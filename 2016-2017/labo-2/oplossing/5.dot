@@ -1,0 +1,15 @@
+digraph {
+	9 -> 8;
+	9 -> 10;
+	10 -> {NULL0[label="NULL"]};
+	10 -> {NULL1[label="NULL"]};
+	8 -> 6;
+	8 -> {NULL2[label="NULL"]};
+	6 -> 1;
+	6 -> {NULL3[label="NULL"]};
+	1 -> {NULL4[label="NULL"]};
+	1 -> 3;
+	3 -> {NULL5[label="NULL"]};
+	3 -> {NULL6[label="NULL"]};
+}
+

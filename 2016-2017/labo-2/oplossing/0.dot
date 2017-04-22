@@ -1,0 +1,7 @@
+digraph {
+	3 -> {NULL0[label="NULL"]};
+	3 -> 8;
+	8 -> {NULL1[label="NULL"]};
+	8 -> {NULL2[label="NULL"]};
+}
+

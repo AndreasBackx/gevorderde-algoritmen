@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="generator" content="intranetr/0.10.0">
+<title>OEFENINGEN: C++11 en binaire bomen | iii intranet</title>    <link rel="stylesheet" type="text/css" media="screen,handheld" href="/css/default.css?0.10.0">
+    <link rel="stylesheet" type="text/css" media="print" href="/css/print.css?0.10.0">
+    <link rel="stylesheet" type="text/css" media="screen,handheld" href="/css/sites/default.css">
+    <script type="text/javascript" src="/js/cache/0d6197553acf19ea859c96f7caf7d8fa6c6519b8.js?0.10.0"></script>
+<!--[if lt IE 8]>
+<link rel="stylesheet" type="text/css" href="/css/ie.css">
+<![endif]-->
+    <script type="text/javascript">
+    (function() {
+        var month = 4;
+        iii.semester = month == 1 ? 1
+            : month <= 6 ? 2
+            : month <= 9 ? 0 : 1;
+        if (iii.semester > 0) {
+            var hideOtherSemester = function() {
+                var other = iii.semester == 1 ? 2 : 1;
+                $('#breadcrumbs li.group-sem'
+                        + other
+                        + ':not(.group-sem'
+                        + iii.semester + '):not(.active)')
+                    .hide();
+            };
+            $(document)
+                .ready(hideOtherSemester)
+                .on("contentUpdate.iii", hideOtherSemester);
+        }
+    })();
+    </script>
+</head>
+
+<body>
+    <div id="header"><h1>
+    <a href="/" title="Naar de thuispagina">
+        intranet
+    </a>
+</h1>
+</div>
+<div id="main">    <div id="node-children">
+    <ul>
+            <li><a href="/Algoritmen-II/reeks01/"><span style="float: right">&#8593;</span>Omhoog</a></li>
+            </ul>
+    </div>
+
+<div id="content" class="">
+        <div id="breadcrumbs-container">
+    <span id="you-are-here">Je bent hier:</span>
+    <ul id="breadcrumbs">
+                            <li class="breadcrumb first"><a href="/" class="breadcrumb first">Intranet</a>
+                </li>
+                            <li class="breadcrumb"><a href="/Algoritmen-II/" class="breadcrumb">Algoritmen-II</a>
+                    <ul class="breadcrumb-siblings">
+                                                <li class="separator"><span>Eerste bachelor</span></li>
+                                                                                                                                                                                                                                                            <li class="breadcrumb-sibling group-sem1 group-sem2"><a class="breadcrumb-sibling group-sem1 group-sem2" href="/OpenLes/">Informatica I - Open Les</a></li>
+                                                                <li class="separator"><span>Tweede bachelor</span></li>
+                                                                                                                                                                                                                <li class="breadcrumb-sibling group-sem2"><a class="breadcrumb-sibling group-sem2" href="/Besturingssystemen-I/">Besturingssystemen I</a></li>
+                                                                                                                                                                                                                <li class="breadcrumb-sibling group-sem1 leaf"><a class="breadcrumb-sibling group-sem1 leaf" href="/Computernetwerken-I/">Computernetwerken I</a></li>
+                                                                <li class="separator"><span>Derde bachelor</span></li>
+                                                                                                                                                                                                                <li class="breadcrumb-sibling group-sem2"><a class="breadcrumb-sibling group-sem2" href="/Algoritmen-I/">Algoritmen I</a></li>
+                                                                                                                                                                                                                <li class="breadcrumb-sibling group-sem2"><a class="breadcrumb-sibling group-sem2" href="/Besturingssystemen-II/">Besturingssystemen II</a></li>
+                                                                                                                                                                                                                <li class="breadcrumb-sibling group-sem2"><a class="breadcrumb-sibling group-sem2" href="/Computernetwerken-II/">Computernetwerken II</a></li>
+                                                                                                                                                                                                                <li class="breadcrumb-sibling group-sem1"><a class="breadcrumb-sibling group-sem1" href="/Databanken/">Databanken</a></li>
+                                                                                                                                                                                                                <li class="breadcrumb-sibling group-sem1"><a class="breadcrumb-sibling group-sem1" href="/Discrete-Wiskunde/">Discrete wiskunde</a></li>
+                                                                <li class="separator"><span>Master</span></li>
+                                                                                                                                                                                                                <li class="breadcrumb-sibling group-sem1 active"><a class="breadcrumb-sibling group-sem1 active" href="/Algoritmen-II/">Algoritmen-II</a></li>
+                                                                                                                                                                                                                <li class="breadcrumb-sibling group-sem1 leaf"><a class="breadcrumb-sibling group-sem1 leaf" href="/Computergrafiek/">Computergrafiek</a></li>
+                                                                                                                                                                                                                                                            <li class="breadcrumb-sibling group-sem1 group-sem2 leaf"><a class="breadcrumb-sibling group-sem1 group-sem2 leaf" href="/Masterproef/">Masterproef</a></li>
+                                                                                                                                                                                                                <li class="breadcrumb-sibling group-sem1"><a class="breadcrumb-sibling group-sem1" href="/Besturingssystemen-III/">Windows</a></li>
+                                                                                                                                                                    <li class="breadcrumb-sibling"><a class="breadcrumb-sibling" href="/Roosters/">Roosters</a></li>
+                                        </ul>
+                </li>
+                            <li class="breadcrumb"><a href="/Algoritmen-II/reeks01/" class="breadcrumb">OEFENINGEN: C++11 en binaire bomen</a>
+                </li>
+                            <li class="breadcrumb"><a href="/Algoritmen-II/reeks01/opgave01.html" class="breadcrumb">OEFENINGEN: C++11 en binaire bomen</a>
+                </li>
+        </ul>
+    </div>
+    <h2>OEFENINGEN: C++11 en binaire bomen</h2>
+    <div id="page-content">
+        <h4>LES 1 - 27 sept 2016</h4>
+<h3>ZOEKBOMEN</h3>
+<h4>Inleiding C++11</h4>
+In <a href="zoekboom11.h">zoekboom11.h</a> vind je de
+basisdefinities en de toevoegfunctie van een binaire zoekboom.
+<ol>
+<li>De noodzakelijke constructoren, move- en copyoperaties
+ontbreken. Voeg ze toe. Controleer of je toevoegcode nu werkt.
+Daarvoor zal je uiteraard een uitschrijfoperatie moeten maken. Let
+erop dat de knopen ouderpointers hebben: om je uitschrijfoperatie
+bruikbaar te maken bij debuggen moet je dus bij elke knoop de
+sleutel uitschrijven van de knoop zelf, maar ook van de ouder en de
+twee kinderen. Anders heb je geen zicht op de structuur van de
+boom!</li>
+<li>We gaan ons dit jaar bezighouden met evenwichtige bomen. Dus ga
+je een paar maten implementeren die aanduiden hoe evenwichtig een
+boom is:
+<ol>
+<li>Maak een functie die de totale diepte van een boom
+teruggeeft.</li>
+<li>Maak een functie die de gemiddelde knoopdiepte teruggeeft: dat
+is de som van de dieptes van alle knopen gedeeld door het aantal
+knopen.</li>
+</ol>
+</li>
+<li>Een basisoperatie bij het evenwichtig maken van bomen is de
+rotatie. Hierbij neemt een kind van een knoop de plaats van zijn
+ouder in; de oorspronkelijke ouder wordt dan kind van het vroegere
+kind. Omdat het om een zoekboom gaat moeten de deelbomen onder deze
+twee knopen verplaatst worden als op de onderstaande afbeelding:
+<p><img src="Rotaties.gif"></p>
+<p>Ontwerp eerst je functiehoofding: welke info heb je nodig om een
+bepaalde knoop te roteren? Hoe geef je die mee aan de functie?
+Schrijf je antwoord op en laat het controleren voor je aan de
+implementatie begint.</p>
+</li>
+<li>Schrijf nu een functie die een boom zo onevenwichtig mogelijk
+maakt. Controleer de werking van die functie met de dieptefunctie
+die je geprogrammeerd hebt.</li>
+<li>Schrijf nu een functie die een boom zo evenwichtig mogelijk
+maakt. Tip: dit is vrij eenvoudig als je de vorige functie
+gebruikt, anders niet. Controleer weer je oplossing op een aantal
+bomen.</li>
+</ol>
+
+        <div id="page-content-end"></div>
+    </div>
+    <div id="footer">    <div id="metadata">
+    Laatst gewijzigd
+            op
+        26-09-2016
+        om
+        12:54
+        
+                door
+                    <a href="mailto:Jan.Cnops@UGent.be">Jan Cnops</a>
+                
+        
+    </div>
+<div id="tag">intranetr/0.10.0</div>
+<div id="footer-end"></div>
+</div>
+</div>
+</div>
+</body>
+
+</html>
+
+<!-- 27 ms / 529 KB -->

@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+ <HEAD>
+  <TITLE> Bibliotheken </TITLE>
+  <META NAME="Generator" CONTENT="EditPlus">
+  <META NAME="Author" CONTENT="">
+  <META NAME="Keywords" CONTENT="">
+  <META NAME="Description" CONTENT="">
+ </HEAD>
+
+ <BODY>
+  
+
+<h3>Bibliotheken</h3>
+
+Een programma kan opgesplitst worden in meerdere "bibliotheken", ook wel "libraries"
+of "header-files" of "headers" genoemd. 
+Conventies i.v.m. <code>#include</code>:
+<li>Standaard-bibliotheken tussen <code>&lt;</code> en <code>&gt;</code> en <i>zonder</i> extensie <code>.h</code>.
+<li>Oudere C-bibliotheken ook zonder <code>.h</code> en met voorvoegsel <code>c</code>.
+<li>"Eigen" bibliotheken tussen dubbele aanhalingstekens en <i>met</i> extensie <code>.h</code> (van "header"). Bij conventie met kleine letters.
+<br>
+Voorbeeld:
+<pre>
+	#include &lt;iostream&gt;
+	#include &lt;ctime&gt; // vroeger &lt;time.h&gt;
+
+	#include "sorteermethode.h"
+	#include "sortvector.h"
+</pre>
+
+<p>
+De ge&iuml;ncludeerde headers komen <i>letterlijk</i> in de programmatekst terecht. De volgorde van includeren is dus van belang!
+Opm. het is aan te raden standaard-bibliotheken <i>eerst</i> te includeren, dus <i>voor</i> eigen bibliotheken.
+
+<p>
+Headers kunnen op hun beurt andere headers includeren. 
+Wie zo'n header includeert krijgt automatisch alle onrechtstreeks ge&iuml;ncludeerde definities "op zijn bord" (zie namespace pollution).
+Indien je bv. <code>&lt;iostream&gt;</code> includeert, 
+is het typisch zo dat onrechtstreeks <code>&lt;cstdlib&gt;</code> en <code>&lt;string&gt;</code> worden geincludeerd. Spijtig genoeg
+is dit afhankelijk van omgeving tot omgeving (er zijn bv. verschillen tussen gdb en Visual Studio). 
+Het is aangewezen elke header die je effectief gebruikt expliciet
+te includeren, dus ook bv. <code>&lt;string&gt;</code>.
+
+
+<p>
+In een project worden bepaalde headers in meerdere bestanden ge&iuml;ncludeerd. Nochtans is het verboden om een klasse tweemaal
+te defini&euml;ren. Om dit te vermijden gebruikt men "guards":
+<pre>
+#ifndef MIJN_UNIEKE_NAAM
+#define MIJN_UNIEKE_NAAM
+	// ... inhoud hier
+#endif
+</pre>
+Als unieke naam kiest men vaak de naam van de header met wat underscores, bv. <code>__SORTVECTOR_H__</code>
+
+
+<p>
+Bij het compileren worden de headerbestanden opgezocht:
+<li>standaard-bibliotheken in <code>include</code>-map (of submappen) van de compiler (bv. <code>c:\Dev-Cpp\include</code>)
+<li>eigen bibliotheken in de map van waaruit gecompileerd wordt (<code>.</code>), of in andere mappen naar keuze. Je kunt de compiler hiervan op de hoogte brengen d.m.v. de command-line parameter -I. In de meeste IDE's kun je dit echter makkelijker via project-opties. <br>
+In NetBeans: rechtsklikken op project, dan bij Properties / Build / C++ Compiler / include directories / ... en dan de map(pen) waar de headers staan toevoegen. 
+
+
+<p>
+Meer uitleg vind je in dit 
+<a href="http://www.informit.com/articles/article.aspx?p=26039">artikel</a>
+over separate compilation en namespaces.
+
+ </BODY>
+</HTML>

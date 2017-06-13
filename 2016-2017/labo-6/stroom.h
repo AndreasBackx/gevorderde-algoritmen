@@ -45,7 +45,7 @@ public:
 
     Stroomnetwerk(const GraafMetTakdata<GERICHT, int>& capaciteiten, int producent, int verbruiker);
 
-    int BepaalMaximumFlow();
+    int BepaalMaxStroom();
     Pad<int> BepaalVergrotendPad(const GraafMetTakdata<GERICHT, int>& rest);
 
 private:
@@ -62,7 +62,7 @@ Stroomnetwerk::Stroomnetwerk(const GraafMetTakdata<GERICHT, int>& capaciteiten, 
 {
 }
 
-int Stroomnetwerk::BepaalMaximumFlow()
+int Stroomnetwerk::BepaalMaxStroom()
 {
     int maximale_netwerkstroom = 0;
     GraafMetTakdata<GERICHT, int> rest{capaciteiten};

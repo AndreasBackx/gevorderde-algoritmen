@@ -1,0 +1,55 @@
+
+# running cmake
+#
+#   mkdir build
+#   cd build
+#   cmake -G "<your preferred development environment>" ..
+#
+# <your preferred development environment> can be found by
+#   cmake --help
+#
+
+cmake_minimum_required(VERSION 3.6.2 FATAL_ERROR)
+
+project("Labo 4 - Btrees")
+set(BUILD_NAME "btree")
+
+include_directories(${CMAKE_SOURCE_DIR})
+
+# Main
+
+set(OPTIONS "-g -std=gnu++11")
+set(WARNINGS "-Wall -Wextra -pedantic")
+set(FLAGS "${OPTIONS} ${WARNINGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${FLAGS}")
+
+add_executable( # Add your source code files and headers
+    ${BUILD_NAME}
+
+    bknoop.h
+    btree.h
+    main.cpp
+    schijf.h
+)
+
+# Testing
+
+enable_testing()
+
+find_package(Threads)
+
+set(GOOGLETEST_DIR /home/martijn/git/googletest/googletest)
+include_directories(${GOOGLETEST_DIR}/include) # path for gtest header files
+link_directories(${GOOGLETEST_DIR}/build) # path for libgtest.a or libtest_main.a
+
+add_executable( # Add your source code files and headers for testing
+    ${BUILD_NAME}-test
+    bknoop.h
+    schijf.h
+    test/bknoop-unittest.cpp
+)
+
+target_link_libraries(${BUILD_NAME}-test ${CMAKE_THREAD_LIBS_INIT} gtest gtest_main)
+
+add_test(${BUILD_NAME}-testrun ${BUILD_NAME}-test)
+

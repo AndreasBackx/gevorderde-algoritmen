@@ -1,15 +1,19 @@
 
-#ifndef SCHIJF_J
+#ifndef SCHIJF_H
 #define SCHIJF_H
 
 #include <map>
 
-typedef unsigned int blokindex;
+using blokindex = unsigned int;
+
+//naamgeving gaat uit van de gebruiker: schrijf is een schrijfoperatie naar
+//de schijf, enzovoorts
 
 template<class T>
-class Schijf : public std::map<blokindex, T>
+class Schijf : private std::map<blokindex, T>
 {
 public:
+    //schrijf: voegt een T toe aan de schijf. Geeft de index terug
 
     blokindex schrijf(const T& b)
     {
@@ -34,13 +38,16 @@ public:
     {
         b = this->operator[](bi);
     }
+    //
+    //  einde interface
+    //
 
-    Schijf() : std::map<blokindex, T>(), indexteller(666) { };
-
+    Schijf() : std::map<blokindex, T >(), indexteller(666)
+    {
+    };
 private:
-
     blokindex indexteller;
-};
 
+};
 
 #endif

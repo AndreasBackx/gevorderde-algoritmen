@@ -57,7 +57,7 @@ enum class Knooptype
 
 void toepassing()
 {
-    std::cout << "test toepassing: Island of Sodor" << std::endl;
+    std::cout << "Test toepassing: Island of Sodor" << std::endl;
     
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_file("treingraaf.xml");

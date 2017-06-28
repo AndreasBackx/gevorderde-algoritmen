@@ -6,15 +6,19 @@
 
 #include <string>
 #include <sstream>
+#include <iostream>
 
 // Betekenis m: zie cursus
+// TODO BKnoop opslitsen in klasse Blad en NietBlad die elk een interface overerven
+//
 
 template<class Sleutel, class Data, blokindex m>
 class BKnoop
 {
 public:
 
-    BKnoop<Sleutel, Data, m>(bool is_blad);
+    BKnoop<Sleutel, Data, m>(bool is_blad_knoop);
+    BKnoop(blokindex linkerkind, const Sleutel& sl, const Data& d, blokindex rechterkind);
     ~BKnoop<Sleutel, Data, m>();
 
     BKnoop<Sleutel, Data, m>(const BKnoop<Sleutel, Data, m>& other) = default;
@@ -24,14 +28,14 @@ public:
     BKnoop<Sleutel, Data, m>& operator=(BKnoop<Sleutel, Data, m>&& other) = default;
 
     bool is_aanwezig(const Sleutel& nieuwe_sleutel) const;
+    bool is_blad() const;
     Data geef_data(const Sleutel& nieuwe_sleutel); // Geen return by reference, want schijfpagina wordt niet in het geheugen gehouden (max 3)
     void voegtoe(const Sleutel& nieuwe_sleutel, const Data& nieuwe_data, blokindex nieuw_rechterkind);
     bool is_vol() const;
     blokindex geef_kindindex(const Sleutel& nieuwe_sleutel) const;
     int aantal_kinderen() const;
 
-
-    Sleutel operator[] (const int index) const;
+    Sleutel operator[](int index) const;
     std::string to_string() const;
 
 private:
@@ -40,16 +44,16 @@ private:
     //
     // m = 4
     // ARRAY_SIZE = 5
-    // sleutel[]   (0)   1   2   3   4
-    // data[]      (0)   1   2   3   4
-    // index[]         0   1   2   3   4
+    // sleutel[]   (0)   1   2   3   4      | 4 sleutels
+    // data[]      (0)   1   2   3   4      | 4 data
+    // index[]         0   1   2   3   4    | 5 indexes
     const static int ARRAY_SIZE = m + 1;
     Sleutel sleutel[ARRAY_SIZE];
     Data data[ARRAY_SIZE];
     blokindex index[ARRAY_SIZE];
     int k;
-    bool is_blad;
-    
+    bool is_blad_knoop;
+
 
     // Crashtest voorkomt dat er meer dan drie knopen in het 'geheugen' zitten (excusief de wortel).
     // Dit veronderstelt wel dat er nooit knopen op de Schijf gedeletete worden.
@@ -60,14 +64,30 @@ template<class Sleutel, class Data, blokindex m>
 int BKnoop<Sleutel, Data, m>::crashtest = 0;
 
 template<class Sleutel, class Data, blokindex m>
-BKnoop<Sleutel, Data, m>::BKnoop(bool is_blad)
-: k{0}, is_blad{is_blad}
+BKnoop<Sleutel, Data, m>::BKnoop(bool is_blad_knoop)
+: k{0}, is_blad_knoop{is_blad_knoop}
 {
     crashtest++;
 
-    // Dit crasht als er een 4e knoop wordt aangemaakt
-    // Zie de limiet van 3 schijfknopen in het intern (RAM) geheugen in de opgave
-    int crashresult = 4 / (-4 + crashtest);
+    // // Dit crasht als er een 4e knoop wordt aangemaakt
+    // // Zie de limiet van 3 schijfknopen in het intern (RAM) geheugen in de opgave
+    // int crashresult = 4 / (-4 + crashtest);
+
+    if (crashtest > 3)
+    {
+        std::cout << "Te veel knopen in het geheugen!" << std::endl;
+        throw "Te veel knopen in het geheugen!";
+    }
+}
+
+template<class Sleutel, class Data, blokindex m>
+BKnoop<Sleutel, Data, m>::BKnoop(blokindex linkerkind, const Sleutel& sl, const Data& d, blokindex rechterkind)
+: BKnoop<Sleutel, Data, m>{false}
+{
+    sleutel[1] = sl;
+    data[1] = d;
+    index[0] = linkerkind;
+    index[1] = rechterkind;
 }
 
 template<class Sleutel, class Data, blokindex m>
@@ -77,14 +97,16 @@ BKnoop<Sleutel, Data, m>::~BKnoop()
 }
 
 template<class Sleutel, class Data, blokindex m>
-Sleutel BKnoop<Sleutel, Data, m>::operator[] (const int index) const
+Sleutel BKnoop<Sleutel, Data, m>::operator[](int index) const
 {
-    if(index > aantal_kinderen())
+    index++;
+
+    if (index > aantal_kinderen())
     {
         throw "Index is larger than amount of keys";
     }
 
-    if (index <= 0)
+    if (index < 1)
     {
         throw "Index must be larger than 0";
     }
@@ -140,6 +162,12 @@ bool BKnoop<Sleutel, Data, m>::is_vol() const
 }
 
 template<class Sleutel, class Data, blokindex m>
+bool BKnoop<Sleutel, Data, m>::is_blad() const
+{
+    return is_blad_knoop;
+}
+
+template<class Sleutel, class Data, blokindex m>
 void BKnoop<Sleutel, Data, m>::voegtoe(const Sleutel& nieuwe_sleutel, const Data& nieuwe_data, blokindex nieuw_rechterkind)
 {
     if (is_aanwezig(nieuwe_sleutel))
@@ -179,7 +207,7 @@ blokindex BKnoop<Sleutel, Data, m>::geef_kindindex(const Sleutel& nieuwe_sleutel
     }
 
     int i = 1;
-    while (i < ARRAY_SIZE && nieuwe_sleutel < sleutel[i])
+    while (i <= k && nieuwe_sleutel > sleutel[i])
     {
         i++;
     }
@@ -200,21 +228,21 @@ std::string BKnoop<Sleutel, Data, m>::to_string() const
     std::stringstream out;
 
     out << "Knoop met " << k << "/" << m << " sleutels:" << std::endl;
-    out << "Blad: " << (is_blad ? "Ja" : "Nee") << std::endl;
+    out << "Blad: " << (is_blad_knoop ? "Ja" : "Nee") << std::endl;
     out << "Sleutels: ";
 
 
-        for (int i = 1; i < ARRAY_SIZE; i++)
+    for (int i = 1; i < ARRAY_SIZE; i++)
+    {
+        if (i <= k)
         {
-            if (i <= k)
-            {
-                out << sleutel[i] << " ";
-            }
-            else 
-            {
-                out << "X ";
-            }
+            out << sleutel[i] << " ";
         }
+        else
+        {
+            out << "X ";
+        }
+    }
 
     out << std::endl;
 

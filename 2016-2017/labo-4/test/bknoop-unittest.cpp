@@ -1,5 +1,4 @@
 
-
 #ifndef BKNOOP_UNITTEST_H
 #define BKNOOP_UNITTEST_H
 
@@ -128,3 +127,4 @@ TEST(test_bknoop, test_geef_index)
 }
 
 #endif /* BKNOOP_UNITTEST_H */
+

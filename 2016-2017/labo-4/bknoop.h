@@ -3,6 +3,7 @@
 #define BKNOOP_H
 
 #include "schijf.h"
+#include "btree.h"
 
 #include <string>
 #include <sstream>
@@ -13,23 +14,31 @@
 //
 
 template<class Sleutel, class Data, blokindex m>
+class BTree;
+
+template<class Sleutel, class Data, blokindex m>
 class BKnoop
 {
+
+    friend class BTree<Sleutel, Data, m>;
+
 public:
 
-    BKnoop<Sleutel, Data, m>(bool is_blad_knoop);
+    BKnoop(bool is_blad_knoop);
+    BKnoop();
     BKnoop(blokindex linkerkind, const Sleutel& sl, const Data& d, blokindex rechterkind);
-    ~BKnoop<Sleutel, Data, m>();
+    ~BKnoop();
 
-    BKnoop<Sleutel, Data, m>(const BKnoop<Sleutel, Data, m>& other) = default;
-    BKnoop<Sleutel, Data, m>& operator=(const BKnoop<Sleutel, Data, m>& other) = default;
+    BKnoop(const BKnoop<Sleutel, Data, m>& other) = default;
+    BKnoop& operator=(const BKnoop<Sleutel, Data, m>& other) = default;
 
-    BKnoop<Sleutel, Data, m>(BKnoop<Sleutel, Data, m>&& other) = default;
-    BKnoop<Sleutel, Data, m>& operator=(BKnoop<Sleutel, Data, m>&& other) = default;
+    BKnoop(BKnoop<Sleutel, Data, m>&& other) = default;
+    BKnoop& operator=(BKnoop<Sleutel, Data, m>&& other) = default;
 
     bool is_aanwezig(const Sleutel& nieuwe_sleutel) const;
     bool is_blad() const;
-    Data geef_data(const Sleutel& nieuwe_sleutel); // Geen return by reference, want schijfpagina wordt niet in het geheugen gehouden (max 3)
+    Data geef_data(const Sleutel& nieuwe_sleutel) const; // Geen return by reference, want schijfpagina wordt niet in het geheugen gehouden (max 3)
+    void update_data(const Sleutel& sl, const Data& d);
     void voegtoe(const Sleutel& nieuwe_sleutel, const Data& nieuwe_data, blokindex nieuw_rechterkind);
     bool is_vol() const;
     blokindex geef_kindindex(const Sleutel& nieuwe_sleutel) const;
@@ -78,6 +87,12 @@ BKnoop<Sleutel, Data, m>::BKnoop(bool is_blad_knoop)
         std::cout << "Te veel knopen in het geheugen!" << std::endl;
         throw "Te veel knopen in het geheugen!";
     }
+}
+
+template<class Sleutel, class Data, blokindex m>
+BKnoop<Sleutel, Data, m>::BKnoop()
+: BKnoop<Sleutel, Data, m>{true}
+{
 }
 
 template<class Sleutel, class Data, blokindex m>
@@ -133,7 +148,7 @@ bool BKnoop<Sleutel, Data, m>::is_aanwezig(const Sleutel& nieuwe_sleutel) const
 }
 
 template<class Sleutel, class Data, blokindex m>
-Data BKnoop<Sleutel, Data, m>::geef_data(const Sleutel& sl)
+Data BKnoop<Sleutel, Data, m>::geef_data(const Sleutel& sl) const
 {
     if (!is_aanwezig(sl))
     {
@@ -153,6 +168,27 @@ Data BKnoop<Sleutel, Data, m>::geef_data(const Sleutel& sl)
     }
 
     return 0;
+}
+
+template<class Sleutel, class Data, blokindex m>
+void BKnoop<Sleutel, Data, m>::update_data(const Sleutel& sl, const Data& d)
+{
+    if (!is_aanwezig(sl))
+    {
+        throw "Sleutel is niet aanwezig in deze knoop";
+    }
+
+    int i = 1;
+
+    while (i <= k)
+    {
+        if (sleutel[i] == sl)
+        {
+            data[i] = d;
+        }
+
+        i++;
+    }
 }
 
 template<class Sleutel, class Data, blokindex m>

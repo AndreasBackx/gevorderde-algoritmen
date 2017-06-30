@@ -26,6 +26,7 @@ public:
 
     BKnoop(bool is_blad_knoop);
     BKnoop();
+    BKnoop(blokindex linkerkind);
     BKnoop(blokindex linkerkind, const Sleutel& sl, const Data& d, blokindex rechterkind);
     ~BKnoop();
 
@@ -39,10 +40,12 @@ public:
     bool is_blad() const;
     Data geef_data(const Sleutel& nieuwe_sleutel) const; // Geen return by reference, want schijfpagina wordt niet in het geheugen gehouden (max 3)
     void update_data(const Sleutel& sl, const Data& d);
+    void voegtoe(const Sleutel& nieuwe_sleutel, const Data& nieuwe_data);
     void voegtoe(const Sleutel& nieuwe_sleutel, const Data& nieuwe_data, blokindex nieuw_rechterkind);
     bool is_vol() const;
     blokindex geef_kindindex(const Sleutel& nieuwe_sleutel) const;
     int aantal_kinderen() const;
+    void beperk_kinderen(int aantal_kinderen);
 
     Sleutel operator[](int index) const;
     std::string to_string() const;
@@ -93,6 +96,13 @@ template<class Sleutel, class Data, blokindex m>
 BKnoop<Sleutel, Data, m>::BKnoop()
 : BKnoop<Sleutel, Data, m>{true}
 {
+}
+
+template<class Sleutel, class Data, blokindex m>
+BKnoop<Sleutel, Data, m>::BKnoop(blokindex linkerkind)
+: BKnoop<Sleutel, Data, m>{false}
+{
+    index[0] = linkerkind;
 }
 
 template<class Sleutel, class Data, blokindex m>
@@ -204,6 +214,12 @@ bool BKnoop<Sleutel, Data, m>::is_blad() const
 }
 
 template<class Sleutel, class Data, blokindex m>
+void BKnoop<Sleutel, Data, m>::voegtoe(const Sleutel& nieuwe_sleutel, const Data& nieuwe_data)
+{
+    voegtoe(nieuwe_sleutel, nieuwe_data, Schijf<BKnoop<Sleutel, Data, m>>::NULL_BLOKINDEX);
+}
+
+template<class Sleutel, class Data, blokindex m>
 void BKnoop<Sleutel, Data, m>::voegtoe(const Sleutel& nieuwe_sleutel, const Data& nieuwe_data, blokindex nieuw_rechterkind)
 {
     if (is_aanwezig(nieuwe_sleutel))
@@ -283,6 +299,12 @@ std::string BKnoop<Sleutel, Data, m>::to_string() const
     out << std::endl;
 
     return out.str();
+}
+
+template<class Sleutel, class Data, blokindex m>
+void BKnoop<Sleutel, Data, m>::beperk_kinderen(int aantal_kinderen)
+{
+    k = aantal_kinderen;
 }
 
 #endif /* BKNOOP_H */

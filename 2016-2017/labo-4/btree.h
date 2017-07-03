@@ -9,6 +9,9 @@
 #include <cmath>
 #include <string>
 #include <sstream>
+#include <unordered_map>
+#include <stdbool.h>
+#include <unordered_set>
 
 // Betekenis m: zie cursus
 
@@ -27,50 +30,44 @@ class BKnoop;
 template<class Sleutel, class Data, blokindex m>
 class BTree
 {
-    public:
+public:
 
-        BTree(Schijf<BKnoop<Sleutel, Data, m>>& schijf);
-        ~BTree() = default;
+    BTree(Schijf<BKnoop<Sleutel, Data, m>>&schijf);
+    ~BTree() = default;
 
-        BTree(const BTree<Sleutel, Data, m>& other) = default;
-        BTree& operator=(const BTree<Sleutel, Data, m>& other) = default;
+    BTree(const BTree<Sleutel, Data, m>& other) = default;
+    BTree& operator=(const BTree<Sleutel, Data, m>& other) = default;
 
-        BTree(BTree<Sleutel, Data, m>&& other) = default;
-        BTree& operator=(BTree<Sleutel, Data, m>&& other) = default;
+    BTree(BTree<Sleutel, Data, m>&& other) = default;
+    BTree& operator=(BTree<Sleutel, Data, m>&& other) = default;
 
-        Data zoeken(const Sleutel& nieuwe_sleutel) const;
-        void voegtoe(const Sleutel& nieuwe_sleutel, const Data&);
+    Data zoek(const Sleutel& nieuwe_sleutel) const;
+    void voegtoe(const Sleutel& nieuwe_sleutel, const Data&);
 
-        std::string to_string() const;
+    std::string to_string() const;
 
-    private:
+private:
 
-        BKnoop<Sleutel, Data, m> splits_knoop(BKnoop<Sleutel, Data, m>& originele_knoop, Sleutel& middel_sleutel, Data& middel_data);
+    BKnoop<Sleutel, Data, m> splits_knoop(BKnoop<Sleutel, Data, m>& originele_knoop, Sleutel& middel_sleutel, Data& middel_data);
+    void append_knoop_to_string(blokindex huidige_index, std::stringstream& out, std::unordered_set<blokindex>& bezochte_indexen, int depth) const;
 
-        Schijf<BKnoop<Sleutel, Data, m>>& schijf;
-        BKnoop<Sleutel, Data, m> wortel;
-        blokindex wortelindex;
+    Schijf<BKnoop<Sleutel, Data, m>>&schijf;
+    BKnoop<Sleutel, Data, m> wortel;
+    blokindex wortelindex;
 };
 
-    template<class Sleutel, class Data, blokindex m>
-BTree<Sleutel, Data, m>::BTree(Schijf<BKnoop<Sleutel, Data, m>>& schijf)
-    : schijf{schijf}, wortel{true}
+template<class Sleutel, class Data, blokindex m>
+BTree<Sleutel, Data, m>::BTree(Schijf<BKnoop<Sleutel, Data, m>>&schijf)
+: schijf{schijf}, wortel{true}
 {
     wortelindex = schijf.schrijf(wortel);
 }
 
 template<class Sleutel, class Data, blokindex m>
-Data BTree<Sleutel, Data, m>::zoeken(const Sleutel& nieuwe_sleutel) const
+Data BTree<Sleutel, Data, m>::zoek(const Sleutel& nieuwe_sleutel) const
 {
-    if (wortel.is_aanwezig(nieuwe_sleutel))
-    {
-        return wortel.geef_data(nieuwe_sleutel);
-    }
-
-    blokindex huidige_index = wortel.geef_kindindex(nieuwe_sleutel);
-    BKnoop<Sleutel, Data, m> huidige_knoop;
-
-    schijf.lees(huidige_knoop, huidige_index);
+    BKnoop<Sleutel, Data, m> huidige_knoop = wortel;
+    blokindex huidige_index = wortelindex;
 
     while (!huidige_knoop.is_blad())
     {
@@ -91,33 +88,39 @@ Data BTree<Sleutel, Data, m>::zoeken(const Sleutel& nieuwe_sleutel) const
     return huidige_knoop.geef_data(nieuwe_sleutel);
 }
 
-    template<class Sleutel, class Data, blokindex m>
+template<class Sleutel, class Data, blokindex m>
 BKnoop<Sleutel, Data, m> BTree<Sleutel, Data, m>::splits_knoop(BKnoop<Sleutel, Data, m>& originele_knoop, Sleutel& middel_sleutel, Data& middel_data)
 {
-    const int middel_index = static_cast<int>(std::floor(originele_knoop.aantal_kinderen() / 2));
-    // bv.
-    // 2 kinderen = 0 1 -> 1 (2/2 = 1)
-    // 3 kinderen = 0 1 2 -> 1 (3/2 -> 1.5)
-    // 4 kinderen = 0 1 2 3 -> 2 (4/2 -> 2)
-    // 5 kinderen = 0 1 2 3 4 -> 2 (5/2 -> 2.5)
+    const int middel_pivot = static_cast<int> (std::ceil(originele_knoop.aantal_kinderen() / 2));
 
-    BKnoop<Sleutel, Data, m> nieuwe_knoop{originele_knoop.is_blad()};
+    BKnoop<Sleutel, Data, m> nieuwe_knoop{originele_knoop.is_blad_knoop};
 
-    middel_sleutel = nieuwe_knoop[middel_index];
-    middel_data = nieuwe_knoop.geef_data(middel_sleutel);
+    middel_sleutel = originele_knoop.sleutel[middel_pivot];
+    middel_data = originele_knoop.data[middel_pivot];
 
-    for (int i = middel_index + 1; i < nieuwe_knoop.aantal_kinderen(); i++)
+    if (!nieuwe_knoop.is_blad_knoop)
     {
-        nieuwe_knoop.voegtoe(
-                nieuwe_knoop[i],
-                nieuwe_knoop.geef_data(nieuwe_knoop[i])
-                );
+        nieuwe_knoop.index[0] = originele_knoop.index[middel_pivot];
     }
+
+    for (int i = middel_pivot + 1; i <= originele_knoop.k; i++)
+    {
+        nieuwe_knoop.sleutel[i - middel_pivot] = originele_knoop.sleutel[i];
+        nieuwe_knoop.data[i - middel_pivot] = originele_knoop.data[i];
+
+        if (!nieuwe_knoop.is_blad_knoop)
+        {
+            nieuwe_knoop.index[i - middel_pivot] = originele_knoop.index[i];
+        }
+    }
+
+    nieuwe_knoop.k = originele_knoop.k - middel_pivot;
+    originele_knoop.k = middel_pivot - 1;
 
     return nieuwe_knoop;
 }
 
-    template<class Sleutel, class Data, blokindex m>
+template<class Sleutel, class Data, blokindex m>
 void BTree<Sleutel, Data, m>::voegtoe(const Sleutel& nieuwe_sleutel, const Data& nieuwe_data)
 {
     blokindex huidige_index = wortelindex;
@@ -132,7 +135,14 @@ void BTree<Sleutel, Data, m>::voegtoe(const Sleutel& nieuwe_sleutel, const Data&
         if (huidige_knoop.is_aanwezig(nieuwe_sleutel))
         {
             huidige_knoop.update_data(nieuwe_sleutel, nieuwe_data);
+
+            if (huidige_index == wortelindex)
+            {
+                wortel = huidige_knoop;
+            }
+
             schijf.herschrijf(huidige_knoop, huidige_index);
+
             return;
         }
 
@@ -143,6 +153,12 @@ void BTree<Sleutel, Data, m>::voegtoe(const Sleutel& nieuwe_sleutel, const Data&
     if (huidige_knoop.is_aanwezig(nieuwe_sleutel))
     {
         huidige_knoop.update_data(nieuwe_sleutel, nieuwe_data);
+
+        if (huidige_index == wortelindex)
+        {
+            wortel = huidige_knoop;
+        }
+
         schijf.herschrijf(huidige_knoop, huidige_index);
         return;
     }
@@ -150,8 +166,8 @@ void BTree<Sleutel, Data, m>::voegtoe(const Sleutel& nieuwe_sleutel, const Data&
     huidige_knoop.voegtoe(nieuwe_sleutel, nieuwe_data);
 
     while (huidige_knoop.is_vol()
-            && huidige_index != wortelindex
-            && !gebruikte_blokindexen.empty())
+        && huidige_index != wortelindex
+        && !gebruikte_blokindexen.empty())
     {
         Sleutel middel_sleutel;
         Data middel_data;
@@ -166,6 +182,11 @@ void BTree<Sleutel, Data, m>::voegtoe(const Sleutel& nieuwe_sleutel, const Data&
         huidige_knoop.voegtoe(middel_sleutel, middel_data, nieuwe_knoop_index);
     }
 
+    if (huidige_index == wortelindex)
+    {
+        wortel = huidige_knoop;
+    }
+
     if (!wortel.is_vol())
     {
         schijf.herschrijf(huidige_knoop, huidige_index);
@@ -174,13 +195,13 @@ void BTree<Sleutel, Data, m>::voegtoe(const Sleutel& nieuwe_sleutel, const Data&
     {
         Sleutel middel_sleutel;
         Data middel_data;
-        BKnoop<Sleutel, Data, m> nieuwe_knoop = splits_knoop(wortel, middel_sleutel, middel_sleutel);
+        BKnoop<Sleutel, Data, m> nieuwe_knoop = splits_knoop(wortel, middel_sleutel, middel_data);
         schijf.herschrijf(wortel, wortelindex);
         blokindex nieuwe_knoop_index = schijf.schrijf(nieuwe_knoop);
 
         wortel = BKnoop<Sleutel, Data, m>{wortelindex};
         wortel.voegtoe(middel_sleutel, middel_data, nieuwe_knoop_index);
-        blokindex wortelindex = schijf.schrijf(wortel);
+        wortelindex = schijf.schrijf(wortel);
     }
 }
 
@@ -189,9 +210,42 @@ std::string BTree<Sleutel, Data, m>::to_string() const
 {
     std::stringstream out;
 
+    out << "Wortel: index " << wortelindex << " | " << wortel.to_string() << std::endl;
 
+    std::stack<blokindex> te_bezoeken_indexen;
+    std::unordered_set<blokindex> bezochte_indexen;
+    append_knoop_to_string(wortelindex, out, bezochte_indexen, 0);
 
     return out.str();
+}
+
+template<class Sleutel, class Data, blokindex m>
+void BTree<Sleutel, Data, m>::append_knoop_to_string(blokindex huidige_index, std::stringstream& out, std::unordered_set<blokindex>& bezochte_indexen, int depth) const
+{
+    if (bezochte_indexen.find(huidige_index) != bezochte_indexen.end())
+    {
+        return;
+    }
+
+    BKnoop<Sleutel, Data, m> huidige_knoop;
+    schijf.lees(huidige_knoop, huidige_index);
+
+    for (int i = 0; i < depth; i++)
+    {
+        out << "    ";
+    }
+
+    out << "Index " << huidige_index << " | " << huidige_knoop.to_string() << std::endl;
+
+    bezochte_indexen.insert(huidige_index);
+
+    if (!huidige_knoop.is_blad())
+    {
+        for (int i = 0; i <= huidige_knoop.k; i++) // TODO vertalen naar public functies in BKnoop
+        {
+            append_knoop_to_string(huidige_knoop.index[i], out, bezochte_indexen, (depth + 1));
+        }
+    }
 }
 
 #endif

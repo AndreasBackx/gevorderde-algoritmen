@@ -11,7 +11,7 @@ template<class T>
 class Schijf: private std::map<blokindex,T>
 {
     public:
-        const blokindex NULL_BLOKINDEX = 0;
+        const static blokindex NULL_BLOKINDEX;
 
         //schrijf: voegt een T toe aan de schijf. Geeft de index terug
         blokindex schrijf(const T& b)
@@ -41,12 +41,16 @@ class Schijf: private std::map<blokindex,T>
         //  einde interface
         //
 
-        Schijf(): map<blokindex,T >(),indexteller(666){};
+        Schijf()
+        : std::map<blokindex,T>(), indexteller(666){};
 
     private:
 
         blokindex indexteller;
 };
+
+template<class T>
+const blokindex Schijf<T>::NULL_BLOKINDEX = 0;
 
 #endif
 

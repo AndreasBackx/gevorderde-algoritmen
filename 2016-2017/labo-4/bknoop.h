@@ -8,6 +8,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <cassert>
 
 // Betekenis m: zie cursus
 // TODO BKnoop opslitsen in klasse Blad en NietBlad die elk een interface overerven
@@ -88,8 +89,9 @@ BKnoop<Sleutel, Data, m>::BKnoop(bool is_blad_knoop)
     if (crashtest > 3)
     {
         std::cout << "Te veel knopen in het geheugen!" << std::endl;
-        throw "Te veel knopen in het geheugen!";
+        assert(crashtest > 3);
     }
+//    std::cout << crashtest << std::endl;
 }
 
 template<class Sleutel, class Data, blokindex m>
@@ -128,12 +130,12 @@ Sleutel BKnoop<Sleutel, Data, m>::operator[](int index) const
 
     if (index > aantal_kinderen())
     {
-        throw "Index is larger than amount of keys";
+        throw "Index is groter dan het aantal sleutels";
     }
 
     if (index < 1)
     {
-        throw "Index must be larger than 0";
+        throw "Index moet groter zijn dan 0";
     }
 
     return sleutel[index];
@@ -279,24 +281,19 @@ std::string BKnoop<Sleutel, Data, m>::to_string() const
 {
     std::stringstream out;
 
-    out << "Knoop met " << k << "/" << m << " sleutels:" << std::endl;
-    out << "Blad: " << (is_blad_knoop ? "Ja" : "Nee") << std::endl;
-    out << "Sleutels: ";
-
+    out << "Knoop met " << k << "/" << m << " sleutels (" << (is_blad_knoop ? "Blad" : "Nietblad") << "): ";
 
     for (int i = 1; i < ARRAY_SIZE; i++)
     {
         if (i <= k)
         {
-            out << sleutel[i] << " ";
+            out << sleutel[i] << "(" << data[i] << ") ";
         }
         else
         {
             out << "X ";
         }
     }
-
-    out << std::endl;
 
     return out.str();
 }

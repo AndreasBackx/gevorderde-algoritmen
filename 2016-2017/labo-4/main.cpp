@@ -11,12 +11,12 @@ int main(int argc, char** argv)
 {
     try
     {
-        const int KNOOP_GROOTTE = 8;
+        const int KNOOP_GROOTTE = 50;
 
         Schijf<BKnoop < std::string, int, KNOOP_GROOTTE>> s;
         BTree<std::string, int, KNOOP_GROOTTE> bt{s};
 
-        std::ifstream in("donquijote-small.txt");
+        std::ifstream in("donquijote.txt");
 
         int word_index = 1;
         
@@ -26,10 +26,10 @@ int main(int argc, char** argv)
             std::transform(word.begin(), word.end(), word.begin(), ::tolower);
             std::cout << word_index << " | \"" << word << "\" (";
 
-            if (word == "mancha")
+            /*if (word == "mancha")
             {
                 std::cout << "HIER";
-            }
+            }*/
 
             try
             {
@@ -46,12 +46,10 @@ int main(int argc, char** argv)
 
             std::cout << ")" << std::endl;
 
-            std::cout << bt.to_string() << std::endl << std::endl;
+            // std::cout << bt.to_string() << std::endl << std::endl;
             
             word_index++;
         }
-
-        std::cout << "of : " << bt.zoek("of") << std::endl;
 
         std::cout << bt.to_string() << std::endl;
     }

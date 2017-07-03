@@ -9,8 +9,6 @@
 #include <cmath>
 #include <string>
 #include <sstream>
-#include <unordered_map>
-#include <stdbool.h>
 #include <unordered_set>
 
 // Betekenis m: zie cursus
@@ -90,7 +88,9 @@ Data BTree<Sleutel, Data, m>::zoek(const Sleutel& nieuwe_sleutel) const
 
 template<class Sleutel, class Data, blokindex m>
 BKnoop<Sleutel, Data, m> BTree<Sleutel, Data, m>::splits_knoop(BKnoop<Sleutel, Data, m>& originele_knoop, Sleutel& middel_sleutel, Data& middel_data)
-{
+{   
+    // TODO vertalen naar public functies in BKnoop
+
     const int middel_pivot = static_cast<int> (std::ceil(originele_knoop.aantal_kinderen() / 2));
 
     BKnoop<Sleutel, Data, m> nieuwe_knoop{originele_knoop.is_blad_knoop};
@@ -177,6 +177,7 @@ void BTree<Sleutel, Data, m>::voegtoe(const Sleutel& nieuwe_sleutel, const Data&
         blokindex nieuwe_knoop_index = schijf.schrijf(nieuwe_knoop);
 
         huidige_index = gebruikte_blokindexen.top();
+        gebruikte_blokindexen.pop();
         schijf.lees(huidige_knoop, huidige_index);
 
         huidige_knoop.voegtoe(middel_sleutel, middel_data, nieuwe_knoop_index);

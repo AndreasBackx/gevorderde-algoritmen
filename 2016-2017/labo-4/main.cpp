@@ -46,8 +46,6 @@ int main(int argc, char** argv)
             word_index++;
         }
 
-        std::cout << "of : " << bt.zoek("of") << std::endl;
-
         std::cout << bt.to_string() << std::endl;
     }
     catch (const char* ex)

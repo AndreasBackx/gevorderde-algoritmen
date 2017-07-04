@@ -81,8 +81,6 @@ Data BTree<Sleutel, Data, m>::zoek(const Sleutel& nieuwe_sleutel) const
     return huidige_knoop.geef_data(nieuwe_sleutel);
 }
 
-
-
 template<class Sleutel, class Data, blokindex m>
 void BTree<Sleutel, Data, m>::voegtoe(const Sleutel& nieuwe_sleutel, const Data& nieuwe_data)
 {

@@ -6,11 +6,8 @@
 #include "bknoop.h"
 
 #include <stack>
-#include <cmath>
 #include <string>
 #include <sstream>
-#include <unordered_map>
-#include <stdbool.h>
 #include <unordered_set>
 
 // Betekenis m: zie cursus
@@ -23,9 +20,6 @@
 // update_data() enz ...). Omdat de focus op de BTree ligt en het aantal lementen per knoop vaak in de orde van
 // 0 tot hondertallen, heb ik besloten om leesbaarheid en losse koppeling te laten primeren op de (vermoedelijk geringe)
 // performantieverlies.
-
-template<class Sleutel, class Data, blokindex m>
-class BKnoop;
 
 template<class Sleutel, class Data, blokindex m>
 class BTree
@@ -48,7 +42,6 @@ public:
 
 private:
 
-    BKnoop<Sleutel, Data, m> splits_knoop(BKnoop<Sleutel, Data, m>& originele_knoop, Sleutel& middel_sleutel, Data& middel_data);
     void append_knoop_to_string(blokindex huidige_index, std::stringstream& out, std::unordered_set<blokindex>& bezochte_indexen, int depth) const;
 
     Schijf<BKnoop<Sleutel, Data, m>>&schijf;
@@ -88,37 +81,7 @@ Data BTree<Sleutel, Data, m>::zoek(const Sleutel& nieuwe_sleutel) const
     return huidige_knoop.geef_data(nieuwe_sleutel);
 }
 
-template<class Sleutel, class Data, blokindex m>
-BKnoop<Sleutel, Data, m> BTree<Sleutel, Data, m>::splits_knoop(BKnoop<Sleutel, Data, m>& originele_knoop, Sleutel& middel_sleutel, Data& middel_data)
-{
-    const int middel_pivot = static_cast<int> (std::ceil(originele_knoop.aantal_kinderen() / 2));
 
-    BKnoop<Sleutel, Data, m> nieuwe_knoop{originele_knoop.is_blad_knoop};
-
-    middel_sleutel = originele_knoop.sleutel[middel_pivot];
-    middel_data = originele_knoop.data[middel_pivot];
-
-    if (!nieuwe_knoop.is_blad_knoop)
-    {
-        nieuwe_knoop.index[0] = originele_knoop.index[middel_pivot];
-    }
-
-    for (int i = middel_pivot + 1; i <= originele_knoop.k; i++)
-    {
-        nieuwe_knoop.sleutel[i - middel_pivot] = originele_knoop.sleutel[i];
-        nieuwe_knoop.data[i - middel_pivot] = originele_knoop.data[i];
-
-        if (!nieuwe_knoop.is_blad_knoop)
-        {
-            nieuwe_knoop.index[i - middel_pivot] = originele_knoop.index[i];
-        }
-    }
-
-    nieuwe_knoop.k = originele_knoop.k - middel_pivot;
-    originele_knoop.k = middel_pivot - 1;
-
-    return nieuwe_knoop;
-}
 
 template<class Sleutel, class Data, blokindex m>
 void BTree<Sleutel, Data, m>::voegtoe(const Sleutel& nieuwe_sleutel, const Data& nieuwe_data)
@@ -171,12 +134,14 @@ void BTree<Sleutel, Data, m>::voegtoe(const Sleutel& nieuwe_sleutel, const Data&
     {
         Sleutel middel_sleutel;
         Data middel_data;
-
-        BKnoop<Sleutel, Data, m> nieuwe_knoop = splits_knoop(huidige_knoop, middel_sleutel, middel_data);
+        BKnoop<Sleutel, Data, m> nieuwe_knoop;
+        huidige_knoop.splits_knoop(nieuwe_knoop, middel_sleutel, middel_data);
+        
         schijf.herschrijf(huidige_knoop, huidige_index);
         blokindex nieuwe_knoop_index = schijf.schrijf(nieuwe_knoop);
 
         huidige_index = gebruikte_blokindexen.top();
+        gebruikte_blokindexen.pop();
         schijf.lees(huidige_knoop, huidige_index);
 
         huidige_knoop.voegtoe(middel_sleutel, middel_data, nieuwe_knoop_index);
@@ -195,7 +160,9 @@ void BTree<Sleutel, Data, m>::voegtoe(const Sleutel& nieuwe_sleutel, const Data&
     {
         Sleutel middel_sleutel;
         Data middel_data;
-        BKnoop<Sleutel, Data, m> nieuwe_knoop = splits_knoop(wortel, middel_sleutel, middel_data);
+        BKnoop<Sleutel, Data, m> nieuwe_knoop;
+        wortel.splits_knoop(nieuwe_knoop, middel_sleutel, middel_data);
+        
         schijf.herschrijf(wortel, wortelindex);
         blokindex nieuwe_knoop_index = schijf.schrijf(nieuwe_knoop);
 
@@ -219,6 +186,7 @@ std::string BTree<Sleutel, Data, m>::to_string() const
     return out.str();
 }
 
+// TODO hier zijn er meer dan 3 knopen in het geheugen door recursie
 template<class Sleutel, class Data, blokindex m>
 void BTree<Sleutel, Data, m>::append_knoop_to_string(blokindex huidige_index, std::stringstream& out, std::unordered_set<blokindex>& bezochte_indexen, int depth) const
 {
@@ -241,9 +209,11 @@ void BTree<Sleutel, Data, m>::append_knoop_to_string(blokindex huidige_index, st
 
     if (!huidige_knoop.is_blad())
     {
-        for (int i = 0; i <= huidige_knoop.k; i++) // TODO vertalen naar public functies in BKnoop
+        std::vector<blokindex> kind_indexen = huidige_knoop.geef_alle_kindindexen();
+        
+        for (blokindex kind_index : kind_indexen)
         {
-            append_knoop_to_string(huidige_knoop.index[i], out, bezochte_indexen, (depth + 1));
+            append_knoop_to_string(kind_index, out, bezochte_indexen, (depth + 1));
         }
     }
 }

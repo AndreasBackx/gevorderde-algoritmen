@@ -3,25 +3,21 @@
 #define BKNOOP_H
 
 #include "schijf.h"
-#include "btree.h"
 
 #include <string>
 #include <sstream>
 #include <iostream>
 #include <cassert>
+#include <cmath>
+#include <vector>
 
 // Betekenis m: zie cursus
 // TODO BKnoop opslitsen in klasse Blad en NietBlad die elk een interface overerven
 //
 
 template<class Sleutel, class Data, blokindex m>
-class BTree;
-
-template<class Sleutel, class Data, blokindex m>
 class BKnoop
 {
-
-    friend class BTree<Sleutel, Data, m>;
 
 public:
 
@@ -47,6 +43,8 @@ public:
     blokindex geef_kindindex(const Sleutel& nieuwe_sleutel) const;
     int aantal_kinderen() const;
     void beperk_kinderen(int aantal_kinderen);
+    void splits_knoop(BKnoop<Sleutel, Data, m>& nieuwe_broer_knoop, Sleutel& middel_sleutel, Data& middel_data);
+    std::vector<blokindex> geef_alle_kindindexen();
 
     Sleutel operator[](int index) const;
     std::string to_string() const;
@@ -302,6 +300,49 @@ template<class Sleutel, class Data, blokindex m>
 void BKnoop<Sleutel, Data, m>::beperk_kinderen(int aantal_kinderen)
 {
     k = aantal_kinderen;
+}
+
+template<class Sleutel, class Data, blokindex m>
+void BKnoop<Sleutel, Data, m>::splits_knoop(BKnoop<Sleutel, Data, m>& nieuwe_broer_knoop, Sleutel& middel_sleutel, Data& middel_data)
+{
+    const int middel_pivot = static_cast<int> (std::ceil(k / 2));
+
+    nieuwe_broer_knoop.is_blad_knoop = is_blad_knoop;
+
+    middel_sleutel = sleutel[middel_pivot];
+    middel_data = data[middel_pivot];
+
+    if (!nieuwe_broer_knoop.is_blad_knoop)
+    {
+        nieuwe_broer_knoop.index[0] = index[middel_pivot];
+    }
+
+    for (int i = middel_pivot + 1; i <= k; i++)
+    {
+        nieuwe_broer_knoop.sleutel[i - middel_pivot] = sleutel[i];
+        nieuwe_broer_knoop.data[i - middel_pivot] = data[i];
+
+        if (!nieuwe_broer_knoop.is_blad_knoop)
+        {
+            nieuwe_broer_knoop.index[i - middel_pivot] = index[i];
+        }
+    }
+
+    nieuwe_broer_knoop.k = k - middel_pivot;
+    k = middel_pivot - 1;
+}
+
+template<class Sleutel, class Data, blokindex m>
+std::vector<blokindex> BKnoop<Sleutel, Data, m>::geef_alle_kindindexen()
+{   
+    std::vector<blokindex> indexen;
+    
+    for (int i = 0; i <= k; i++)
+    {
+        indexen.push_back(index[i]);
+    }
+    
+    return indexen;
 }
 
 #endif /* BKNOOP_H */

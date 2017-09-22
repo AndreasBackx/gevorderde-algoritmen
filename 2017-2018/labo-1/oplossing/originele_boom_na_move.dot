@@ -1,0 +1,3 @@
+digraph BST {
+	 null [shape=point];
+}

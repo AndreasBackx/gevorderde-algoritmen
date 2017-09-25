@@ -24,6 +24,12 @@ int main()
         zb.voegtoe(key, 2 * key);
     }
 
+    std::cout << "Diepte: " << zb.diepte() << std::endl;
+    assert(zb.diepte() == 8);
+    
+    std::cout << "gemiddelde diepte: " << zb.gemiddelde_diepte() << std::endl;
+    assert(zb.gemiddelde_diepte() == ((static_cast<double>(56) / static_cast<double>(15))));
+
     std::cout << "Gevuld:" << std::endl;
     std::cout << zb.get_dot_code() << std::endl;
     out.open("boom_gevuld.dot");
@@ -54,5 +60,15 @@ int main()
     out << zb_move.get_dot_code();
     out.close();
 
+    Zoekboom<int, int> zb_links{zb_copy};
+    Zoekboom<int, int> zb_rechts{zb_copy};
+    zb_rechts.roteer(Richting::RECHTS);
+    std::cout << "Roteer rechts:" << std::endl;
+    std::cout << zb_rechts.get_dot_code() << std::endl;
+    out.open("boom_roteer_rechts.dot");
+    out << zb_rechts.get_dot_code();
+    out.close();
+
+    
     return 0;
 }

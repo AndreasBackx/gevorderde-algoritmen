@@ -75,7 +75,22 @@ int main()
     out.open("boom_roteer_rechts.dot");
     out << zb_rechts.get_dot_code();
     out.close();
+    
+    Zoekboom<int, int> zb_onevenwichtig{zb_copy};
+    zb_onevenwichtig.maak_onevenwichtig();
+    std::cout << "Onevenwichtig:" << std::endl;
+    std::cout << zb_onevenwichtig.get_dot_code() << std::endl;
+    out.open("boom_onevenwichtig.dot");
+    out << zb_onevenwichtig.get_dot_code();
+    out.close();
 
+    Zoekboom<int, int> zb_evenwichtig{zb_copy};
+    zb_evenwichtig.maak_evenwichtig();
+    std::cout << "Evenwichtig:" << std::endl;
+    std::cout << zb_evenwichtig.get_dot_code() << std::endl;
+    out.open("boom_evenwichtig.dot");
+    out << zb_evenwichtig.get_dot_code();
+    out.close();
     
     return 0;
 }

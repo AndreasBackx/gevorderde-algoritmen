@@ -48,6 +48,8 @@ public:
     double gemiddelde_diepte() const;
     void voegtoe(const Sleutel& sleutel, const Data & data);
     void roteer(const Richting& richting);
+    void maak_onevenwichtig();
+    void maak_evenwichtig();
     
     std::string get_dot_code() const;
 
@@ -55,6 +57,7 @@ protected:
 
     void zoek(const Sleutel& sleutel, Zoekknoop<Sleutel, Data>*& ouder, Zoekboom<Sleutel, Data>*& plaats);
     void gemiddelde_diepte(int diepte, int& som_dieptes, int& aantal_knopen) const;
+    void maak_onevenwichtig_overloop_inorder(Zoekboom<Sleutel, Data>& onevenwichtige_boom, const Zoekboom<Sleutel, Data>* plaats) const;
 };
 
 /******************************************************************************/
@@ -205,6 +208,53 @@ void Zoekboom<Sleutel, Data>::roteer(const Richting& richting)
         }
     }
 };
+
+template <class Sleutel, class Data>
+void Zoekboom<Sleutel, Data>::maak_onevenwichtig_overloop_inorder(Zoekboom<Sleutel, Data>& onevenwichtige_boom, const Zoekboom<Sleutel, Data>* plaats) const
+{
+    if (!plaats || !(*plaats))
+    {
+        return;
+    }
+    
+    maak_onevenwichtig_overloop_inorder(onevenwichtige_boom, &((*plaats)->links));
+    
+    std::cout << (*plaats)->sleutel << ", ";
+    onevenwichtige_boom.voegtoe((*plaats)->sleutel, (*plaats)->data);
+    
+    maak_onevenwichtig_overloop_inorder(onevenwichtige_boom, &((*plaats)->rechts));
+}
+
+template <class Sleutel, class Data>
+void Zoekboom<Sleutel, Data>::maak_onevenwichtig()
+{
+    Zoekboom<Sleutel, Data> onevenwichtige_boom;
+
+    maak_onevenwichtig_overloop_inorder(onevenwichtige_boom, this);
+    
+    (*this) = std::move(onevenwichtige_boom);
+}
+
+template <class Sleutel, class Data>
+void Zoekboom<Sleutel, Data>::maak_evenwichtig()
+{
+    if (!(*this))
+    {
+        return;
+    }
+    
+    this->maak_onevenwichtig();
+    
+    int diepte = this->diepte(); // Veranderd telkens
+    
+    for(int i = 0; i < diepte/2; i++)
+    {
+        this->roteer(Richting::LINKS);
+    }
+    
+    ((*this)->links).maak_evenwichtig();
+    ((*this)->rechts).maak_evenwichtig();
+}
 
 template <class Sleutel, class Data>
 void Zoekboom<Sleutel, Data>::zoek(const Sleutel& sleutel, Zoekknoop<Sleutel, Data>*& ouder, Zoekboom<Sleutel, Data>*& plaats)

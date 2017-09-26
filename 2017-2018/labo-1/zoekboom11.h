@@ -170,23 +170,39 @@ void Zoekboom<Sleutel, Data>::roteer(const Richting& richting)
         temp->links = std::move((*this)->rechts);
         (*this)->rechts = std::move(temp);
 
-//        if ((*this)->rechts->links)
-//        {
-//            (*this)->rechts->links->ouder = (*this)->ouder;
-//        }
-//        (*this)->ouder = (*this)->rechts->ouder;
-//        (*this)->rechts->ouder = this->get();
-
         (*this)->ouder = (*this)->rechts->ouder;
         (*this)->rechts->ouder = this->get();
         if ((*this)->rechts->links)
         {
             (*this)->rechts->links->ouder = ((*this)->rechts).get();
         }
+        
+        //        // Ook mogelijk:
+//        if ((*this)->rechts->links)
+//        {
+//            (*this)->rechts->links->ouder = (*this)->ouder;
+//        }
+//        (*this)->ouder = (*this)->rechts->ouder;
+//        (*this)->rechts->ouder = this->get();
     }
     else if (richting == Richting::LINKS)
     {
-
+        if (!(*this)->rechts) 
+        {
+            return;
+        }
+        
+        Zoekboom temp{std::move(*this)};
+        (*this) = std::move(temp->rechts);
+        temp->rechts = std::move((*this)->links);
+        (*this)->links = std::move(temp);
+        
+        (*this)->ouder = (*this)->links->ouder;
+        (*this)->links->ouder = this->get();
+        if ((*this)->links->rechts)
+        {
+            (*this)->links->rechts->ouder = ((*this)->links).get();
+        }
     }
 };
 

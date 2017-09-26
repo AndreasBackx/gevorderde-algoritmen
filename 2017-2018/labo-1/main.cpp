@@ -61,6 +61,13 @@ int main()
     out.close();
 
     Zoekboom<int, int> zb_links{zb_copy};
+    zb_links.roteer(Richting::LINKS);
+    std::cout << "Roteer links:" << std::endl;
+    std::cout << zb_links.get_dot_code() << std::endl;
+    out.open("boom_roteer_links.dot");
+    out << zb_links.get_dot_code();
+    out.close();
+    
     Zoekboom<int, int> zb_rechts{zb_copy};
     zb_rechts.roteer(Richting::RECHTS);
     std::cout << "Roteer rechts:" << std::endl;

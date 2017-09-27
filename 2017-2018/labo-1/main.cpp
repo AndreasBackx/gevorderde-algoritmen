@@ -4,9 +4,12 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <cassert>
 
 int main()
 {
+
+    Zoekknoop<int, int> zk{ 1, 111 };
 
     Zoekboom<int, int> zb;
 
@@ -33,6 +36,8 @@ int main()
     std::cout << "Rep OK: " << (zb.is_rep_ok() ? "OK" : "Niet OK") << std::endl;
     assert(zb.is_rep_ok());
     
+    Zoekknoop<int, int> zk2{*zb};
+
     std::cout << "Gevuld:" << std::endl;
     std::cout << zb.get_dot_code() << std::endl;
     out.open("boom_gevuld.dot");

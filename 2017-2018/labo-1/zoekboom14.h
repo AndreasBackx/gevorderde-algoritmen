@@ -2,24 +2,13 @@
 #ifndef ZOEKBOOM_H
 #define ZOEKBOOM_H
 
-#include <cstdlib>
-#include <iostream>
-#include <queue>
+#include "zoekknoop14.h"
+
 #include <memory>
 #include <sstream>
 #include <stack>
-#include <cassert>
-#include <algorithm>
 #include <functional>
-#include <fstream>
-
-/*******************************************************************************
-
-Klasse: Zoekboom
-   
-Beschrijving: Binaire zoekboom waarin geen duplicaatsleutels zijn toegestaan
-   
-*******************************************************************************/
+#include <algorithm>
 
 enum class Richting
 {
@@ -39,12 +28,11 @@ public:
     Zoekboom(const Sleutel& sleutel, const Data& data);
     virtual ~Zoekboom();
 
-    Zoekboom(const Zoekboom& andere);
-    Zoekboom& operator=(const Zoekboom & andere);
+    Zoekboom(const Zoekboom<Sleutel, Data>& andere);
+    Zoekboom<Sleutel, Data>& operator=(const Zoekboom<Sleutel, Data>& andere);
 
-    Zoekboom(Zoekboom&& andere) : std::unique_ptr<Zoekknoop<Sleutel, Data>>{std::move(andere)} {};
-    using std::unique_ptr<Zoekknoop<Sleutel, Data>>::operator=;
-    Zoekboom& operator=(Zoekboom&& andere) = default;
+    Zoekboom(Zoekboom<Sleutel, Data>&& andere);
+    Zoekboom<Sleutel, Data>& operator=(Zoekboom<Sleutel, Data>&& andere);
 
     int diepte() const;
     double gemiddelde_diepte() const;
@@ -54,7 +42,6 @@ public:
     void maak_evenwichtig();
     bool is_rep_ok() const;
     void overloop_inorder(std::function<void(const Zoekknoop<Sleutel,Data>&)> bezoek) const;
-    void schrijf(std::ostream& os) const;
     
     std::string get_dot_code() const;
 
@@ -82,7 +69,7 @@ Zoekboom<Sleutel, Data>::~Zoekboom()
 {}
 
 template <class Sleutel, class Data>
-Zoekboom<Sleutel, Data>::Zoekboom(const Zoekboom& andere)
+Zoekboom<Sleutel, Data>::Zoekboom(const Zoekboom<Sleutel, Data>& andere)
 {
     if (!andere)
     {
@@ -90,8 +77,20 @@ Zoekboom<Sleutel, Data>::Zoekboom(const Zoekboom& andere)
     }
     else
     {
-        *this = std::make_unique<Zoekknoop<Sleutel, Data>>(*andere);
+        this->reset(new Zoekknoop<Sleutel, Data>{*andere});
     }
+}
+
+template <class Sleutel, class Data>
+Zoekboom<Sleutel, Data>::Zoekboom(Zoekboom<Sleutel, Data>&& andere)
+: std::unique_ptr<Zoekknoop<Sleutel, Data>>{std::move(andere)} 
+{}
+
+template <class Sleutel, class Data>
+Zoekboom<Sleutel, Data>& Zoekboom<Sleutel, Data>::operator=(Zoekboom<Sleutel, Data>&& andere)
+{
+    this->swap(andere);
+    return *this;
 }
 
 template <class Sleutel, class Data>
@@ -295,35 +294,6 @@ void Zoekboom<Sleutel, Data>::overloop_inorder(std::function<void(const Zoekknoo
 }
 
 template <class Sleutel, class Data>
-void Zoekboom<Sleutel, Data>::schrijf(std::ostream& os) const
-{
-    overloop_inorder([&os](const Zoekknoop<Sleutel, Data>& knoop)
-    {
-        os << "(" << knoop.sleutel << " -> " << knoop.data << ")";
-        os << "\n  Linkerkind: ";
-        if (knoop.links)
-        {
-            os << knoop.links->sleutel;
-        }
-        else
-        {
-            os << "-----";
-        }
-        os << "\n  Rechterkind: ";
-        if (knoop.rechts)
-        {
-            os << knoop.rechts->sleutel;
-        }
-        else
-        {
-            os << "-----";
-        }
-        os << "\n";
-    });
-}
-
-
-template <class Sleutel, class Data>
 void Zoekboom<Sleutel, Data>::is_current_rep_ok(bool& is_ok) const 
 {
     if (!(*this) || !is_ok)
@@ -429,72 +399,6 @@ std::string Zoekboom<Sleutel, Data>::get_dot_code() const
     }
 
     return ss.str();
-}
-
-/******************************************************************************/
-
-template <class Sleutel, class Data>
-class Zoekknoop
-{
-public:
-
-    friend class Zoekboom<Sleutel, Data>;
-
-    Zoekknoop(const Sleutel& sleutel, const Data& data);
-    virtual ~Zoekknoop();
-
-    Zoekknoop(const Zoekknoop& andere);
-    Zoekknoop& operator=(const Zoekknoop & andere);
-
-    Zoekknoop(Zoekknoop&& andere) = delete;
-    Zoekknoop& operator=(Zoekknoop&& andere) = delete;
-
-protected:
-
-    Sleutel sleutel;
-    Data data;
-
-    Zoekknoop<Sleutel, Data>* ouder;
-    Zoekboom<Sleutel, Data> links, rechts;
-};
-
-/******************************************************************************/
-
-template <class Sleutel, class Data>
-Zoekknoop<Sleutel, Data>::Zoekknoop(const Sleutel& sleutel, const Data& data) 
-: sleutel{sleutel}, data{data}, ouder{nullptr}
-{}
-
-template <class Sleutel, class Data>
-Zoekknoop<Sleutel, Data>::~Zoekknoop() 
-{}
-
-template <class Sleutel, class Data>
-Zoekknoop<Sleutel, Data>& Zoekknoop<Sleutel, Data>::operator=(const Zoekknoop<Sleutel, Data>& andere)
-{
-    Zoekknoop<Sleutel, Data> temp(andere);
-    temp.swap(*this);
-
-    return *this;
-}
-
-template <class Sleutel, class Data>
-Zoekknoop<Sleutel, Data>::Zoekknoop(const Zoekknoop<Sleutel, Data>& ander) 
-{
-    sleutel = ander.sleutel;
-    data = ander.data;
-    ouder = nullptr; // Belangrijk voor root
-
-    links = Zoekboom<Sleutel, Data>{ander.links};
-    if (links) {
-        links->ouder = this;
-    }
-    
-    rechts = Zoekboom<Sleutel, Data>{ander.rechts};
-    if (rechts)
-    {
-        rechts->ouder = this;
-    }
 }
 
 #endif /* ZOEKBOOM_H */

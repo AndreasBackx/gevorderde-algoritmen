@@ -10,14 +10,16 @@
 #include <stack>
 #include <cassert>
 #include <algorithm>
+#include <functional>
+#include <fstream>
 
-/**********************************************************************
+/*******************************************************************************
 
-   Class: Zoekboom
+Klasse: Zoekboom
    
-   beschrijving: Binaire zoekboom waarin geen duplicaatsleutels zijn toegestaan.
+Beschrijving: Binaire zoekboom waarin geen duplicaatsleutels zijn toegestaan
    
- ***************************************************************************/
+*******************************************************************************/
 
 enum class Richting
 {
@@ -46,10 +48,13 @@ public:
 
     int diepte() const;
     double gemiddelde_diepte() const;
-    void voegtoe(const Sleutel& sleutel, const Data & data);
+    void voeg_toe(const Sleutel& sleutel, const Data & data);
     void roteer(const Richting& richting);
     void maak_onevenwichtig();
     void maak_evenwichtig();
+    bool is_rep_ok() const;
+    void overloop_inorder(std::function<void(const Zoekknoop<Sleutel,Data>&)> bezoek) const;
+    void schrijf(std::ostream& os) const;
     
     std::string get_dot_code() const;
 
@@ -57,7 +62,7 @@ protected:
 
     void zoek(const Sleutel& sleutel, Zoekknoop<Sleutel, Data>*& ouder, Zoekboom<Sleutel, Data>*& plaats);
     void gemiddelde_diepte(int diepte, int& som_dieptes, int& aantal_knopen) const;
-    void maak_onevenwichtig_overloop_inorder(Zoekboom<Sleutel, Data>& onevenwichtige_boom, const Zoekboom<Sleutel, Data>* plaats) const;
+    void is_current_rep_ok(bool& is_ok) const;
 };
 
 /******************************************************************************/
@@ -125,21 +130,31 @@ void Zoekboom<Sleutel, Data>::gemiddelde_diepte(int diepte, int& som_dieptes, in
 template <class Sleutel, class Data>
 double Zoekboom<Sleutel, Data>::gemiddelde_diepte() const
 {
-    if (!(*this)) {
+    if (!(*this))
+    {
         return 0;
-    } 
+    }
     
+//    int diepte = 0;
     int som_dieptes = 0;
     int aantal_knopen = 0;
-    
+
+//        overloop_inorder([diepte, &som_dieptes, &aantal_knopen](const Zoekknoop<Sleutel, Data>& knoop) mutable
+//        {
+//            diepte++;
+//    
+//            aantal_knopen++;
+//            som_dieptes += diepte;
+//        });
+//
+//        std::cout << som_dieptes << " -- " << aantal_knopen << std::endl;
     this->gemiddelde_diepte(0, som_dieptes, aantal_knopen);
-    
-    std::cout << som_dieptes << ", " << aantal_knopen << std::endl;
-    return (static_cast<double>(som_dieptes) / static_cast<double>(aantal_knopen));
+
+    return (static_cast<double> (som_dieptes) / static_cast<double> (aantal_knopen));
 }
 
 template <class Sleutel, class Data>
-void Zoekboom<Sleutel, Data>::voegtoe(const Sleutel& sleutel, const Data& data)
+void Zoekboom<Sleutel, Data>::voeg_toe(const Sleutel& sleutel, const Data& data)
 {
     Zoekboom<Sleutel, Data>* plaats;
     Zoekknoop<Sleutel, Data>* ouder;
@@ -210,27 +225,14 @@ void Zoekboom<Sleutel, Data>::roteer(const Richting& richting)
 };
 
 template <class Sleutel, class Data>
-void Zoekboom<Sleutel, Data>::maak_onevenwichtig_overloop_inorder(Zoekboom<Sleutel, Data>& onevenwichtige_boom, const Zoekboom<Sleutel, Data>* plaats) const
-{
-    if (!plaats || !(*plaats))
-    {
-        return;
-    }
-    
-    maak_onevenwichtig_overloop_inorder(onevenwichtige_boom, &((*plaats)->links));
-    
-    std::cout << (*plaats)->sleutel << ", ";
-    onevenwichtige_boom.voegtoe((*plaats)->sleutel, (*plaats)->data);
-    
-    maak_onevenwichtig_overloop_inorder(onevenwichtige_boom, &((*plaats)->rechts));
-}
-
-template <class Sleutel, class Data>
 void Zoekboom<Sleutel, Data>::maak_onevenwichtig()
 {
     Zoekboom<Sleutel, Data> onevenwichtige_boom;
 
-    maak_onevenwichtig_overloop_inorder(onevenwichtige_boom, this);
+    overloop_inorder([&onevenwichtige_boom](const Zoekknoop<Sleutel, Data>& knoop)
+    {
+        onevenwichtige_boom.voeg_toe(knoop.sleutel, knoop.data);
+    });
     
     (*this) = std::move(onevenwichtige_boom);
 }
@@ -276,6 +278,91 @@ void Zoekboom<Sleutel, Data>::zoek(const Sleutel& sleutel, Zoekknoop<Sleutel, Da
         }
     };
 };
+
+template <class Sleutel, class Data>
+void Zoekboom<Sleutel, Data>::overloop_inorder(std::function<void(const Zoekknoop<Sleutel, Data>&) > bezoek_functie) const
+{
+    if (!(*this))
+    {
+        return;
+    }
+
+    (*this)->links.overloop_inorder(bezoek_functie);
+
+    bezoek_functie(*(*this));
+
+    (*this)->rechts.overloop_inorder(bezoek_functie);
+}
+
+template <class Sleutel, class Data>
+void Zoekboom<Sleutel, Data>::schrijf(std::ostream& os) const
+{
+    overloop_inorder([&os](const Zoekknoop<Sleutel, Data>& knoop)
+    {
+        os << "(" << knoop.sleutel << " -> " << knoop.data << ")";
+        os << "\n  Linkerkind: ";
+        if (knoop.links)
+        {
+            os << knoop.links->sleutel;
+        }
+        else
+        {
+            os << "-----";
+        }
+        os << "\n  Rechterkind: ";
+        if (knoop.rechts)
+        {
+            os << knoop.rechts->sleutel;
+        }
+        else
+        {
+            os << "-----";
+        }
+        os << "\n";
+    });
+}
+
+
+template <class Sleutel, class Data>
+void Zoekboom<Sleutel, Data>::is_current_rep_ok(bool& is_ok) const 
+{
+    if (!(*this) || !is_ok)
+    {
+        return;
+    }
+
+    if ((*this)->links)
+    {
+        if (((*this)->links->sleutel > (*this)->sleutel)
+            || ((*this)->links->ouder != this->get()))
+        {
+            is_ok = false;
+        }
+
+        ((*this)->links).is_current_rep_ok(is_ok);
+    }
+
+    if ((*this)->rechts)
+    {
+        if (((*this)->rechts->sleutel < (*this)->sleutel)
+            || ((*this)->rechts->ouder != this->get()))
+        {
+            is_ok = false;
+        }
+        
+        ((*this)->rechts).is_current_rep_ok(is_ok);
+    }
+}
+
+template <class Sleutel, class Data>
+bool Zoekboom<Sleutel, Data>::is_rep_ok() const 
+{
+    bool is_correct = true;
+    
+    is_current_rep_ok(is_correct);
+    
+    return is_correct;
+}
 
 template <class Sleutel, class Data>
 std::string Zoekboom<Sleutel, Data>::get_dot_code() const 

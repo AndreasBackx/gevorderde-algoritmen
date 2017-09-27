@@ -14,7 +14,7 @@
 <![endif]-->
     <script type="text/javascript">
     (function() {
-        var month = 4;
+        var month = 9;
         iii.semester = month == 1 ? 1
             : month <= 6 ? 2
             : month <= 9 ? 0 : 1;
@@ -68,14 +68,14 @@
                                                                                                                                                                                                                 <li class="breadcrumb-sibling group-sem1"><a class="breadcrumb-sibling group-sem1" href="/Databanken/">Databanken</a></li>
                                                                                                                                                                                                                 <li class="breadcrumb-sibling group-sem1"><a class="breadcrumb-sibling group-sem1" href="/Discrete-Wiskunde/">Discrete wiskunde</a></li>
                                                                 <li class="separator"><span>Master</span></li>
-                                                                                                                                                                                                                <li class="breadcrumb-sibling group-sem1 active"><a class="breadcrumb-sibling group-sem1 active" href="/Algoritmen-II/">Algoritmen-II</a></li>
+                                                                                                                                                                                                                <li class="breadcrumb-sibling group-sem1 leaf active"><a class="breadcrumb-sibling group-sem1 leaf active" href="/Algoritmen-II/">Algoritmen-II</a></li>
                                                                                                                                                                                                                 <li class="breadcrumb-sibling group-sem1 leaf"><a class="breadcrumb-sibling group-sem1 leaf" href="/Computergrafiek/">Computergrafiek</a></li>
                                                                                                                                                                                                                                                             <li class="breadcrumb-sibling group-sem1 group-sem2 leaf"><a class="breadcrumb-sibling group-sem1 group-sem2 leaf" href="/Masterproef/">Masterproef</a></li>
                                                                                                                                                                                                                 <li class="breadcrumb-sibling group-sem1"><a class="breadcrumb-sibling group-sem1" href="/Besturingssystemen-III/">Windows</a></li>
                                                                                                                                                                     <li class="breadcrumb-sibling"><a class="breadcrumb-sibling" href="/Roosters/">Roosters</a></li>
                                         </ul>
                 </li>
-                            <li class="breadcrumb"><a href="/Algoritmen-II/reeks01/" class="breadcrumb">OEFENINGEN: C++11 en binaire bomen</a>
+                            <li class="breadcrumb"><a href="/Algoritmen-II/reeks01/" class="breadcrumb">reeks01</a>
                 </li>
                             <li class="breadcrumb"><a href="/Algoritmen-II/reeks01/opgave01.html" class="breadcrumb">OEFENINGEN: C++11 en binaire bomen</a>
                 </li>
@@ -85,8 +85,8 @@
     <div id="page-content">
         <h4>LES 1 - 27 sept 2016</h4>
 <h3>ZOEKBOMEN</h3>
-<h4>Inleiding C++11</h4>
-In <a href="zoekboom11.h">zoekboom11.h</a> vind je de
+<h4>Inleiding C++14</h4>
+In <a href="zoekboom14.h">zoekboom14.h</a> vind je de
 basisdefinities en de toevoegfunctie van een binaire zoekboom.
 <ol>
 <li>De noodzakelijke constructoren, move- en copyoperaties
@@ -103,9 +103,6 @@ boom is:
 <ol>
 <li>Maak een functie die de totale diepte van een boom
 teruggeeft.</li>
-<li>Maak een functie die de gemiddelde knoopdiepte teruggeeft: dat
-is de som van de dieptes van alle knopen gedeeld door het aantal
-knopen.</li>
 </ol>
 </li>
 <li>Een basisoperatie bij het evenwichtig maken van bomen is de
@@ -118,24 +115,111 @@ twee knopen verplaatst worden als op de onderstaande afbeelding:
 bepaalde knoop te roteren? Hoe geef je die mee aan de functie?
 Schrijf je antwoord op en laat het controleren voor je aan de
 implementatie begint.</p>
+<p><strong>Implementatietip:</strong> het is handig als je aan een
+knoop een functie geeft die een referentie naar zijn linker- of
+rechterdeelboom geeft op basis van een <tt>bool</tt>-argument.</p>
 </li>
-<li>Schrijf nu een functie die een boom zo onevenwichtig mogelijk
-maakt. Controleer de werking van die functie met de dieptefunctie
-die je geprogrammeerd hebt.</li>
-<li>Schrijf nu een functie die een boom zo evenwichtig mogelijk
-maakt. Tip: dit is vrij eenvoudig als je de vorige functie
-gebruikt, anders niet. Controleer weer je oplossing op een aantal
-bomen.</li>
+<li>Schrijf nu een functie <tt>maakOnevenwichtig()</tt> die een
+boom zo onevenwichtig mogelijk maakt.</li>
+<li>Schrijf nu een functie <tt>maakEvenwichtig()</tt> die een boom
+zo evenwichtig mogelijk maakt <em>zonder ooit een sleutel of een
+datum te kopiëen of te moven</em>. Tip: dit is vrij eenvoudig als
+je de vorige functie gebruikt, anders niet.</li>
 </ol>
+<h4>Testen</h4>
+Als je code schrijft moet je die ook <em>testen</em>. Dat is meer
+dan alleen maar nagaan of je code compileert en niet crasht op één
+klein voorbeeldje. Vaak is het zo dat je meer testcode hebt dan
+code die getest moet worden. Dat lijkt veel werk met weinig
+opbrengst, maar dat is het niet: alleen zo kan je zeker zijn dat je
+code werkt zoals het hoort.
+<p>Een belangrijk concept bij testen is de <em>rep-invariant</em>.
+Dit staat voor representatie-invariant. Het is het geheel van
+voorwaarden waaraan de representatie in het geheugen van een object
+moet voldoen om de een geldig object voor te stellen. Voor een
+binaire zoekboom zijn de in het oog springende voorwaarden:</p>
+<ol>
+<li>Het moet een geldige binaire boom zijn.</li>
+<li>De sleutels moeten in volgorde staan.</li>
+</ol>
+Het eerste aspect houdt in dat alle pointers oké moeten zijn. Nu
+werken we met <tt>unique_ptr</tt>s. Bij normaal gebruik staat een
+<tt>unique_ptr</tt> op nul ofwel wijst hij naar een object terwijl
+hij de enige <tt>unique_ptr</tt> is die naar dat object wijst. Als
+dat om een of andere reden niet het geval is merken we dat meestal
+gauw genoeg, zodat we dat in dit geval niet moeten testen. (Er kan
+soms een probleem zijn met een circuit van <tt>unique_ptr</tt>s,
+maar zo'n circuit hangt dan per definitie nergens meer aan. Het
+leidt dan wel tot een geheugenlek, maar niet tot een verbreking van
+de rep-invariant). Onze binaire boom heeft ook ouderpointers. Dit
+zijn gewone pointers en het behoort natuurlijk tot de rep-invariant
+dat deze pointers naar de juiste knopen wijzen.
+<p>De rep-invariant van alle betrokken objecten maakt deel uit van
+pre- en postconditie van alle publiek toegankelijke functies
+(interne functies kunnen soms de rep-invariant doorbreken of een
+gebroken rep-invariant herstellen). Bij testen moet je hem dus
+regelmatig controleren. Het is gebruikelijk een te testen klasse
+een lidfunctie <tt>bool repOK()</tt> te geven. Deze gaat na of de
+rep-invariant voldaan is. Het eerste punt van de bovenstaande
+opdracht is dus het schrijven van de <tt>repOK()</tt>-functie voor
+de zoekboomklasse die de bovenstaande voorwaarden controleert. Tip:
+dit kan in O(<em>n</em>).</p>
+<p>Als volgende punt moet je kunnen nagaan of de operaties die je
+programmeert wel degelijk doen wat ze moeten doen. Eén element
+daarbij is dat de operaties niets mogen veranderen aan de
+sleutelverzameling. Hiervoor is het nodig dat je</p>
+<ol>
+<li>Een kopie kan nemen van de begintoestand voor het uitvoeren van
+de operatie. Noteer dat dit alleen maar mogelijk is als sleutels en
+data kopieerbaar zijn (is dat eigenlijk een voorwaarde die moet
+altijd moet voldaan zijn als je een zoekboom wil gebruiken?)</li>
+<li>Van twee zoekbomen kan nagaan of ze dezelfde sleutelverzameling
+hebben en dezelfde data bij de gelijke sleutels. Nu heeft de
+zoekboom een <tt>inorder</tt>-functie die gemakkelijk kan gebruikt
+kan worden met λ-functies. Zijn er alternatieve manieren om een
+boom te doorlopen? Welke is het meest geschikt bij dit
+probleem?</li>
+</ol>
+<p>De rotatie-operatie kan je nu gemakkelijk testen op kleine
+voorbeeldjes door middel van de uitschrijfoperatie. Zorg er zeker
+voor dat je alle speciale gevallen bekijkt:</p>
+<ul>
+<li>Roteer zowel deelbomen als basisbomen.</li>
+<li>Probeer alle mogelijke combinatie van aan- en afwezige
+kinderen. Als p de ouderknoop is van de knoop c en c moet geroteerd
+worden met p, dan kan p al of niet een tweede kind hebben en c kan
+geen of twee kinderen hebben, of alleen een linker- en een
+rechterkind.</li>
+<li>Roteer zowel naar links als naar rechts.</li>
+<li>Combineer de bovenstaande mogelijkheden.</li>
+</ul>
+De functies <tt>maakOnevenwichtig()</tt> en
+<tt>maakEvenwichtig()</tt> kan je nu gemakkelijk testen. Je kan
+nagaan of ze hun werk goed doen door de diepte van het resultaat te
+controleren. Zorg er zeker voor dat je alle speciale gevallen
+bekijkt:
+<ul>
+<li>Een lege boom.</li>
+<li>Een zeer onvenwichtige en een zeer evenwichtige boom, maar ook
+random bomen.</li>
+<li>Voor <tt>maakEvenwichtig()</tt>: bomen die het maximum aantal
+knopen bevatten dat met een bepaalde diepte kan bereikt worden en
+bomen met 1 knoop extra.</li>
+<li><tt>maakEvenwichtig()</tt> moet een efficiëntie hebben van O(n
+lg n). Probeer dat eens uit met waarden voor n die redelijk groot
+zijn: een boom met 16383 of 16384 (wat is er speciaal aan deze
+getallen?) elementen moet binnen de seconde evenwichtig gemaakt
+worden.</li>
+</ul>
 
         <div id="page-content-end"></div>
     </div>
     <div id="footer">    <div id="metadata">
     Laatst gewijzigd
             op
-        26-09-2016
+        26-09-2017
         om
-        12:54
+        11:07
         
                 door
                     <a href="mailto:Jan.Cnops@UGent.be">Jan Cnops</a>
@@ -151,4 +235,4 @@ bomen.</li>
 
 </html>
 
-<!-- 27 ms / 529 KB -->
+<!-- 27 ms / 531 KB -->

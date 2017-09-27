@@ -1,5 +1,5 @@
 
-#include "zoekboom11.h"
+#include "zoekboom14.h"
 
 #include <string>
 #include <iostream>
@@ -21,15 +21,18 @@ int main()
 
     for (int key : keys)
     {
-        zb.voegtoe(key, 2 * key);
+        zb.voeg_toe(key, 2 * key);
     }
 
     std::cout << "Diepte: " << zb.diepte() << std::endl;
     assert(zb.diepte() == 8);
     
-    std::cout << "gemiddelde diepte: " << zb.gemiddelde_diepte() << std::endl;
+    std::cout << "Gemiddelde diepte: " << zb.gemiddelde_diepte() << std::endl;
     assert(zb.gemiddelde_diepte() == ((static_cast<double>(56) / static_cast<double>(15))));
 
+    std::cout << "Rep OK: " << (zb.is_rep_ok() ? "OK" : "Niet OK") << std::endl;
+    assert(zb.is_rep_ok());
+    
     std::cout << "Gevuld:" << std::endl;
     std::cout << zb.get_dot_code() << std::endl;
     out.open("boom_gevuld.dot");

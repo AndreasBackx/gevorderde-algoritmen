@@ -29,9 +29,6 @@ int main()
 
     std::cout << "Diepte: " << zb.diepte() << std::endl;
     assert(zb.diepte() == 8);
-    
-    std::cout << "Gemiddelde diepte: " << zb.gemiddelde_diepte() << std::endl;
-    assert(zb.gemiddelde_diepte() == ((static_cast<double>(56) / static_cast<double>(15))));
 
     std::cout << "Rep OK: " << (zb.is_rep_ok() ? "OK" : "Niet OK") << std::endl;
     assert(zb.is_rep_ok());

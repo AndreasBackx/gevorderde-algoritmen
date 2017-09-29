@@ -68,12 +68,9 @@ Zoekboom<Sleutel, Data>::~Zoekboom()
 
 template <class Sleutel, class Data>
 Zoekboom<Sleutel, Data>::Zoekboom(const Zoekboom<Sleutel, Data>& andere)
+: std::unique_ptr<Zoekknoop<Sleutel, Data>>{nullptr}
 {
-    if (!andere)
-    {
-        this->reset(nullptr);
-    }
-    else
+    if (andere)
     {
         this->reset(new Zoekknoop<Sleutel, Data>{*andere});
     }
@@ -123,7 +120,7 @@ void Zoekboom<Sleutel, Data>::voeg_toe(const Sleutel& sleutel, const Data& data)
         *plaats = Zoekboom<Sleutel, Data>{sleutel, data};
         (*plaats)->ouder = ouder;
     };
-};
+}
 
 template <class Sleutel, class Data>
 void Zoekboom<Sleutel, Data>::roteer(const Richting& richting)
@@ -179,7 +176,7 @@ void Zoekboom<Sleutel, Data>::roteer(const Richting& richting)
             (*this)->links->rechts->ouder = ((*this)->links).get();
         }
     }
-};
+}
 
 template <class Sleutel, class Data>
 void Zoekboom<Sleutel, Data>::maak_onevenwichtig()

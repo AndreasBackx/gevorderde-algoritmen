@@ -35,20 +35,20 @@ public:
     Zoekboom<Sleutel, Data>& operator=(Zoekboom<Sleutel, Data>&& andere);
 
     int diepte() const;
-    double gemiddelde_diepte() const;
     void voeg_toe(const Sleutel& sleutel, const Data & data);
     void roteer(const Richting& richting);
     void maak_onevenwichtig();
     void maak_evenwichtig();
-    virtual bool is_rep_ok() const;
+    bool is_rep_ok() const;
     void overloop_inorder(std::function<void(const Zoekknoop<Sleutel,Data>&)> bezoek) const;
     
     bool is_gelijk(const Zoekboom<Sleutel, Data>& andere) const;
 
-    virtual std::string get_dot_code() const;
+    std::string get_dot_code() const;
 
 protected:
 
+    void maak_lijst_evenwichtig();
     void controleer_is_gelijk(const Zoekboom<Sleutel, Data>& andere, bool& is_gelijk) const;
     void zoek(const Sleutel& sleutel, Zoekknoop<Sleutel, Data>*& ouder, Zoekboom<Sleutel, Data>*& plaats);
 };
@@ -184,35 +184,57 @@ void Zoekboom<Sleutel, Data>::roteer(const Richting& richting)
 template <class Sleutel, class Data>
 void Zoekboom<Sleutel, Data>::maak_onevenwichtig()
 {
-    Zoekboom<Sleutel, Data> onevenwichtige_boom;
-
-    overloop_inorder([&onevenwichtige_boom](const Zoekknoop<Sleutel, Data>& knoop)
+    if (!(*this))
     {
-        onevenwichtige_boom.voeg_toe(knoop.sleutel, knoop.data);
-    });
-    
-    (*this) = std::move(onevenwichtige_boom);
+        return;
+    }
+
+    while ((*this)->links)
+    {
+        roteer(Richting::RECHTS);
+    }
+
+    if ((*this)->rechts)
+    {
+        ((*this)->rechts).maak_onevenwichtig();
+    }
 }
 
+// Verwacht een gelinkte lijst
 template <class Sleutel, class Data>
-void Zoekboom<Sleutel, Data>::maak_evenwichtig()
+void Zoekboom<Sleutel, Data>::maak_lijst_evenwichtig()
 {
     if (!(*this))
     {
         return;
     }
-    
-    this->maak_onevenwichtig();
-    
-    int diepte = this->diepte(); // Veranderd telkens
-    
-    for(int i = 0; i < diepte/2; i++)
+
+    Richting roteer_naar_richting;
+
+    if ((*this)->links)
     {
-        this->roteer(Richting::LINKS);
+        roteer_naar_richting = Richting::RECHTS;
+    }
+    else
+    {
+        roteer_naar_richting = Richting::LINKS;
     }
     
-    ((*this)->links).maak_evenwichtig();
-    ((*this)->rechts).maak_evenwichtig();
+    int huidige_diepte = diepte(); // Is nodig!
+    for (int i = 0; i < (huidige_diepte / 2); i++)
+    {
+        roteer(roteer_naar_richting);
+    }
+
+    ((*this)->links).maak_lijst_evenwichtig();
+    ((*this)->rechts).maak_lijst_evenwichtig();
+}
+
+template <class Sleutel, class Data>
+void Zoekboom<Sleutel, Data>::maak_evenwichtig()
+{
+    maak_onevenwichtig();
+    maak_lijst_evenwichtig();
 }
 
 template <class Sleutel, class Data>
@@ -322,14 +344,15 @@ bool Zoekboom<Sleutel, Data>::is_gelijk(const Zoekboom<Sleutel, Data>& andere) c
     return is_gelijk;
 }
 
+// Niet de mooiste methode
 template <class Sleutel, class Data>
 std::string Zoekboom<Sleutel, Data>::get_dot_code() const 
 {
-    std::stringstream ss;
+    std::stringstream out;
 
     if (!(*this))
     {
-        ss << "digraph BST {" << std::endl
+        out << "digraph BST {" << std::endl
             << "\t null [shape=point];" << std::endl
             << "}" << std::endl;
     }
@@ -339,7 +362,7 @@ std::string Zoekboom<Sleutel, Data>::get_dot_code() const
         te_bezoeken_deelbomen.push(this);
         int nullptr_teller = 0;
 
-        ss << "digraph BST {" << std::endl;
+        out << "digraph BST {" << std::endl;
 
         while (!te_bezoeken_deelbomen.empty())
         {
@@ -348,45 +371,35 @@ std::string Zoekboom<Sleutel, Data>::get_dot_code() const
 
             if (*huidige_deelboom)
             {
-
-                const Zoekboom<Sleutel, Data>& linker_kind = (*huidige_deelboom)->links;
-                const Zoekboom<Sleutel, Data>& rechter_kind = (*huidige_deelboom)->rechts;
-
                 if ((*huidige_deelboom)->ouder)
                 {
-                    ss << "\t " << (*huidige_deelboom)->sleutel << " -> " << (*huidige_deelboom)->ouder->sleutel << " [style=dashed];" << std::endl;
+                    out << "\t " << (*huidige_deelboom)->sleutel << " -> " << (*huidige_deelboom)->ouder->sleutel << " [style=dashed];" << std::endl;
                 }
 
-                if (linker_kind)
+                for (const Zoekboom<Sleutel, Data>* kind : { &((*huidige_deelboom)->links), &((*huidige_deelboom)->rechts)})
                 {
-                    ss << "\t " << (*huidige_deelboom)->sleutel << " -> " << linker_kind->sleutel << ";" << std::endl;
-                    te_bezoeken_deelbomen.push(&linker_kind);
-                }
-                else
-                {
-                    ss << "\t null" << nullptr_teller << " [shape=point]" << ";" << std::endl;
-                    ss << "\t " << (*huidige_deelboom)->sleutel << " -> " << "null" << nullptr_teller << ";" << std::endl;
-                    nullptr_teller++;
-                }
-
-                if (rechter_kind)
-                {
-                    ss << "\t " << (*huidige_deelboom)->sleutel << " -> " << rechter_kind->sleutel << ";" << std::endl;
-                    te_bezoeken_deelbomen.push(&rechter_kind);
-                }
-                else
-                {
-                    ss << "\t null" << nullptr_teller << " [shape=point]" << ";" << std::endl;
-                    ss << "\t " << (*huidige_deelboom)->sleutel << " -> " << "null" << nullptr_teller << ";" << std::endl;
-                    nullptr_teller++;
+                    if (kind)
+                    {
+                        if (*kind)
+                        {
+                            out << "\t " << (*huidige_deelboom)->sleutel << " -> " << (*kind)->sleutel << ";" << std::endl;
+                            te_bezoeken_deelbomen.push(kind);
+                        }
+                        else
+                        {
+                            out << "\t null" << nullptr_teller << " [shape=point]" << ";" << std::endl;
+                            out << "\t " << (*huidige_deelboom)->sleutel << " -> " << "null" << nullptr_teller << ";" << std::endl;
+                            nullptr_teller++;
+                        }
+                    }
                 }
             }
         }
 
-        ss << "}" << std::endl;
+        out << "}" << std::endl;
     }
 
-    return ss.str();
+    return out.str();
 }
 
 #endif /* ZOEKBOOM_H */

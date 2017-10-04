@@ -87,6 +87,13 @@ int main()
     out.open("boom_copy.dot");
     out << zb_copy.get_dot_code();
     out.close();
+    
+    Zoekboom<int, int> zb_testcopy{zb};
+    std::cout << "Zijn gelijk: " << zb_testcopy.is_gelijk(zb) << std::endl;
+    assert(zb_testcopy.is_gelijk(zb));
+    zb_testcopy.voeg_toe(111, 1337);
+    std::cout << "Zijn gelijk: " << zb_testcopy.is_gelijk(zb) << std::endl;
+    assert(!zb_testcopy.is_gelijk(zb));
 
     Zoekboom<int, int> zb_move{std::move(zb)};
     std::cout << "Origineel na move:" << std::endl;
@@ -132,7 +139,7 @@ int main()
     out << zb_evenwichtig.get_dot_code();
     out.close();
 
-    test_groot_aantal_sleutels();
+//    test_groot_aantal_sleutels();
 
     std::cout << "Done..." << std::endl;
 

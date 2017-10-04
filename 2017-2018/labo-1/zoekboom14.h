@@ -40,13 +40,16 @@ public:
     void roteer(const Richting& richting);
     void maak_onevenwichtig();
     void maak_evenwichtig();
-    bool is_rep_ok() const;
+    virtual bool is_rep_ok() const;
     void overloop_inorder(std::function<void(const Zoekknoop<Sleutel,Data>&)> bezoek) const;
     
-    std::string get_dot_code() const;
+    bool is_gelijk(const Zoekboom<Sleutel, Data>& andere) const;
+
+    virtual std::string get_dot_code() const;
 
 protected:
 
+    void controleer_is_gelijk(const Zoekboom<Sleutel, Data>& andere, bool& is_gelijk) const;
     void zoek(const Sleutel& sleutel, Zoekknoop<Sleutel, Data>*& ouder, Zoekboom<Sleutel, Data>*& plaats);
 };
 
@@ -279,6 +282,44 @@ bool Zoekboom<Sleutel, Data>::is_rep_ok() const
     });
     
     return is_correct;
+}
+
+template <class Sleutel, class Data>
+void Zoekboom<Sleutel, Data>::controleer_is_gelijk(const Zoekboom<Sleutel, Data>& andere, bool& is_gelijk) const
+{
+    if (!is_gelijk)
+    {
+        return;
+    }
+
+    if (!(*this) && !andere)
+    {
+        return;
+    }
+    else if (!(*this) || !andere)
+    {
+        is_gelijk = false;
+        return;
+    }
+
+    if (*(*this) != *andere)
+    {
+        is_gelijk = false;
+        return;
+    }
+
+    (*this)->links.controleer_is_gelijk(andere->links, is_gelijk);
+    (*this)->rechts.controleer_is_gelijk(andere->rechts, is_gelijk);
+}
+
+template <class Sleutel, class Data>
+bool Zoekboom<Sleutel, Data>::is_gelijk(const Zoekboom<Sleutel, Data>& andere) const
+{
+    bool is_gelijk = true;
+
+    controleer_is_gelijk(andere, is_gelijk);
+    
+    return is_gelijk;
 }
 
 template <class Sleutel, class Data>

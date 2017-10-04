@@ -28,13 +28,17 @@ public:
     Zoekknoop(Zoekknoop<Sleutel, Data>&& andere) = delete;
     Zoekknoop<Sleutel, Data>& operator=(Zoekknoop<Sleutel, Data>&& andere) = delete;
 
+    bool operator==(const Zoekknoop<Sleutel, Data>& andere) const;
+    bool operator!=(const Zoekknoop<Sleutel, Data>& andere) const;
+
 protected:
 
     Sleutel sleutel;
     Data data;
 
     Zoekknoop<Sleutel, Data>* ouder;
-    Zoekboom<Sleutel, Data> links, rechts;
+    Zoekboom<Sleutel, Data> links;
+    Zoekboom<Sleutel, Data> rechts;
 };
 
 /******************************************************************************/
@@ -58,22 +62,34 @@ Zoekknoop<Sleutel, Data>& Zoekknoop<Sleutel, Data>::operator=(const Zoekknoop<Sl
 }
 
 template <class Sleutel, class Data>
-Zoekknoop<Sleutel, Data>::Zoekknoop(const Zoekknoop<Sleutel, Data>& ander) 
+Zoekknoop<Sleutel, Data>::Zoekknoop(const Zoekknoop<Sleutel, Data>& andere)
 {
-    sleutel = ander.sleutel;
-    data = ander.data;
+    sleutel = andere.sleutel;
+    data = andere.data;
     ouder = nullptr; // Belangrijk voor root
 
-    links = Zoekboom<Sleutel, Data>{ander.links};
+    links = Zoekboom<Sleutel, Data>{andere.links};
     if (links) {
         links->ouder = this;
     }
     
-    rechts = Zoekboom<Sleutel, Data>{ander.rechts};
+    rechts = Zoekboom<Sleutel, Data>{andere.rechts};
     if (rechts)
     {
         rechts->ouder = this;
     }
+}
+
+template <class Sleutel, class Data>
+bool Zoekknoop<Sleutel, Data>::operator==(const Zoekknoop<Sleutel, Data>& andere) const
+{
+    return ((sleutel == andere.sleutel) && (data == andere.data));
+}
+
+template <class Sleutel, class Data>
+bool Zoekknoop<Sleutel, Data>::operator!=(const Zoekknoop<Sleutel, Data>& andere) const
+{
+    return !(*this == andere);
 }
 
 #endif /* ZOEKKNOOP_H */

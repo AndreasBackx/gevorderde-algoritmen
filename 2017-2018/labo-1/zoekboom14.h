@@ -48,7 +48,9 @@ public:
     std::string get_dot_code() const;
 
     // TODO nakijken of de constness correct is geimplementeerd
-    class const_iterator // https://www.cs.northwestern.edu/~riesbeck/programming/c++/stl-iterator-define.html#TOC11
+    class const_iterator
+            // https://www.cs.northwestern.edu/~riesbeck/programming/c++/stl-iterator-define.html#TOC11
+            // http://collaboration.cmc.ec.gc.ca/science/rpn/biblio/ddj/Website/articles/CUJ/2001/0101/austern/austern.htm
     {
     public:
         const_iterator(Zoekknoop<Sleutel, Data>* huidige_knoop);
@@ -71,10 +73,8 @@ public:
         const Zoekknoop<Sleutel, Data>* huidige_knoop;
     };
 
-    const_iterator begin();
-    const_iterator end();
-    const_iterator cbegin() const;
-    const_iterator cend() const;
+    const_iterator begin() const;
+    const_iterator end() const;
 
 protected:
 
@@ -377,10 +377,10 @@ bool Zoekboom<Sleutel, Data>::is_gelijk(const Zoekboom<Sleutel, Data>& andere) c
 template <class Sleutel, class Data>
 bool Zoekboom<Sleutel, Data>::is_content_gelijk(const Zoekboom<Sleutel, Data>& andere) const
 {
-    auto this_iter = this->cbegin();
-    auto andere_iter = andere.cbegin();
+    auto this_iter = this->begin();
+    auto andere_iter = andere.begin();
 
-    while (this_iter != this->cend() && andere_iter != andere.cend())
+    while (this_iter != this->end() && andere_iter != andere.end())
     {
         if ((this_iter->sleutel != andere_iter->sleutel)
             || (this_iter->data != andere_iter->data))
@@ -525,19 +525,7 @@ const Zoekknoop<Sleutel, Data>* Zoekboom<Sleutel, Data>::const_iterator::operato
 }
 
 template <class Sleutel, class Data>
-typename Zoekboom<Sleutel, Data>::const_iterator Zoekboom<Sleutel, Data>::begin()
-{
-    return cbegin();
-}
-
-template <class Sleutel, class Data>
-typename Zoekboom<Sleutel, Data>::const_iterator Zoekboom<Sleutel, Data>::end()
-{
-    return cend();
-}
-
-template <class Sleutel, class Data>
-typename Zoekboom<Sleutel, Data>::const_iterator Zoekboom<Sleutel, Data>::cbegin() const
+typename Zoekboom<Sleutel, Data>::const_iterator Zoekboom<Sleutel, Data>::begin() const
 {
     Zoekknoop<Sleutel, Data>* huidige_knoop = this->get();
     while(huidige_knoop && huidige_knoop->links)
@@ -549,7 +537,7 @@ typename Zoekboom<Sleutel, Data>::const_iterator Zoekboom<Sleutel, Data>::cbegin
 }
 
 template <class Sleutel, class Data>
-typename Zoekboom<Sleutel, Data>::const_iterator Zoekboom<Sleutel, Data>::cend() const
+typename Zoekboom<Sleutel, Data>::const_iterator Zoekboom<Sleutel, Data>::end() const
 {
     return Zoekboom<Sleutel, Data>::const_iterator{nullptr};
 }

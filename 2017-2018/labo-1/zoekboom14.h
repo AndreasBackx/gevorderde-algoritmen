@@ -9,6 +9,7 @@
 #include <stack>
 #include <functional>
 #include <algorithm>
+#include <tuple>
 
 enum class Richting
 {
@@ -80,7 +81,7 @@ protected:
 
     void maak_lijst_evenwichtig();
     void controleer_is_gelijk(const Zoekboom<Sleutel, Data>& andere, bool& is_gelijk) const;
-    void zoek(const Sleutel& sleutel, Zoekknoop<Sleutel, Data>*& ouder, Zoekboom<Sleutel, Data>*& plaats);
+    std::tuple<Zoekboom<Sleutel, Data>*, Zoekknoop<Sleutel, Data>*> zoek(const Sleutel& sleutel);
 };
 
 /******************************************************************************/
@@ -146,7 +147,8 @@ void Zoekboom<Sleutel, Data>::voeg_toe(const Sleutel& sleutel, const Data& data)
     Zoekboom<Sleutel, Data>* plaats;
     Zoekknoop<Sleutel, Data>* ouder;
     
-    zoek(sleutel, ouder, plaats);
+    std::tie(plaats, ouder) = zoek(sleutel);
+    // C++17 (nog niet ondersteund): auto [plaats, ouder] = zoek(sleutel);
     
     if (!(*plaats))
     {        
@@ -268,10 +270,10 @@ void Zoekboom<Sleutel, Data>::maak_evenwichtig()
 }
 
 template <class Sleutel, class Data>
-void Zoekboom<Sleutel, Data>::zoek(const Sleutel& sleutel, Zoekknoop<Sleutel, Data>*& ouder, Zoekboom<Sleutel, Data>*& plaats)
+std::tuple<Zoekboom<Sleutel, Data>*, Zoekknoop<Sleutel, Data>*> Zoekboom<Sleutel, Data>::zoek(const Sleutel& sleutel)
 {
-    plaats = this;
-    ouder = nullptr;
+    Zoekboom<Sleutel, Data>* plaats = this;
+    Zoekknoop<Sleutel, Data>* ouder = nullptr;
     
     while (*plaats && (*plaats)->sleutel != sleutel)
     {
@@ -286,6 +288,8 @@ void Zoekboom<Sleutel, Data>::zoek(const Sleutel& sleutel, Zoekknoop<Sleutel, Da
             plaats = &(*plaats)->links;
         }
     };
+
+    return std::make_tuple(plaats, ouder);
 };
 
 template <class Sleutel, class Data>

@@ -31,6 +31,9 @@ public:
     bool operator==(const Zoekknoop<Sleutel, Data>& andere) const;
     bool operator!=(const Zoekknoop<Sleutel, Data>& andere) const;
 
+    const Sleutel& geef_sleutel() const;
+    const Data& geef_data() const;
+
 protected:
 
     Sleutel sleutel;
@@ -90,6 +93,18 @@ template <class Sleutel, class Data>
 bool Zoekknoop<Sleutel, Data>::operator!=(const Zoekknoop<Sleutel, Data>& andere) const
 {
     return !(*this == andere);
+}
+
+template <class Sleutel, class Data>
+const Sleutel& Zoekknoop<Sleutel, Data>::geef_sleutel() const
+{
+    return sleutel;
+}
+
+template <class Sleutel, class Data>
+const Data& Zoekknoop<Sleutel, Data>::geef_data() const
+{
+    return data;
 }
 
 #endif /* ZOEKKNOOP_H */

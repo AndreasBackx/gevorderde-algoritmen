@@ -41,6 +41,41 @@ void test_evenwichtig()
     std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " ms" << std::endl;
 }
 
+void test_iterator()
+{
+    Zoekboom<int, int> zb;
+
+    int keys[] = {13, 3, 4, 12, 14, 10, 5, 1, 8, 2, 7, 9, 11, 6, 18}; // http://lcm.csa.iisc.ernet.in/dsa/node91.html
+
+    for (int key : keys)
+    {
+        zb.voeg_toe(key, 2 * key);
+    }
+
+    for (const auto& knoop : zb)
+    {
+        std::cout << knoop.geef_sleutel() << ", ";
+    }
+
+    std::cout << std::endl;
+
+    Zoekboom<int, int> zb_copy{zb};
+    zb.roteer(Richting::LINKS);
+    zb.roteer(Richting::LINKS);
+    zb.roteer(Richting::LINKS);
+    zb.roteer(Richting::LINKS);
+    zb.roteer(Richting::LINKS);
+    zb.roteer(Richting::LINKS);
+
+    for (const auto& knoop : zb_copy)
+    {
+        std::cout << knoop.geef_sleutel() << ", ";
+    }
+
+    std::cout << std::endl;
+    std::cout << zb_copy.is_content_gelijk(zb) << std::endl;
+}
+
 void test_groot_aantal_sleutels()
 {
     Zoekboom<int, int> groot_zb;
@@ -173,6 +208,7 @@ int main()
     out.close();
 
 //    test_groot_aantal_sleutels();
+    test_iterator();
 
     test_evenwichtig();
 

@@ -7,6 +7,39 @@
 #include <cassert>
 #include <vector>
 #include <algorithm>
+#include <chrono>
+
+void test_evenwichtig()
+{
+    Zoekboom<int, int> zb;
+
+    constexpr int AANTAL = 16384;
+
+    std::vector<int> sleutels(AANTAL); // op deze manier geen dubbels
+
+    std::cout << "> vector vullen" << std::endl;
+    for (int i = 0; i < AANTAL; i++)
+    {
+        sleutels.at(i) = i;
+    }
+
+    std::cout << "> vector shufflen" << std::endl;
+    std::random_shuffle(std::begin(sleutels), std::end(sleutels));
+
+    std::cout << "> sleutels toevoegen" << std::endl;
+    for (size_t i = 0; i < sleutels.size(); i++)
+    {
+        zb.voeg_toe(sleutels[i], 2 * sleutels[i]);
+    }
+
+    auto begin = std::chrono::steady_clock::now();
+
+    zb.maak_evenwichtig();
+
+    auto end = std::chrono::steady_clock::now();
+
+    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " ms" << std::endl;
+}
 
 void test_groot_aantal_sleutels()
 {
@@ -140,6 +173,8 @@ int main()
     out.close();
 
 //    test_groot_aantal_sleutels();
+
+    test_evenwichtig();
 
     std::cout << "Done..." << std::endl;
 

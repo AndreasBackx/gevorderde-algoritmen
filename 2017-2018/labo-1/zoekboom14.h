@@ -42,7 +42,7 @@ public:
     void maak_evenwichtig();
     bool is_rep_ok() const;
     void overloop_inorder(std::function<void(const Zoekknoop<Sleutel,Data>&)> bezoek) const;
-    
+
     bool is_gelijk(const Zoekboom<Sleutel, Data>& andere) const;
     bool is_content_gelijk(const Zoekboom<Sleutel, Data>& andere) const;
 
@@ -87,12 +87,12 @@ protected:
 /******************************************************************************/
 
 template <class Sleutel, class Data>
-Zoekboom<Sleutel, Data>::Zoekboom() 
+Zoekboom<Sleutel, Data>::Zoekboom()
 : std::unique_ptr<Zoekknoop<Sleutel, Data>>{nullptr}
 {}
 
 template <class Sleutel, class Data>
-Zoekboom<Sleutel, Data>::Zoekboom(const Sleutel& sleutel, const Data& data) 
+Zoekboom<Sleutel, Data>::Zoekboom(const Sleutel& sleutel, const Data& data)
 : std::unique_ptr<Zoekknoop<Sleutel, Data>>{std::make_unique<Zoekknoop<Sleutel, Data>>(sleutel, data)}
 {}
 
@@ -112,7 +112,7 @@ Zoekboom<Sleutel, Data>::Zoekboom(const Zoekboom<Sleutel, Data>& andere)
 
 template <class Sleutel, class Data>
 Zoekboom<Sleutel, Data>::Zoekboom(Zoekboom<Sleutel, Data>&& andere)
-: std::unique_ptr<Zoekknoop<Sleutel, Data>>{std::move(andere)} 
+: std::unique_ptr<Zoekknoop<Sleutel, Data>>{std::move(andere)}
 {}
 
 template <class Sleutel, class Data>
@@ -136,8 +136,8 @@ int Zoekboom<Sleutel, Data>::diepte() const
 {
     if (!(*this)) {
         return -1; // Enkel bestaande knopen kunnen een diepte hebben
-    } 
-    
+    }
+
     return (std::max((*this)->links.diepte(), (*this)->rechts.diepte()) + 1);
 }
 
@@ -146,15 +146,15 @@ void Zoekboom<Sleutel, Data>::voeg_toe(const Sleutel& sleutel, const Data& data)
 {
     Zoekboom<Sleutel, Data>* plaats;
     Zoekknoop<Sleutel, Data>* ouder;
-    
+
     std::tie(plaats, ouder) = zoek(sleutel);
     // C++17 (nog niet ondersteund): auto [plaats, ouder] = zoek(sleutel);
-    
+
     if (!(*plaats))
-    {        
+    {
         *plaats = Zoekboom<Sleutel, Data>{sleutel, data};
         (*plaats)->ouder = ouder;
-    };
+    }
 }
 
 template <class Sleutel, class Data>
@@ -183,7 +183,7 @@ void Zoekboom<Sleutel, Data>::roteer(const Richting& richting)
         {
             (*this)->rechts->links->ouder = ((*this)->rechts).get();
         }
-        
+
         //        // Ook mogelijk:
 //        if ((*this)->rechts->links)
 //        {
@@ -194,16 +194,16 @@ void Zoekboom<Sleutel, Data>::roteer(const Richting& richting)
     }
     else if (richting == Richting::LINKS)
     {
-        if (!(*this)->rechts) 
+        if (!(*this)->rechts)
         {
             return;
         }
-        
+
         Zoekboom temp{std::move(*this)};
         (*this) = std::move(temp->rechts);
         temp->rechts = std::move((*this)->links);
         (*this)->links = std::move(temp);
-        
+
         (*this)->ouder = (*this)->links->ouder;
         (*this)->links->ouder = this->get();
         if ((*this)->links->rechts)
@@ -251,7 +251,7 @@ void Zoekboom<Sleutel, Data>::maak_lijst_evenwichtig()
     {
         roteer_naar_richting = Richting::LINKS;
     }
-    
+
     int huidige_diepte = diepte(); // Is nodig!
     for (int i = 0; i < (huidige_diepte / 2); i++)
     {
@@ -274,11 +274,11 @@ std::tuple<Zoekboom<Sleutel, Data>*, Zoekknoop<Sleutel, Data>*> Zoekboom<Sleutel
 {
     Zoekboom<Sleutel, Data>* plaats = this;
     Zoekknoop<Sleutel, Data>* ouder = nullptr;
-    
+
     while (*plaats && (*plaats)->sleutel != sleutel)
     {
         ouder = plaats->get();
-            
+
         if (sleutel > (*plaats)->sleutel)
         {
             plaats = &(*plaats)->rechts;
@@ -308,27 +308,27 @@ void Zoekboom<Sleutel, Data>::overloop_inorder(std::function<void(const Zoekknoo
 }
 
 template <class Sleutel, class Data>
-bool Zoekboom<Sleutel, Data>::is_rep_ok() const 
+bool Zoekboom<Sleutel, Data>::is_rep_ok() const
 {
     bool is_correct = true;
-    
+
     const Sleutel* vorige = nullptr;
-    
+
     overloop_inorder([&vorige, &is_correct](const Zoekknoop<Sleutel, Data>& knoop)
     {
         if (!is_correct)
         {
             return;
         }
-        
-        if (vorige 
+
+        if (vorige
             && (*vorige > knoop.sleutel))
         {
             is_correct = false;
             return;
         }
-        
-        if(knoop.ouder 
+
+        if(knoop.ouder
             && ((knoop.ouder->links).get() != &knoop)
             && ((knoop.ouder->rechts).get() != &knoop))
         {
@@ -336,7 +336,7 @@ bool Zoekboom<Sleutel, Data>::is_rep_ok() const
             return;
         }
     });
-    
+
     return is_correct;
 }
 
@@ -374,7 +374,7 @@ bool Zoekboom<Sleutel, Data>::is_gelijk(const Zoekboom<Sleutel, Data>& andere) c
     bool is_gelijk = true;
 
     controleer_is_gelijk(andere, is_gelijk);
-    
+
     return is_gelijk;
 }
 
@@ -401,7 +401,7 @@ bool Zoekboom<Sleutel, Data>::is_content_gelijk(const Zoekboom<Sleutel, Data>& a
 
 // Niet de mooiste methode
 template <class Sleutel, class Data>
-std::string Zoekboom<Sleutel, Data>::get_dot_code() const 
+std::string Zoekboom<Sleutel, Data>::get_dot_code() const
 {
     std::stringstream out;
 

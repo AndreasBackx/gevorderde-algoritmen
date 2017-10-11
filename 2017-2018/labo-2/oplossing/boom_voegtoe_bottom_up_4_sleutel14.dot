@@ -1,0 +1,24 @@
+digraph BST {
+	 4 -> 3;
+	 4 -> 13;
+	 13 -> 4 [style=dashed];
+	 13 -> 12;
+	 13 -> 14;
+	14 [color="red"];
+	 14 -> 13 [style=dashed];
+	 null0 [shape=point];
+	 14 -> null0;
+	 null1 [shape=point];
+	 14 -> null1;
+	12 [color="red"];
+	 12 -> 13 [style=dashed];
+	 null2 [shape=point];
+	 12 -> null2;
+	 null3 [shape=point];
+	 12 -> null3;
+	 3 -> 4 [style=dashed];
+	 null4 [shape=point];
+	 3 -> null4;
+	 null5 [shape=point];
+	 3 -> null5;
+}

@@ -47,12 +47,12 @@ protected:
 /******************************************************************************/
 
 template <class Sleutel, class Data>
-Zoekknoop<Sleutel, Data>::Zoekknoop(const Sleutel& sleutel, const Data& data) 
+Zoekknoop<Sleutel, Data>::Zoekknoop(const Sleutel& sleutel, const Data& data)
 : sleutel{sleutel}, data{data}, ouder{nullptr}
 {}
 
 template <class Sleutel, class Data>
-Zoekknoop<Sleutel, Data>::~Zoekknoop() 
+Zoekknoop<Sleutel, Data>::~Zoekknoop()
 {}
 
 template <class Sleutel, class Data>
@@ -75,7 +75,7 @@ Zoekknoop<Sleutel, Data>::Zoekknoop(const Zoekknoop<Sleutel, Data>& andere)
     if (links) {
         links->ouder = this;
     }
-    
+
     rechts = Zoekboom<Sleutel, Data>{andere.rechts};
     if (rechts)
     {

@@ -27,6 +27,7 @@ int main()
         i++;
     }
 
+    assert(rzb.is_rep_ok());
 
     std::cout << "Done..." << std::endl;
 

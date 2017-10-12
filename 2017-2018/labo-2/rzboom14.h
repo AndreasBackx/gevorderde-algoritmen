@@ -42,6 +42,7 @@ protected:
 
     std::tuple<RZBoom<Sleutel, Data>*, RZKnoop<Sleutel, Data>*> zoek(const Sleutel& sleutel);
     std::tuple<RZBoom<Sleutel, Data>*, RZBoom<Sleutel, Data>*, RZBoom<Sleutel, Data>*> geef_familie(const RZBoom<Sleutel, Data>* const plaats);
+    int check_zwarte_diepte(bool& is_correct) const;
 };
 
 /******************************************************************************/
@@ -122,7 +123,6 @@ std::tuple<RZBoom<Sleutel, Data>*, RZBoom<Sleutel, Data>*, RZBoom<Sleutel, Data>
     }
 
     Richting grootouder_ouder_richting = (*plaats)->ouder->is_welk_kind();
-
     RZBoom<Sleutel, Data>* ouder = (*grootouder)->geef_kind(grootouder_ouder_richting);
     RZBoom<Sleutel, Data>* nonkel = (*grootouder)->geef_kind(inverse_richting(grootouder_ouder_richting));
 
@@ -169,7 +169,6 @@ void RZBoom<Sleutel, Data>::voeg_toe_bottom_up(const Sleutel& sleutel, const Dat
             if (ouder_kind_richting == grootouder_ouder_richting)
             {
                 // Eenvoudiger eerst de kleuren te veranderen, nu alle unique_ptr's nog kloppen
-
                 (*ouder)->kleur = Kleur::ZWART;
                 (*grootouder)->kleur = Kleur::ROOD;
 
@@ -189,10 +188,7 @@ void RZBoom<Sleutel, Data>::voeg_toe_bottom_up(const Sleutel& sleutel, const Dat
     }
 
     // Voor als het nieuwe kind root, kind van root is, of "plaats" naar daar is opgeschoven na bottom up
-    if ((*this)->kleur == Kleur::ROOD)
-    {
-        (*this)->kleur = Kleur::ZWART;
-    }
+    (*this)->kleur = Kleur::ZWART;
 }
 
 template <class Sleutel, class Data>
@@ -302,7 +298,7 @@ bool RZBoom<Sleutel, Data>::is_rep_ok() const
         bool is_dubbel_rood = knoop.ouder
                               && (knoop.kleur == Kleur::ROOD)
                               && (knoop.ouder->kleur == Kleur::ROOD);
-        bool is_wortel_rood = !knoop.ouder && knoop.kleur::ROOD;
+        bool is_wortel_rood = !knoop.ouder && (knoop.kleur == Kleur::ROOD);
 
         if (is_vorige_sleutel_incorrect
             || is_ouder_incorrect
@@ -314,7 +310,48 @@ bool RZBoom<Sleutel, Data>::is_rep_ok() const
         }
     });
 
+    if (is_correct)
+    {
+        (void) check_zwarte_diepte(is_correct);
+    }
+
     return is_correct;
+}
+
+template <class Sleutel, class Data>
+int RZBoom<Sleutel, Data>::check_zwarte_diepte(bool& is_correct) const
+{
+    if (!is_correct)
+    {
+        return -1;
+    }
+
+    if(!(*this))
+    {
+        return 1;
+    }
+
+    int zwarte_diepte_links = ((*this)->links).check_zwarte_diepte(is_correct);
+    int zwarte_diepte_rechts = ((*this)->rechts).check_zwarte_diepte(is_correct);
+
+    if(zwarte_diepte_links != zwarte_diepte_rechts)
+    {
+        is_correct = false;
+        return -1;
+    }
+
+    if ((*this)->kleur == Kleur::ZWART)
+    {
+        return (zwarte_diepte_links + 1);
+    }
+    else if ((*this)->kleur == Kleur::ROOD)
+    {
+        return zwarte_diepte_links;
+    }
+    else
+    {
+        throw;
+    }
 }
 
 template <class Sleutel, class Data>

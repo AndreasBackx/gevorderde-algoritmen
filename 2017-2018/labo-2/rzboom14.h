@@ -34,7 +34,7 @@ public:
     void roteer(const Richting& richting);
     bool is_rep_ok() const;
     void overloop_inorder(std::function<void(const RZKnoop<Sleutel,Data>&)> bezoek) const;
-//    Kleur geef_kleur() const;
+    Kleur geef_kleur() const;
 
     std::string get_dot_code() const;
 
@@ -116,28 +116,15 @@ std::tuple<RZBoom<Sleutel, Data>*, RZBoom<Sleutel, Data>*, RZBoom<Sleutel, Data>
     }
     else
     {
-        if (((*plaats)->ouder->ouder->ouder->links).get() == (*plaats)->ouder->ouder)
-        {
-            grootouder = &((*plaats)->ouder->ouder->ouder->links);
-        }
-        else
-        {
-            grootouder = &((*plaats)->ouder->ouder->ouder->rechts);
-        }
+        grootouder = (*plaats)->ouder->ouder->ouder->geef_kind(
+                         (*plaats)->ouder->ouder->is_welk_kind()
+                     );
     }
 
-    RZBoom<Sleutel, Data>* ouder = nullptr;
-    RZBoom<Sleutel, Data>* nonkel = nullptr;
-    if (((*grootouder)->links).get() == (*plaats)->ouder)
-    {
-        ouder = &((*grootouder)->links);
-        nonkel = &((*grootouder)->rechts);
-    }
-    else
-    {
-        ouder = &((*grootouder)->rechts);
-        nonkel = &((*grootouder)->links);
-    }
+    Richting grootouder_ouder_richting = (*plaats)->ouder->is_welk_kind();
+
+    RZBoom<Sleutel, Data>* ouder = (*grootouder)->geef_kind(grootouder_ouder_richting);
+    RZBoom<Sleutel, Data>* nonkel = (*grootouder)->geef_kind(inverse_richting(grootouder_ouder_richting));
 
     return std::make_tuple(grootouder, ouder, nonkel);
 }
@@ -160,21 +147,21 @@ void RZBoom<Sleutel, Data>::voeg_toe_bottom_up(const Sleutel& sleutel, const Dat
 
     while (plaats && (*plaats) && (*plaats)->ouder // Voor de zekerheid
            && (*plaats)->ouder->kleur == Kleur::ROOD
-           && (*plaats)->ouder->ouder) // We itereren zolang er een grootouder is
+           && (*plaats)->ouder->ouder) // We itereren zolang er een grootouder is (eigenlijk onnodige check: als de ouder rood is, heeft die sowieso een grootouder)
     {
         RZBoom<Sleutel, Data>* grootouder = nullptr;
         RZBoom<Sleutel, Data>* ouder = nullptr;
         RZBoom<Sleutel, Data>* nonkel = nullptr;
         std::tie(grootouder, ouder, nonkel) = geef_familie(plaats);
 
-        if ((*nonkel) && (*nonkel)->kleur == Kleur::ROOD)
+        if (nonkel->geef_kleur() == Kleur::ROOD) // Geef_kleur() ipv ...->kleur voor als nonkel == nullptr
         {
             (*ouder)->kleur = Kleur::ZWART;
             (*nonkel)->kleur = Kleur::ZWART;
             (*grootouder)->kleur = Kleur::ROOD;
             plaats = grootouder;
         }
-        else if (!(*nonkel) || (*nonkel)->kleur == Kleur::ZWART)
+        else if (nonkel->geef_kleur() == Kleur::ZWART)
         {
             Richting grootouder_ouder_richting = (*ouder)->is_welk_kind();
             Richting ouder_kind_richting = (*plaats)->is_welk_kind();
@@ -187,25 +174,12 @@ void RZBoom<Sleutel, Data>::voeg_toe_bottom_up(const Sleutel& sleutel, const Dat
                 (*grootouder)->kleur = Kleur::ROOD;
 
                 grootouder->roteer(inverse_richting(grootouder_ouder_richting));
-
-                // Dubbel rood is hier opgelost
             }
             else
             {
                 Richting draairichting = inverse_richting(ouder_kind_richting);
                 ouder->roteer(draairichting);
-                if (draairichting == Richting::LINKS)
-                {
-                    plaats = &((*ouder)->links);
-                }
-                else if (draairichting == Richting::RECHTS)
-                {
-                    plaats = &((*ouder)->rechts);
-                }
-                else
-                {
-                    throw;
-                }
+                plaats = (*ouder)->geef_kind(draairichting);
             }
         }
         else
@@ -343,18 +317,18 @@ bool RZBoom<Sleutel, Data>::is_rep_ok() const
     return is_correct;
 }
 
-//template <class Sleutel, class Data>
-//Kleur RZBoom<Sleutel, Data>::geef_kleur() const
-//{
-//    if (!(*this))
-//    {
-//        return Kleur::ZWART;
-//    }
-//    else
-//    {
-//        return (*this)->geef_kleur();
-//    }
-//}
+template <class Sleutel, class Data>
+Kleur RZBoom<Sleutel, Data>::geef_kleur() const
+{
+    if (!(*this))
+    {
+        return Kleur::ZWART;
+    }
+    else
+    {
+        return (*this)->geef_kleur();
+    }
+}
 
 // Niet de mooiste methode
 template <class Sleutel, class Data>

@@ -60,10 +60,8 @@ public:
     const Sleutel& geef_sleutel() const;
     const Data& geef_data() const;
     const Kleur& geef_kleur() const;
-    void wissel_kleur();
     Richting is_welk_kind() const;
-    RZKnoop<Sleutel, Data>* geef_broer();
-    RZKnoop<Sleutel, Data>* geef_kind(const Richting& richting);
+    RZBoom<Sleutel, Data>* geef_kind(const Richting& richting);
 
 protected:
 
@@ -149,23 +147,6 @@ const Kleur& RZKnoop<Sleutel, Data>::geef_kleur() const
 }
 
 template <class Sleutel, class Data>
-void RZKnoop<Sleutel, Data>::wissel_kleur()
-{
-    if (kleur == Kleur::ZWART)
-    {
-        kleur = Kleur::ROOD;
-    }
-    else if (kleur == Kleur::ROOD)
-    {
-        kleur = Kleur::ZWART;
-    }
-    else
-    {
-        throw;
-    }
-}
-
-template <class Sleutel, class Data>
 Richting RZKnoop<Sleutel, Data>::is_welk_kind() const
 {
     assert(ouder);
@@ -185,36 +166,15 @@ Richting RZKnoop<Sleutel, Data>::is_welk_kind() const
 }
 
 template <class Sleutel, class Data>
-RZKnoop<Sleutel, Data>* RZKnoop<Sleutel, Data>::geef_kind(const Richting& richting)
+RZBoom<Sleutel, Data>* RZKnoop<Sleutel, Data>::geef_kind(const Richting& richting)
 {
-    assert(ouder);
-
     if (richting == Richting::LINKS)
     {
-        return links.get();
+        return &(links);
     }
     else if (richting == Richting::RECHTS)
     {
-        return rechts.get();
-    }
-    else
-    {
-        throw;
-    }
-}
-
-template <class Sleutel, class Data>
-RZKnoop<Sleutel, Data>* RZKnoop<Sleutel, Data>::geef_broer()
-{
-    assert(ouder);
-
-    if (is_welk_kind() == Richting::LINKS)
-    {
-        return ouder->rechts.get();
-    }
-    else if (is_welk_kind() == Richting::RECHTS)
-    {
-        return ouder->links.get();
+        return &(rechts);
     }
     else
     {

@@ -1,5 +1,6 @@
 
 #include "dnasequentie.h"
+#include "bottelmachine.h"
 
 #include <iostream>
 #include <fstream>
@@ -24,7 +25,7 @@ std::vector<DNASequentie> lees_bestand(const std::string& bestandsnaam)
     return lijnen;
 }
 
-int main()
+void test_labo()
 {
     std::vector<DNASequentie> human_dna{lees_bestand("human.dna")};
     std::cout << "Mens:" << std::endl;
@@ -139,6 +140,56 @@ int main()
 
         std::cout << " [ OK ]" << std::endl;
     }
+
+    std::cout << "Test DNA OK" << std::endl;
+}
+
+void test_labo_uitbreiding()
+{
+    Bottelmachine bm;
+    std::vector<int> test_reeks = {0, 3, 2, 7, 1};
+
+    constexpr int AANTAL_OPLOSSINGEN = 7;
+    constexpr int OPLOSSINGEN[AANTAL_OPLOSSINGEN][2] =
+    {
+        {13,4},
+        {3,1},
+        {5,2},
+        {8,2},
+        {10,2},
+        {12,3},
+        {1,1}
+    };
+
+    for (size_t i = 0; i < AANTAL_OPLOSSINGEN; i++)
+    {
+        const int SOM = OPLOSSINGEN[i][0];
+        const int AANTAL_FLESSEN = bm.min_aantal_flessen(SOM, test_reeks);
+        const int OPLOSSING = OPLOSSINGEN[i][1];
+
+        std::cout << "Check aantal flessen nodig voor " << SOM << " geeft ("
+                  << AANTAL_FLESSEN << ") en verwacht " << OPLOSSING;
+
+        assert(AANTAL_FLESSEN == OPLOSSING);
+
+        std::cout << " [ OK ]" << std::endl;
+    }
+
+    assert(bm.min_aantal_flessen(13, test_reeks) == 4);
+    assert(bm.min_aantal_flessen(3, test_reeks) == 1);
+    assert(bm.min_aantal_flessen(5, test_reeks) == 2);
+    assert(bm.min_aantal_flessen(8, test_reeks) == 2);
+    assert(bm.min_aantal_flessen(10, test_reeks) == 2);
+    assert(bm.min_aantal_flessen(12, test_reeks) == 3);
+    assert(bm.min_aantal_flessen(1, test_reeks) == 1);
+
+    std::cout << "Test bottelmachine OK" << std::endl;
+}
+
+int main()
+{
+    test_labo();
+    test_labo_uitbreiding();
 
     return 0;
 }

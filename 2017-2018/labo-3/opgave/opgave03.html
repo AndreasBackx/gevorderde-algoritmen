@@ -1,0 +1,168 @@
+<center><font size="+1"><b>
+<title>OEFENINGEN: DNA</title>
+OEFENINGEN<br>bij<br>ALGORITMEN en GEGEVENSSTRUCTUREN</b></font>
+</center>
+
+<center>
+<p>
+2017-2018<br>
+</center>
+
+<p>
+
+<li><b>LES 6</b>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<li><b>DNA</b>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+12 oktober 2017<br>
+<p>
+<center>
+<img src="dna_string.gif" width="100%">
+</center>
+<p>
+<p>
+Het is altijd interessant om te weten hoe verwant twee dier- of plantensoorten zijn. E&eacute;n
+manier om dat te berekenen gaat als volgt: je zoekt in de DNA-sequenties van beide
+soorten naar gelijkaardige stukken en bepaalt hun <i>mutatieafstand</i>.
+<p>
+De mutatieafstand tussen twee DNA-strings wordt berekend met elementaire
+mutatieoperaties. Deze zijn:
+<ul>
+<li> Het schrappen van &eacute;&eacute;n base uit de sequentie.
+<li> Het tussenvoegen van &eacute;&eacute;n base in de sequentie.
+<li> Het vervangen van &eacute;&eacute;n base uit de sequentie door een andere
+waarde.
+</ul>
+De mutatieafstand d(A,B) is het kleinst aantal mutaties waarmee A in B kan worden
+omgezet. (Denk even na. Is d(A,B)=d(B,A)?).
+<p>
+<b>Opgave:</b>
+Leid van de klasse <tt>string</tt> een klasse <tt>DNASequentie</tt> af. Deze moet een
+lidfunctie
+<p>
+<tt>int DNASequentie::d(const String&) const</tt>
+<p>
+hebben die de mutatieafstand
+implementeert.
+<p>
+In het bestand <a href="human.dna">human.dna</a> vind je een aantal menselijke DNA-sequenties en
+in <a href="chimp.dna">chimp.dna</a> de overeenkomstige chimpanseese sequenties, Maar
+wel in een andere volgorde. Lijken deze voldoende op elkaar om terug uit te vinden welke
+sequenties bij elkaar horen?
+<p>
+<b>Hints</b>
+<ul>
+<li> Je moet niet de reeks mutaties geven die A omzet in B. Deze is trouwens niet altijd
+uniek. Wel interessant om weten is dat je best kan gaan kijken naar de meest linkse
+operatie (het dichtst bij het begin van de A-string) van een kortste mutatiereeks.
+<ul>
+<li>Als dit het toevoegen is van een base v&oacute;&oacute;r de eerste letter van A dan
+mag je veronderstellen dat de toegevoegde letter de eerste letter is van B en dan is
+<p>
+<center><br>d(A,B)=1+d(A,(cdr B))</center>.
+<p>
+<li>Als de operatie het verwijderen is van de eerste letter van A dan is
+<p>
+<center><br>d(A,B)=1+d((cdr A),B)</center>.
+<p>
+<li>Als de operatie het vervangen is van de eerste letter van A door de eerste letter van
+B dan is
+<p>
+<center><br>d(A,B)=1+d((cdr A),(cdr B))</center>.
+<p>
+<li>Als het niet een van de drie voorgaande is geldt ofwel dat de meest linkse operatie een
+andere operatie is ofwel dat er geen andere operatie is omdat beide strings gelijk zijn.
+Zelfs als de strings verschillen geldt dat (car A)=(car B) en geldt ook dat
+<p>
+<center><br>d(A,B)=d((cdr A),(cdr B))</center>.
+<p>
+</ul>
+Zoals algemeen bekend staat car voor <i>Contents of the Address part of Register
+number</i> en cdr voor <i>Contents of the Decrement part of Register number</i>. (car A)
+is dus de eerste letter van de string A en (cdr A) is wat overblijft als we uit A de
+eerste letter schrappen.
+<li>Dit is een oefening op dynamisch programmeren.
+</ul>
+-------
+Uitvoer van het programma is:
+<p>Menselijk 0 komt overeen met chimpansees 69 met afstand 24
+<p>Menselijk 1 komt overeen met chimpansees 63 met afstand 10
+<p>Menselijk 2 komt overeen met chimpansees 27 met afstand 25
+<p>Menselijk 3 komt overeen met chimpansees 45 met afstand 26
+<p>Menselijk 4 komt overeen met chimpansees 46 met afstand 12
+<p>Menselijk 5 komt overeen met chimpansees 25 met afstand 30
+<p>Menselijk 6 komt overeen met chimpansees 61 met afstand 10
+<p>Menselijk 7 komt overeen met chimpansees 57 met afstand 12
+<p>Menselijk 8 komt overeen met chimpansees 74 met afstand 35
+<p>Menselijk 9 komt overeen met chimpansees 59 met afstand 9
+<p>Menselijk 10 komt overeen met chimpansees 43 met afstand 26
+<p>Menselijk 11 komt overeen met chimpansees 47 met afstand 25
+<p>Menselijk 12 komt overeen met chimpansees 33 met afstand 36
+<p>Menselijk 13 komt overeen met chimpansees 66 met afstand 23
+<p>Menselijk 14 komt overeen met chimpansees 18 met afstand 12
+<p>Menselijk 15 komt overeen met chimpansees 40 met afstand 7
+<p>Menselijk 16 komt overeen met chimpansees 44 met afstand 11
+<p>Menselijk 17 komt overeen met chimpansees 6 met afstand 11
+<p>Menselijk 18 komt overeen met chimpansees 32 met afstand 17
+<p>Menselijk 19 komt overeen met chimpansees 2 met afstand 23
+<p>Menselijk 20 komt overeen met chimpansees 54 met afstand 23
+<p>Menselijk 21 komt overeen met chimpansees 62 met afstand 13
+<p>Menselijk 22 komt overeen met chimpansees 4 met afstand 13
+<p>Menselijk 23 komt overeen met chimpansees 15 met afstand 21
+<p>Menselijk 24 komt overeen met chimpansees 48 met afstand 26
+<p>Menselijk 25 komt overeen met chimpansees 12 met afstand 21
+<p>Menselijk 26 komt overeen met chimpansees 21 met afstand 25
+<p>Menselijk 27 komt overeen met chimpansees 19 met afstand 34
+<p>Menselijk 28 komt overeen met chimpansees 8 met afstand 20
+<p>Menselijk 29 komt overeen met chimpansees 3 met afstand 17
+<p>Menselijk 30 komt overeen met chimpansees 9 met afstand 20
+<p>Menselijk 31 komt overeen met chimpansees 73 met afstand 18
+<p>Menselijk 32 komt overeen met chimpansees 1 met afstand 22
+<p>Menselijk 33 komt overeen met chimpansees 22 met afstand 23
+<p>Menselijk 34 komt overeen met chimpansees 11 met afstand 24
+<p>Menselijk 35 komt overeen met chimpansees 24 met afstand 10
+<p>Menselijk 36 komt overeen met chimpansees 13 met afstand 5
+<p>Menselijk 37 komt overeen met chimpansees 5 met afstand 23
+<p>Menselijk 38 komt overeen met chimpansees 65 met afstand 12
+<p>Menselijk 39 komt overeen met chimpansees 7 met afstand 25
+<p>Menselijk 40 komt overeen met chimpansees 35 met afstand 24
+<p>Menselijk 41 komt overeen met chimpansees 60 met afstand 28
+<p>Menselijk 42 komt overeen met chimpansees 10 met afstand 8
+<p>Menselijk 43 komt overeen met chimpansees 49 met afstand 22
+<p>Menselijk 44 komt overeen met chimpansees 29 met afstand 21
+<p>Menselijk 45 komt overeen met chimpansees 67 met afstand 28
+<p>Menselijk 46 komt overeen met chimpansees 16 met afstand 7
+<p>Menselijk 47 komt overeen met chimpansees 64 met afstand 28
+<p>Menselijk 48 komt overeen met chimpansees 71 met afstand 28
+<p>Menselijk 49 komt overeen met chimpansees 50 met afstand 11
+<p>Menselijk 50 komt overeen met chimpansees 37 met afstand 27
+<p>Menselijk 51 komt overeen met chimpansees 56 met afstand 30
+<p>Menselijk 52 komt overeen met chimpansees 17 met afstand 5
+<p>Menselijk 53 komt overeen met chimpansees 38 met afstand 26
+<p>Menselijk 54 komt overeen met chimpansees 31 met afstand 25
+<p>Menselijk 55 komt overeen met chimpansees 23 met afstand 3
+<p>Menselijk 56 komt overeen met chimpansees 68 met afstand 14
+<p>Menselijk 57 komt overeen met chimpansees 36 met afstand 19
+<p>Menselijk 58 komt overeen met chimpansees 53 met afstand 12
+<p>Menselijk 59 komt overeen met chimpansees 51 met afstand 23
+<p>Menselijk 60 komt overeen met chimpansees 39 met afstand 7
+<p>Menselijk 61 komt overeen met chimpansees 42 met afstand 20
+<p>Menselijk 62 komt overeen met chimpansees 55 met afstand 20
+<p>Menselijk 63 komt overeen met chimpansees 52 met afstand 24
+<p>Menselijk 64 komt overeen met chimpansees 30 met afstand 24
+<p>Menselijk 65 komt overeen met chimpansees 70 met afstand 24
+<p>Menselijk 66 komt overeen met chimpansees 14 met afstand 29
+<p>Menselijk 67 komt overeen met chimpansees 34 met afstand 17
+<p>Menselijk 68 komt overeen met chimpansees 26 met afstand 13
+<p>Menselijk 69 komt overeen met chimpansees 0 met afstand 14
+<p>Menselijk 70 komt overeen met chimpansees 20 met afstand 5
+<p>Menselijk 71 komt overeen met chimpansees 58 met afstand 20
+<p>Menselijk 72 komt overeen met chimpansees 72 met afstand 28
+<p>Menselijk 73 komt overeen met chimpansees 41 met afstand 21
+<p>Menselijk 74 komt overeen met chimpansees 28 met afstand 18
+
+</HTML>

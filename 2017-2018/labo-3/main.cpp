@@ -5,19 +5,7 @@
 #include <fstream>
 #include <cassert>
 #include <vector>
-
-void test_d()
-{
-    assert(DNASequentie{"Zeil"}.d("trails") == 4); // https://secweb.cs.odu.edu/~zeil/cs361/web/website/Lectures/styles/pages/editdistance.html
-    std::cout << std::endl;
-    assert(DNASequentie{"a cat"}.d("an act") == 3); // https://scarcitycomputing.blogspot.be/2013/04/damerau-levenshtein-edit-distance.html
-    std::cout << std::endl;
-    assert(DNASequentie{"sitting"}.d("kitten") == 3); // https://en.wikipedia.org/wiki/Levenshtein_distance
-    std::cout << std::endl;
-    assert(DNASequentie{"Sunday"}.d("Saturday") == 3); // https://en.wikipedia.org/wiki/Levenshtein_distance
-
-    std::cout << "Test afstand OK" << std::endl;
-}
+#include <iomanip>
 
 std::vector<DNASequentie> lees_bestand(const std::string& bestandsnaam)
 {
@@ -38,14 +26,13 @@ std::vector<DNASequentie> lees_bestand(const std::string& bestandsnaam)
 
 int main()
 {
-    test_d();
-
     std::vector<DNASequentie> human_dna{lees_bestand("human.dna")};
-    std::cout << "Human:" << std::endl;
+    std::cout << "Mens:" << std::endl;
     for (size_t i = 0; i < human_dna.size(); i++)
     {
         std::cout << i << ": " << human_dna[i] << std::endl;
     }
+    std::cout << std::endl;
 
     std::vector<DNASequentie> chimp_dna{lees_bestand("chimp.dna")};
     std::cout << "Aap:" << std::endl;
@@ -53,6 +40,7 @@ int main()
     {
         std::cout << i << ": " << chimp_dna[i] << std::endl;
     }
+    std::cout << std::endl;
 
     constexpr int AANTAL_OPLOSSINGEN = 75;
     constexpr int OPLOSSINGEN[AANTAL_OPLOSSINGEN][3] =
@@ -142,22 +130,15 @@ int main()
         const int AFSTAND = human_dna[HUMAN_INDEX].d(chimp_dna[CHIMP_INDEX]);
         const int CONVENT_AFSTAND = human_dna[HUMAN_INDEX].d_volgens_conventie(chimp_dna[CHIMP_INDEX]);
 
-        std::cout << "Check " << i << " voor mens " << HUMAN_INDEX << " en aap " << CHIMP_INDEX
-                  << " geeft (" << AFSTAND << " & " << CONVENT_AFSTAND << ") en verwacht " << OPLOSSING;
+        std::cout << "Check " << std::setw(2) << i << " voor mens " << std::setw(2) << HUMAN_INDEX
+                  << " en aap " << std::setw(2) << CHIMP_INDEX << " geeft (" << std::setw(2) << AFSTAND
+                  << " & " << std::setw(2) << CONVENT_AFSTAND << ") en verwacht " << std::setw(2) << OPLOSSING;
 
         assert(human_dna[HUMAN_INDEX].d(chimp_dna[CHIMP_INDEX]) == OPLOSSING);
         assert(human_dna[HUMAN_INDEX].d_volgens_conventie(chimp_dna[CHIMP_INDEX]) == OPLOSSING);
 
         std::cout << " [ OK ]" << std::endl;
     }
-
-
-
-//    std::cout << "Afstand mens -> aap: " << std::endl
-//              << human_dna.d(chimp_dna) << std::endl;
-
-//    std::cout << human_dna.d(chimp_dna.substr(69));
-//    std::cout << "Done..." << std::endl;
 
     return 0;
 }

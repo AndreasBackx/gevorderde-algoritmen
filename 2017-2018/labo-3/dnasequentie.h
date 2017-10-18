@@ -3,6 +3,9 @@
 #include <vector>
 #include <algorithm>
 
+#include <iostream>
+#include <iomanip>
+
 // Levenshtein distance
 // http://users.monash.edu/~lloyd/tildeAlgDS/Dynamic/Edit/
 // https://secweb.cs.odu.edu/~zeil/cs361/web/website/Lectures/styles/pages/editdistance.html
@@ -22,8 +25,13 @@ public:
     DNASequentie(DNASequentie&& ander) = default;
     DNASequentie& operator=(DNASequentie&& ander) = default;
 
-    int d(const std::string& andere) const;
-    int d_volgens_conventie(const std::string& andere) const;
+    int d_bottom_up(const DNASequentie& andere) const;
+    int d_bottom_up_volgens_conventie(const DNASequentie& andere) const;
+    int DNASequentie::d_top_down_volgens_conventie(const DNASequentie& andere);
+
+private:
+
+    int DNASequentie::d_top_down_volgens_conventie(const DNASequentie& andere, std::vector<std::vector<int>>& afstanden, int van, int naar);
 };
 
 DNASequentie::DNASequentie(const std::string& inhoud)
@@ -47,7 +55,7 @@ DNASequentie::DNASequentie(std::string&& inhoud)
 //    I 3
 //    L 4
 //
-int DNASequentie::d_volgens_conventie(const std::string& andere) const
+int DNASequentie::d_bottom_up_volgens_conventie(const DNASequentie& andere) const
 {
     const size_t VAN_MATRIX_GROOTTE = size() + 1;
     const size_t NAAR_MATRIX_GROOTTE = andere.size() + 1;
@@ -85,6 +93,67 @@ int DNASequentie::d_volgens_conventie(const std::string& andere) const
     return afstanden[VAN_MATRIX_GROOTTE - 1][NAAR_MATRIX_GROOTTE - 1];
 }
 
+
+int DNASequentie::d_top_down_volgens_conventie(const DNASequentie& andere)
+{
+    const size_t VAN_MATRIX_GROOTTE = size() + 1;
+    const size_t NAAR_MATRIX_GROOTTE = andere.size() + 1;
+
+    std::vector<std::vector<int>> afstanden(
+        VAN_MATRIX_GROOTTE,
+        std::vector<int>(NAAR_MATRIX_GROOTTE, -1)
+    );
+
+    int afstand = d_top_down_volgens_conventie(andere, afstanden, (VAN_MATRIX_GROOTTE - 1), (NAAR_MATRIX_GROOTTE - 1));
+
+    /*for (const std::vector<int>& naar : afstanden)
+    {
+        for (int afstand : naar)
+        {
+            std::cout << std::setw(3) << afstand;
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;*/
+
+    return afstand;
+}
+
+int DNASequentie::d_top_down_volgens_conventie(
+    const DNASequentie& andere,
+    std::vector<std::vector<int>>& afstanden,
+    int van,
+    int naar
+)
+{
+    if (afstanden[van][naar] < 0)
+    {
+        if (van == 0)
+        {
+            afstanden[van][naar] = naar;
+        }
+        else if (naar == 0)
+        {
+            afstanden[van][naar] = van;
+        }
+        else
+        {
+            int verandering = d_top_down_volgens_conventie(andere, afstanden, (van - 1), (naar - 1));
+            if ((*this)[van - 1] != andere[naar - 1])
+            {
+                verandering++;
+            }
+
+            int toevoegen = (1 + d_top_down_volgens_conventie(andere, afstanden, van, (naar - 1)));
+            int verwijderen = (1 + d_top_down_volgens_conventie(andere, afstanden, (van - 1), naar));
+
+            afstanden[van][naar] = std::min({verandering, toevoegen, verwijderen});
+        }
+    }
+
+    return afstanden[van][naar];
+}
+
 // Correcte oplossing omgekeerd volgens labo
 //
 // Vanachter naar voor: bv. zeil -> trails
@@ -96,7 +165,7 @@ int DNASequentie::d_volgens_conventie(const std::string& andere) const
 //                  3 E
 //                  4 Z
 //
-int DNASequentie::d(const std::string& andere) const
+int DNASequentie::d_bottom_up(const DNASequentie& andere) const
 {
     const size_t VAN_MATRIX_GROOTTE = size() + 1;
     const int NAAR_MATRIX_GROOTTE = andere.size() + 1;

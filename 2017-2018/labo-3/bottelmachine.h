@@ -66,10 +66,13 @@ int Bottelmachine::bereken_min_aantal_flessen(int inhoud,
 
     if (min_aantal == std::numeric_limits<int>::max())
     {
-        min_aantal = -1;
+        aantal_flessen_per_inhoud[inhoud] = -1;
+    }
+    else
+    {
+        aantal_flessen_per_inhoud[inhoud] = (min_aantal + 1);
     }
 
-    aantal_flessen_per_inhoud[inhoud] = (min_aantal + 1);
     return aantal_flessen_per_inhoud[inhoud];
 }
 

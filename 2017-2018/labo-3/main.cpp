@@ -1,40 +1,35 @@
 
-#include "dnasequentie.h"
 #include "bottelmachine.h"
+#include "dnasequentie.h"
 
-#include <iostream>
-#include <fstream>
 #include <cassert>
-#include <vector>
-#include <iomanip>
-#include <limits>
 #include <chrono>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <limits>
+#include <vector>
 
 void test_labo_uitbreiding()
 {
     Bottelmachine bm;
+
+    assert(bm.min_aantal_flessen(450, {200, 50}) == 3);
+    assert(bm.min_aantal_flessen(90, {80, 23, 22, 1}) == 4);
+
     std::vector<int> test_reeks = {0, 3, 2, 7, 1};
 
     constexpr int AANTAL_OPLOSSINGEN = 7;
-    constexpr int OPLOSSINGEN[AANTAL_OPLOSSINGEN][2] =
-    {
-        {13,4},
-        {3,1},
-        {5,2},
-        {8,2},
-        {10,2},
-        {12,3},
-        {1,1}
-    };
+    constexpr int OPLOSSINGEN[AANTAL_OPLOSSINGEN][2] = {{13, 4}, {3, 1}, {5, 2}, {8, 2}, {10, 2}, {12, 3}, {1, 1}};
 
     for (size_t i = 0; i < AANTAL_OPLOSSINGEN; i++)
     {
         const int SOM = OPLOSSINGEN[i][0];
-        const int AANTAL_FLESSEN = bm.min_aantal_flessen(SOM, test_reeks);
+        const int AANTAL_FLESSEN = bm.min_aantal_flessen_uitgebreid_bottom_up(SOM, test_reeks);
         const int OPLOSSING = OPLOSSINGEN[i][1];
 
-        std::cout << "Check aantal flessen nodig voor " << SOM << " geeft ("
-                  << AANTAL_FLESSEN << ") en verwacht " << OPLOSSING;
+        std::cout << "Check aantal flessen nodig voor " << SOM << " geeft (" << AANTAL_FLESSEN << ") en verwacht "
+                  << OPLOSSING;
 
         assert(AANTAL_FLESSEN == OPLOSSING);
 
@@ -44,7 +39,7 @@ void test_labo_uitbreiding()
     std::cout << "Test bottelmachine OK" << std::endl;
 }
 
-int main()
+void vergelijk_mens_aap()
 {
     std::vector<DNASequentie> aap_dna;
 
@@ -70,9 +65,11 @@ int main()
         size_t min_index = 0;
         int min_afstand = std::numeric_limits<int>::max();
 
-        for (int j = 0; j < aap_dna.size(); j++)
+        assert(aap_dna.size() < std::numeric_limits<int>::max());
+        for (int j = 0; j < static_cast<int>(aap_dna.size()); j++)
         {
             int afstand = mens.d_bottom_up_volgens_conventie(aap_dna[j]);
+            // int afstand = mens.d_top_down_volgens_conventie(aap_dna[j]);
             // assert(afstand == mens.d_bottom_up(aap_dna[j]));
             // assert(afstand == mens.d_top_down_volgens_conventie(aap_dna[j]));
 
@@ -83,7 +80,8 @@ int main()
             }
         }
 
-        std::cout << "Menselijk " << i << " komt overeen met chimpansees " << min_index << " met afstand " << min_afstand << std::endl;
+        std::cout << "Menselijk " << i << " komt overeen met chimpansees " << min_index << " met afstand "
+                  << min_afstand << std::endl;
 
         i++;
     }
@@ -92,8 +90,14 @@ int main()
 
     bestand.close();
 
-    std::cout << "Verstreken tijd voor DNA vergelijkingen: " << std::chrono::duration_cast<std::chrono::milliseconds>(finish_time - start_time).count() << " ms" << std::endl;
+    std::cout << "Verstreken tijd voor DNA vergelijkingen: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(finish_time - start_time).count() << " ms"
+              << std::endl;
+}
 
+int main()
+{
+    // vergelijk_mens_aap();
     test_labo_uitbreiding();
 
     return 0;

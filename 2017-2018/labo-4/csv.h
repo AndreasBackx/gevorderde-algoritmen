@@ -45,7 +45,7 @@ private:
 CsvData::CsvData(const std::string& bestandsnaam, const std::string& scheidingsteken)
     : bestandsnaam{bestandsnaam}, scheidingsteken{scheidingsteken}
 {
-    std::string file_extension = ".csv";
+    std::string file_extension = ".tsv";
     if (this->bestandsnaam.find(file_extension) == std::string::npos)
     {
         this->bestandsnaam.append(file_extension);

@@ -1,0 +1,38 @@
+<html>
+    <head>
+        <title>OEFENINGEN: Punten in een vlak</title></head><body>
+
+        <h3>LES 5    ---  19 okt 2015</h3>
+        <h2>QUADTREES</h2>
+        <p>
+        <h3>Eerste labo</h3>
+
+
+        Implementeer een point quadtree die punten met <tt>int</tt>-co&ouml;rdinaten kan opslaan.
+        Je moet punten kunnen toevoegen, vragen of een bepaald punt in de boom zit en de diepte
+        van de boom kunnen opvragen.
+        <p>
+        Zoals een gewone binaire boom heeft een quadtree geen mechanisme om de diepte te
+        beperken. Deze kan dus behoorlijk groot worden als de punten worden opgegeven in een
+        volgorde die een bepaalde structuur bezit. We proberen dat hier eens uit met punten van
+        de vorm
+        <p>
+        ((10000-5*i)* cos(i*0.25*M_PI), (10000-5*i)* sin(i*0.25*M_PI)),
+        <p>
+        die op een spiraal liggen.
+        Neem de eerste 2 van deze rij en steek ze in een quadtree. Wat is de diepte?
+        Wat is de diepte na de eerste 4 elementen? de eerste 8, 16, 32, 64, ..., 131072?
+        <p> Je kan waarschijnlijk de diepte verbeteren door de punten in een tabel te steken,
+        dan de elementen willekeurig door mekaar te gooien en ze dan in de nieuwe volgorde toe te
+        voegen. Welke diepte krijg je dan na 2, 4, 8, 16, 32, 64, ..., 131072 elementen?
+        Soms is het interessant om grafiekjes te kunnen bekijken. We laten uiteraard het
+        eigenlijke werk, het tekenen van de grafiek, over aan iemand anders, en gebruiken een
+        spreadsheet. Daarvoor verwijzen we naar de headers <a href="./csv.h">csv.h</a> en
+        <a href="./puntgenerator.h">puntgenerator.h</a> en het voorbeeld <a href="./zoekboomdiepte.cpp">zoekboomdiepte.cpp</a>
+        dat je in reeks 1 kreeg. Wat extra uitleg vind je bij de <a href="./opgave01.html">opgave van die reeks</a>. 
+
+        <p>
+        Maak een grafiek met beide reeksen van dieptes (met en zonder door elkaar gooien).
+        </p>
+    </body></html>
+

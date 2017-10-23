@@ -18,6 +18,8 @@ set(SOURCES
     main.cpp
     csv.h
     puntgenerator.h
+    zoekboom14.h
+    zoekknoop14.h
     )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

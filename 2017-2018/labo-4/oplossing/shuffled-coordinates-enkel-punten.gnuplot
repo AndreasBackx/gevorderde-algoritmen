@@ -6,5 +6,5 @@ set xlabel 'X'
 set ylabel 'Y'
 set grid
 set autoscale
-plot "dieptedata.csv" using 3:4 with linespoints
+plot "dieptedata.csv" using 3:4
 pause -1

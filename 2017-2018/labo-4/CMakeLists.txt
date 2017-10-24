@@ -20,6 +20,7 @@ set(SOURCES
     puntgenerator.h
     zoekboom14.h
     zoekknoop14.h
+    punt2d.h
     )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

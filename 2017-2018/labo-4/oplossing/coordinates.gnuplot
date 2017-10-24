@@ -5,6 +5,6 @@ set title 'Coordinaten'
 set xlabel 'X'
 set ylabel 'Y'
 set grid
-set autoscale 
+set autoscale
 plot "dieptedata.csv" using 1:2 with linespoints
 pause -1

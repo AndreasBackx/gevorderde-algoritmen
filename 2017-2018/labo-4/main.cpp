@@ -1,23 +1,14 @@
 
 #include "csv.h"
+#include "punt2d.h"
 #include "puntgenerator.h"
 #include "zoekboom14.h"
 
-#include <random>
-#include <vector>
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
-
-class Punt2D
-{
-public:
-    Punt2D(double x, double y) : x{ x }, y{ y }
-    {};
-
-    double x;
-    double y;
-};
+#include <random>
+#include <vector>
 
 int main()
 {
@@ -33,7 +24,7 @@ int main()
         double x = (10'000 - (5 * i)) * cos(i * 0.25 * PI);
         double y = (10'000 - (5 * i)) * sin(i * 0.25 * PI);
 
-        data.push_back(Punt2D{ x, y });
+        data.push_back(Punt2D{x, y});
     }
 
     std::vector<Punt2D> shuffled_data{data};

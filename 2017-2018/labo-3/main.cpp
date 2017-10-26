@@ -15,7 +15,7 @@ void test_labo_uitbreiding()
     Bottelmachine bm;
 
     assert(bm.min_aantal_flessen(450, {200, 50}) == 3);
-    assert(bm.min_aantal_flessen(90, {80, 23, 22, 1}) == 4);
+    assert(bm.min_aantal_flessen(450, {200, 50}) == 3);
 
     std::vector<int> test_reeks = {0, 3, 2, 7, 1};
 
@@ -26,6 +26,7 @@ void test_labo_uitbreiding()
     {
         const int SOM = OPLOSSINGEN[i][0];
         const int AANTAL_FLESSEN = bm.min_aantal_flessen_uitgebreid_bottom_up(SOM, test_reeks);
+        assert(AANTAL_FLESSEN == bm.min_aantal_flessen_uitgebreid_top_down(SOM, test_reeks));
         const int OPLOSSING = OPLOSSINGEN[i][1];
 
         std::cout << "Check aantal flessen nodig voor " << SOM << " geeft (" << AANTAL_FLESSEN << ") en verwacht "
@@ -70,8 +71,8 @@ void vergelijk_mens_aap()
         {
             int afstand = mens.d_bottom_up_volgens_conventie(aap_dna[j]);
             // int afstand = mens.d_top_down_volgens_conventie(aap_dna[j]);
-            // assert(afstand == mens.d_bottom_up(aap_dna[j]));
-            // assert(afstand == mens.d_top_down_volgens_conventie(aap_dna[j]));
+            assert(afstand == mens.d_bottom_up(aap_dna[j]));
+            assert(afstand == mens.d_top_down_volgens_conventie(aap_dna[j]));
 
             if (afstand < min_afstand)
             {
@@ -97,7 +98,7 @@ void vergelijk_mens_aap()
 
 int main()
 {
-    // vergelijk_mens_aap();
+    vergelijk_mens_aap();
     test_labo_uitbreiding();
 
     return 0;

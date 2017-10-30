@@ -4,8 +4,8 @@
 
 #include "rzboom14.h"
 
-#include <memory>
 #include <cassert>
+#include <memory>
 
 enum class Kleur
 {
@@ -25,14 +25,13 @@ Richting inverse_richting(const Richting& richting)
     {
         return Richting::RECHTS;
     }
-    else if (richting == Richting::RECHTS)
+
+    if (richting == Richting::RECHTS)
     {
         return Richting::LINKS;
     }
-    else
-    {
-        throw;
-    }
+
+    throw;
 }
 
 template <class Sleutel, class Data>
@@ -42,11 +41,10 @@ template <class Sleutel, class Data>
 class RZKnoop
 {
 public:
-
     friend class RZBoom<Sleutel, Data>;
 
     RZKnoop(const Sleutel& sleutel, const Data& data, const Kleur& kleur);
-    virtual ~RZKnoop();
+    virtual ~RZKnoop() = default;
 
     RZKnoop(const RZKnoop<Sleutel, Data>& andere);
     RZKnoop<Sleutel, Data>& operator=(const RZKnoop<Sleutel, Data>& andere);
@@ -64,7 +62,6 @@ public:
     RZBoom<Sleutel, Data>* geef_kind(const Richting& richting);
 
 protected:
-
     Sleutel sleutel;
     Data data;
     Kleur kleur;
@@ -78,12 +75,9 @@ protected:
 
 template <class Sleutel, class Data>
 RZKnoop<Sleutel, Data>::RZKnoop(const Sleutel& sleutel, const Data& data, const Kleur& kleur)
-: sleutel{sleutel}, data{data}, kleur{kleur}, ouder{nullptr}
-{}
-
-template <class Sleutel, class Data>
-RZKnoop<Sleutel, Data>::~RZKnoop()
-{}
+    : sleutel{sleutel}, data{data}, kleur{kleur}, ouder{nullptr}
+{
+}
 
 template <class Sleutel, class Data>
 RZKnoop<Sleutel, Data>& RZKnoop<Sleutel, Data>::operator=(const RZKnoop<Sleutel, Data>& andere)
@@ -103,10 +97,11 @@ RZKnoop<Sleutel, Data>::RZKnoop(const RZKnoop<Sleutel, Data>& andere)
     ouder = nullptr; // Belangrijk voor root
 
     links = RZBoom<Sleutel, Data>{andere.links};
-    if (links) {
+    if (links)
+    {
         links->ouder = this;
     }
-    
+
     rechts = RZBoom<Sleutel, Data>{andere.rechts};
     if (rechts)
     {
@@ -117,9 +112,7 @@ RZKnoop<Sleutel, Data>::RZKnoop(const RZKnoop<Sleutel, Data>& andere)
 template <class Sleutel, class Data>
 bool RZKnoop<Sleutel, Data>::operator==(const RZKnoop<Sleutel, Data>& andere) const
 {
-    return ((sleutel == andere.sleutel)
-            && (data == andere.data)
-            && (kleur == andere.kleur));
+    return ((sleutel == andere.sleutel) && (data == andere.data) && (kleur == andere.kleur));
 }
 
 template <class Sleutel, class Data>
@@ -155,14 +148,13 @@ Richting RZKnoop<Sleutel, Data>::is_welk_kind() const
     {
         return Richting::LINKS;
     }
-    else if (this == (ouder->rechts).get())
+
+    if (this == (ouder->rechts).get())
     {
         return Richting::RECHTS;
     }
-    else
-    {
-        throw;
-    }
+
+    throw;
 }
 
 template <class Sleutel, class Data>
@@ -172,14 +164,13 @@ RZBoom<Sleutel, Data>* RZKnoop<Sleutel, Data>::geef_kind(const Richting& richtin
     {
         return &(links);
     }
-    else if (richting == Richting::RECHTS)
+
+    if (richting == Richting::RECHTS)
     {
         return &(rechts);
     }
-    else
-    {
-        throw;
-    }
+
+    throw;
 }
 
 #endif /* ZOEKKNOOP_H */

@@ -1,0 +1,6 @@
+digraph BST {
+	 null0 [shape=point];
+	 4 -> null0;
+	 null1 [shape=point];
+	 4 -> null1;
+}

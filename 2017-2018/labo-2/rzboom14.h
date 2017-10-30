@@ -4,11 +4,11 @@
 
 #include "rzknoop14.h"
 
+#include <algorithm>
+#include <functional>
 #include <memory>
 #include <sstream>
 #include <stack>
-#include <functional>
-#include <algorithm>
 #include <tuple>
 
 template <class Sleutel, class Data>
@@ -18,10 +18,9 @@ template <class Sleutel, class Data>
 class RZBoom : public std::unique_ptr<RZKnoop<Sleutel, Data>>
 {
 public:
-
     RZBoom();
     RZBoom(const Sleutel& sleutel, const Data& data, const Kleur& kleur);
-    virtual ~RZBoom();
+    virtual ~RZBoom() = default;
 
     RZBoom(const RZBoom<Sleutel, Data>& andere);
     RZBoom<Sleutel, Data>& operator=(const RZBoom<Sleutel, Data>& andere);
@@ -30,42 +29,37 @@ public:
     RZBoom<Sleutel, Data>& operator=(RZBoom<Sleutel, Data>&& andere);
 
     int diepte() const;
-    void voeg_toe_bottom_up(const Sleutel& sleutel, const Data & data);
+    void voeg_toe_bottom_up(const Sleutel& sleutel, const Data& data);
+    void voeg_toe_top_down(const Sleutel& sleutel, const Data& data);
     void roteer(const Richting& richting);
     bool is_rep_ok() const;
-    void overloop_inorder(std::function<void(const RZKnoop<Sleutel,Data>&)> bezoek) const;
+    void overloop_inorder(std::function<void(const RZKnoop<Sleutel, Data>&)> bezoek) const;
     Kleur geef_kleur() const;
 
     std::string get_dot_code() const;
 
 protected:
-
     std::tuple<RZBoom<Sleutel, Data>*, RZKnoop<Sleutel, Data>*> zoek(const Sleutel& sleutel);
-    std::tuple<RZBoom<Sleutel, Data>*, RZBoom<Sleutel, Data>*, RZBoom<Sleutel, Data>*> geef_familie(const RZBoom<Sleutel, Data>* const plaats);
+    std::tuple<RZBoom<Sleutel, Data>*, RZBoom<Sleutel, Data>*, RZBoom<Sleutel, Data>*> geef_familie(
+            const RZBoom<Sleutel, Data>* const plaats);
     int check_zwarte_diepte(bool& is_correct) const;
 };
 
 /******************************************************************************/
 
 template <class Sleutel, class Data>
-RZBoom<Sleutel, Data>::RZBoom()
-: std::unique_ptr<RZKnoop<Sleutel, Data>>{nullptr}
-{}
-
-template <class Sleutel, class Data>
-RZBoom<Sleutel, Data>::~RZBoom()
-{}
+RZBoom<Sleutel, Data>::RZBoom() : std::unique_ptr<RZKnoop<Sleutel, Data>>{nullptr}
+{
+}
 
 template <class Sleutel, class Data>
 RZBoom<Sleutel, Data>::RZBoom(const Sleutel& sleutel, const Data& data, const Kleur& kleur)
-: std::unique_ptr<RZKnoop<Sleutel, Data>>{std::make_unique<RZKnoop<Sleutel, Data>>(sleutel, data, kleur)}
-{}
+    : std::unique_ptr<RZKnoop<Sleutel, Data>>{std::make_unique<RZKnoop<Sleutel, Data>>(sleutel, data, kleur)} {}
 
-                                                                                  ;
+      ;
 
 template <class Sleutel, class Data>
-RZBoom<Sleutel, Data>::RZBoom(const RZBoom<Sleutel, Data>& andere)
-: std::unique_ptr<RZKnoop<Sleutel, Data>>{nullptr}
+RZBoom<Sleutel, Data>::RZBoom(const RZBoom<Sleutel, Data>& andere) : std::unique_ptr<RZKnoop<Sleutel, Data>>{nullptr}
 {
     if (andere)
     {
@@ -75,8 +69,9 @@ RZBoom<Sleutel, Data>::RZBoom(const RZBoom<Sleutel, Data>& andere)
 
 template <class Sleutel, class Data>
 RZBoom<Sleutel, Data>::RZBoom(RZBoom<Sleutel, Data>&& andere)
-: std::unique_ptr<RZKnoop<Sleutel, Data>>{std::move(andere)}
-{}
+    : std::unique_ptr<RZKnoop<Sleutel, Data>>{std::move(andere)}
+{
+}
 
 template <class Sleutel, class Data>
 RZBoom<Sleutel, Data>& RZBoom<Sleutel, Data>::operator=(RZBoom<Sleutel, Data>&& andere)
@@ -97,7 +92,8 @@ RZBoom<Sleutel, Data>& RZBoom<Sleutel, Data>::operator=(const RZBoom<Sleutel, Da
 template <class Sleutel, class Data>
 int RZBoom<Sleutel, Data>::diepte() const
 {
-    if (!(*this)) {
+    if (!(*this))
+    {
         return -1; // Enkel bestaande knopen kunnen een diepte hebben
     }
 
@@ -105,7 +101,8 @@ int RZBoom<Sleutel, Data>::diepte() const
 }
 
 template <class Sleutel, class Data>
-std::tuple<RZBoom<Sleutel, Data>*, RZBoom<Sleutel, Data>*, RZBoom<Sleutel, Data>*> RZBoom<Sleutel, Data>::geef_familie(const RZBoom<Sleutel, Data>* const plaats)
+std::tuple<RZBoom<Sleutel, Data>*, RZBoom<Sleutel, Data>*, RZBoom<Sleutel, Data>*> RZBoom<Sleutel, Data>::geef_familie(
+        const RZBoom<Sleutel, Data>* const plaats)
 {
     assert(plaats && *plaats);
     assert((*plaats)->ouder && (*plaats)->ouder->ouder);
@@ -117,9 +114,7 @@ std::tuple<RZBoom<Sleutel, Data>*, RZBoom<Sleutel, Data>*, RZBoom<Sleutel, Data>
     }
     else
     {
-        grootouder = (*plaats)->ouder->ouder->ouder->geef_kind(
-                         (*plaats)->ouder->ouder->is_welk_kind()
-                     );
+        grootouder = (*plaats)->ouder->ouder->ouder->geef_kind((*plaats)->ouder->ouder->is_welk_kind());
     }
 
     Richting grootouder_ouder_richting = (*plaats)->ouder->is_welk_kind();
@@ -147,7 +142,8 @@ void RZBoom<Sleutel, Data>::voeg_toe_bottom_up(const Sleutel& sleutel, const Dat
 
     while (plaats && (*plaats) && (*plaats)->ouder // Voor de zekerheid
            && (*plaats)->ouder->kleur == Kleur::ROOD
-           && (*plaats)->ouder->ouder) // We itereren zolang er een grootouder is (eigenlijk onnodige check: als de ouder rood is, heeft die sowieso een grootouder)
+           && (*plaats)->ouder->ouder) // We itereren zolang er een grootouder is (eigenlijk onnodige check: als de
+    // ouder rood is, heeft die sowieso een grootouder)
     {
         RZBoom<Sleutel, Data>* grootouder = nullptr;
         RZBoom<Sleutel, Data>* ouder = nullptr;
@@ -188,6 +184,87 @@ void RZBoom<Sleutel, Data>::voeg_toe_bottom_up(const Sleutel& sleutel, const Dat
     }
 
     // Voor als het nieuwe kind root, kind van root is, of "plaats" naar daar is opgeschoven na bottom up
+    (*this)->kleur = Kleur::ZWART;
+}
+
+template <class Sleutel, class Data>
+void RZBoom<Sleutel, Data>::voeg_toe_top_down(const Sleutel& sleutel, const Data& data)
+{
+    RZBoom<Sleutel, Data>* plaats = this;
+    RZKnoop<Sleutel, Data>* ouder_knoop = nullptr;
+
+    bool is_toegevoegd = false;
+    while (!is_toegevoegd)
+    {
+        RZBoom<Sleutel, Data>* linkerkind = (*plaats)->geef_kind(Richting::LINKS);
+        RZBoom<Sleutel, Data>* rechterkind = (*plaats)->geef_kind(Richting::RECHTS);
+
+        if (!(*plaats))
+        {
+            *plaats = RZBoom<Sleutel, Data>{sleutel, data, Kleur::ROOD};
+            (*plaats)->ouder = ouder_knoop;
+
+            is_toegevoegd = true;
+        }
+        else if ((*plaats)->sleutel == sleutel)
+        {
+            throw "Sleutel is al aanwezig";
+        }
+        else if ((*plaats)->geef_kleur() == Kleur::ZWART && linkerkind->geef_kleur() == Kleur::ROOD
+                 && rechterkind->geef_kleur() == Kleur::ROOD)
+        {
+            (*plaats)->kleur = Kleur::ROOD;
+            (*linkerkind)->kleur = Kleur::ZWART;
+            (*rechterkind)->kleur = Kleur::ZWART;
+        }
+
+        if ((*plaats)->ouder && (*plaats)->ouder->ouder && ((*plaats)->kleur == Kleur::ROOD)
+            && ((*plaats)->ouder->kleur == Kleur::ROOD))
+        { // Niet alleen bij het afdalen, maar ook na het toevoegen kan er dubbelrood optreden
+            RZBoom<Sleutel, Data>* ouder = nullptr;
+            RZBoom<Sleutel, Data>* nonkel = nullptr;
+            RZBoom<Sleutel, Data>* grootouder = nullptr;
+
+            std::tie(grootouder, ouder, nonkel) = geef_familie(plaats);
+
+            Richting grootouder_ouder_richting = (*ouder)->is_welk_kind();
+            Richting ouder_kind_richting = (*plaats)->is_welk_kind();
+
+            if (ouder_kind_richting != grootouder_ouder_richting)
+            {
+                (*plaats)->kleur = Kleur::ZWART;
+                (*grootouder)->kleur = Kleur::ROOD;
+
+                ouder->roteer(inverse_richting(ouder_kind_richting));
+                grootouder->roteer(inverse_richting(grootouder_ouder_richting));
+            }
+            else
+            {
+                (*ouder)->kleur = Kleur::ZWART;
+                (*grootouder)->kleur = Kleur::ROOD;
+
+                grootouder->roteer(inverse_richting(grootouder_ouder_richting));
+            }
+        }
+
+        if (!is_toegevoegd)
+        { // Anders wordt de throw opgeroepen na het toevoegen
+            ouder_knoop = plaats->get();
+            if (sleutel < (*plaats)->sleutel)
+            {
+                plaats = (*plaats)->geef_kind(Richting::LINKS);
+            }
+            else if (sleutel > (*plaats)->sleutel)
+            {
+                plaats = (*plaats)->geef_kind(Richting::RECHTS);
+            }
+            else
+            {
+                throw "Sleutel is al aanwezig";
+            }
+        }
+    }
+
     (*this)->kleur = Kleur::ZWART;
 }
 
@@ -263,7 +340,7 @@ std::tuple<RZBoom<Sleutel, Data>*, RZKnoop<Sleutel, Data>*> RZBoom<Sleutel, Data
 }
 
 template <class Sleutel, class Data>
-void RZBoom<Sleutel, Data>::overloop_inorder(std::function<void(const RZKnoop<Sleutel, Data>&) > bezoek_functie) const
+void RZBoom<Sleutel, Data>::overloop_inorder(std::function<void(const RZKnoop<Sleutel, Data>&)> bezoek_functie) const
 {
     if (!(*this))
     {
@@ -284,26 +361,19 @@ bool RZBoom<Sleutel, Data>::is_rep_ok() const
 
     const Sleutel* vorige = nullptr;
 
-    overloop_inorder([&vorige, &is_correct](const RZKnoop<Sleutel, Data>& knoop)
-    {
+    overloop_inorder([&vorige, &is_correct](const RZKnoop<Sleutel, Data>& knoop) {
         if (!is_correct)
         {
             return;
         }
 
         bool is_vorige_sleutel_incorrect = vorige && (*vorige > knoop.sleutel);
-        bool is_ouder_incorrect = knoop.ouder
-                                  && ((knoop.ouder->links).get() != &knoop)
-                                  && ((knoop.ouder->rechts).get() != &knoop);
-        bool is_dubbel_rood = knoop.ouder
-                              && (knoop.kleur == Kleur::ROOD)
-                              && (knoop.ouder->kleur == Kleur::ROOD);
+        bool is_ouder_incorrect
+                = knoop.ouder && ((knoop.ouder->links).get() != &knoop) && ((knoop.ouder->rechts).get() != &knoop);
+        bool is_dubbel_rood = knoop.ouder && (knoop.kleur == Kleur::ROOD) && (knoop.ouder->kleur == Kleur::ROOD);
         bool is_wortel_rood = !knoop.ouder && (knoop.kleur == Kleur::ROOD);
 
-        if (is_vorige_sleutel_incorrect
-            || is_ouder_incorrect
-            || is_dubbel_rood
-            || is_wortel_rood)
+        if (is_vorige_sleutel_incorrect || is_ouder_incorrect || is_dubbel_rood || is_wortel_rood)
         {
             is_correct = false;
             return;
@@ -326,7 +396,7 @@ int RZBoom<Sleutel, Data>::check_zwarte_diepte(bool& is_correct) const
         return -1;
     }
 
-    if(!(*this))
+    if (!(*this))
     {
         return 1;
     }
@@ -334,7 +404,7 @@ int RZBoom<Sleutel, Data>::check_zwarte_diepte(bool& is_correct) const
     int zwarte_diepte_links = ((*this)->links).check_zwarte_diepte(is_correct);
     int zwarte_diepte_rechts = ((*this)->rechts).check_zwarte_diepte(is_correct);
 
-    if(zwarte_diepte_links != zwarte_diepte_rechts)
+    if (zwarte_diepte_links != zwarte_diepte_rechts)
     {
         is_correct = false;
         return -1;
@@ -344,14 +414,13 @@ int RZBoom<Sleutel, Data>::check_zwarte_diepte(bool& is_correct) const
     {
         return (zwarte_diepte_links + 1);
     }
-    else if ((*this)->kleur == Kleur::ROOD)
+
+    if ((*this)->kleur == Kleur::ROOD)
     {
         return zwarte_diepte_links;
     }
-    else
-    {
-        throw;
-    }
+
+    throw;
 }
 
 template <class Sleutel, class Data>
@@ -361,10 +430,8 @@ Kleur RZBoom<Sleutel, Data>::geef_kleur() const
     {
         return Kleur::ZWART;
     }
-    else
-    {
-        return (*this)->geef_kleur();
-    }
+
+    return (*this)->geef_kleur();
 }
 
 // Niet de mooiste methode
@@ -375,9 +442,7 @@ std::string RZBoom<Sleutel, Data>::get_dot_code() const
 
     if (!(*this))
     {
-        out << "digraph BST {" << std::endl
-            << "\t null [shape=point];" << std::endl
-            << "}" << std::endl;
+        out << "digraph BST {" << std::endl << "\t null [shape=point];" << std::endl << "}" << std::endl;
     }
     else
     {
@@ -401,22 +466,27 @@ std::string RZBoom<Sleutel, Data>::get_dot_code() const
 
                 if ((*huidige_deelboom)->ouder)
                 {
-                    out << "\t " << (*huidige_deelboom)->sleutel << " -> " << (*huidige_deelboom)->ouder->sleutel << " [style=dashed];" << std::endl;
+                    out << "\t " << (*huidige_deelboom)->sleutel << " -> " << (*huidige_deelboom)->ouder->sleutel
+                        << " [style=dashed];" << std::endl;
                 }
 
-                for (const RZBoom<Sleutel, Data>* kind : { &((*huidige_deelboom)->links), &((*huidige_deelboom)->rechts)})
+                for (const RZBoom<Sleutel, Data>* kind :
+                     {&((*huidige_deelboom)->links), &((*huidige_deelboom)->rechts)})
                 {
                     if (kind)
                     {
                         if (*kind)
                         {
-                            out << "\t " << (*huidige_deelboom)->sleutel << " -> " << (*kind)->sleutel << ";" << std::endl;
+                            out << "\t " << (*huidige_deelboom)->sleutel << " -> " << (*kind)->sleutel << ";"
+                                << std::endl;
                             te_bezoeken_deelbomen.push(kind);
                         }
                         else
                         {
-                            out << "\t null" << nullptr_teller << " [shape=point]" << ";" << std::endl;
-                            out << "\t " << (*huidige_deelboom)->sleutel << " -> " << "null" << nullptr_teller << ";" << std::endl;
+                            out << "\t null" << nullptr_teller << " [shape=point]"
+                                << ";" << std::endl;
+                            out << "\t " << (*huidige_deelboom)->sleutel << " -> "
+                                << "null" << nullptr_teller << ";" << std::endl;
                             nullptr_teller++;
                         }
                     }

@@ -1,6 +1,0 @@
-digraph BST {
-	 null0 [shape=point];
-	 13 -> null0;
-	 null1 [shape=point];
-	 13 -> null1;
-}

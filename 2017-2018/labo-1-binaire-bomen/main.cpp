@@ -1,13 +1,13 @@
 
 #include "zoekboom14.h"
 
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <cassert>
-#include <vector>
 #include <algorithm>
+#include <cassert>
 #include <chrono>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <vector>
 
 void test_evenwichtig()
 {
@@ -98,18 +98,18 @@ void test_groot_aantal_sleutels()
     {
         groot_zb.voeg_toe(sleutels[i], 2 * sleutels[i]);
 
-        if ((i % (AANTAL/100)) == 0)
+        if ((i % (AANTAL / 100)) == 0)
         {
             printf("Added %zu\n", i); // sneller dan cout
         }
     }
 
-//    std::cout << "Groot uitschrijven naar bestand..." << std::endl;
-//
-//    std::ofstream out;
-//    out.open("boom_groot.dot");
-//    out << groot_zb.get_dot_code();
-//    out.close();
+    //    std::cout << "Groot uitschrijven naar bestand..." << std::endl;
+    //
+    //    std::ofstream out;
+    //    out.open("boom_groot.dot");
+    //    out << groot_zb.get_dot_code();
+    //    out.close();
 }
 
 int main()
@@ -155,7 +155,7 @@ int main()
     out.open("boom_copy.dot");
     out << zb_copy.get_dot_code();
     out.close();
-    
+
     Zoekboom<int, int> zb_testcopy{zb};
     std::cout << "Zijn gelijk: " << zb_testcopy.is_gelijk(zb) << std::endl;
     assert(zb_testcopy.is_gelijk(zb));
@@ -207,7 +207,7 @@ int main()
     out << zb_evenwichtig.get_dot_code();
     out.close();
 
-//    test_groot_aantal_sleutels();
+    //    test_groot_aantal_sleutels();
     test_iterator();
 
     test_evenwichtig();

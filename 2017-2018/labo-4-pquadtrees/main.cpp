@@ -76,5 +76,20 @@ int main()
     std::cout << "Diepte " << zb.diepte() << ", geshuffelde diepte " << shuffled_zb.diepte() << std::endl;
     std::cout << "Done..." << std::endl;
 
+    Puntgenerator pg;
+
+    CsvData random{"random"};
+    std::vector<double> random_punten_x;
+    std::vector<double> random_punten_y;
+
+    for (int i = 0; i < 100'000; i++)
+    {
+        random_punten_x.push_back(pg.geef_punt());
+        random_punten_y.push_back(pg.geef_punt());
+    }
+
+    random.voegDataToe(random_punten_x);
+    random.voegDataToe(random_punten_y);
+
     return 0;
 }

@@ -16,14 +16,13 @@ template <class Sleutel, class Data>
 class Zoekknoop
 {
 public:
-
     friend class Zoekboom<Sleutel, Data>;
 
     Zoekknoop(const Sleutel& sleutel, const Data& data);
     virtual ~Zoekknoop();
 
     Zoekknoop(const Zoekknoop<Sleutel, Data>& andere);
-    Zoekknoop<Sleutel, Data>& operator=(const Zoekknoop<Sleutel, Data>& andere);
+    Zoekknoop<Sleutel, Data>& operator=(const Zoekknoop<Sleutel, Data>& andere) = delete;
 
     Zoekknoop(Zoekknoop<Sleutel, Data>&& andere) = delete;
     Zoekknoop<Sleutel, Data>& operator=(Zoekknoop<Sleutel, Data>&& andere) = delete;
@@ -35,7 +34,6 @@ public:
     const Data& geef_data() const;
 
 protected:
-
     Sleutel sleutel;
     Data data;
 
@@ -48,21 +46,23 @@ protected:
 
 template <class Sleutel, class Data>
 Zoekknoop<Sleutel, Data>::Zoekknoop(const Sleutel& sleutel, const Data& data)
-: sleutel{sleutel}, data{data}, ouder{nullptr}
-{}
+    : sleutel{sleutel}, data{data}, ouder{nullptr}
+{
+}
 
 template <class Sleutel, class Data>
 Zoekknoop<Sleutel, Data>::~Zoekknoop()
-{}
-
-template <class Sleutel, class Data>
-Zoekknoop<Sleutel, Data>& Zoekknoop<Sleutel, Data>::operator=(const Zoekknoop<Sleutel, Data>& andere)
 {
-    Zoekknoop<Sleutel, Data> temp(andere);
-    temp.swap(*this);
-
-    return *this;
 }
+
+// template <class Sleutel, class Data>
+// Zoekknoop<Sleutel, Data>& Zoekknoop<Sleutel, Data>::operator=(const Zoekknoop<Sleutel, Data>& andere)
+// {
+//     Zoekknoop<Sleutel, Data> temp{andere};
+//     temp.swap(*this);
+//
+//     return *this;
+// }
 
 template <class Sleutel, class Data>
 Zoekknoop<Sleutel, Data>::Zoekknoop(const Zoekknoop<Sleutel, Data>& andere)
@@ -72,7 +72,8 @@ Zoekknoop<Sleutel, Data>::Zoekknoop(const Zoekknoop<Sleutel, Data>& andere)
     ouder = nullptr; // Belangrijk voor root
 
     links = Zoekboom<Sleutel, Data>{andere.links};
-    if (links) {
+    if (links)
+    {
         links->ouder = this;
     }
 

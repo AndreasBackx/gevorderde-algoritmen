@@ -68,11 +68,29 @@ std::string Pad<T>::to_string() const
 
 
 ***************************************************************************/
+
+// template <class T>
+// class KortstePadZoeker : public Vergrotendpadzoeker<T>
+// {
+// public:
+//     KortstePadZoeker(const GraafMetTakdata<GERICHT, T>& stroomnetwerk, int producent, int verbruiker, Pad<T>& pad);
+// }
+//
+// template <class T>
+// KortstePadZoeker::KortstePadZoeker(const GraafMetTakdata<GERICHT, T>& stroomnetwerk,
+//                                    int producent,
+//                                    int verbruiker,
+//                                    Pad<T>& pad)
+// {
+//     std::vector<int> voorlopers;
+//     std::vector<bool> is_knoop_bezocht;
+// }
+
 template <class T>
-class Vergrotendpadzoeker
+class LangPadZoeker
 {
 public:
-    Vergrotendpadzoeker(const GraafMetTakdata<GERICHT, T>& stroomnetwerk, int producent, int verbruiker, Pad<T>& pad);
+    LangPadZoeker(const GraafMetTakdata<GERICHT, T>& stroomnetwerk, int producent, int verbruiker, Pad<T>& pad);
 
 protected:
     virtual void zoek_pad_vanuit_knoop(int knoopnr, int diepte);
@@ -86,10 +104,10 @@ protected:
 };
 
 template <class T>
-Vergrotendpadzoeker<T>::Vergrotendpadzoeker(const GraafMetTakdata<GERICHT, T>& stroomnetwerk,
-                                            int producent,
-                                            int verbruiker,
-                                            Pad<T>& pad)
+LangPadZoeker<T>::LangPadZoeker(const GraafMetTakdata<GERICHT, T>& stroomnetwerk,
+                                int producent,
+                                int verbruiker,
+                                Pad<T>& pad)
     : stroomnetwerk{stroomnetwerk},
       pad{pad},
       producent{producent},
@@ -122,7 +140,7 @@ Vergrotendpadzoeker<T>::Vergrotendpadzoeker(const GraafMetTakdata<GERICHT, T>& s
 // Deze kortste pad zoeker is een niet-ideale zoeker. Het zoekt een lang pad, zodat er een grotere kans is dat eventuele
 // fouten op terugverbindingen bij het restnetwerk bovenkomen.
 template <class T>
-void Vergrotendpadzoeker<T>::zoek_pad_vanuit_knoop(int knoopnr, int diepte)
+void LangPadZoeker<T>::zoek_pad_vanuit_knoop(int knoopnr, int diepte)
 {
     is_knoop_bezocht[knoopnr] = true;
     for (const auto& it : stroomnetwerk[knoopnr])
@@ -189,6 +207,7 @@ public:
     Stroomnetwerk<T>& operator-=(const Pad<T>& vergrotendpad);
 
     std::string genereer_dot_code() const;
+    T geef_capaciteit() const;
 
 protected:
     int producent;
@@ -208,7 +227,7 @@ Stroomnetwerk<T>::Stroomnetwerk(const GraafMetTakdata<GERICHT, T>& graaf, int pr
     Stroomnetwerk<T> restnetwerk{graaf};
 
     Pad<T> vergrotendpad;
-    Vergrotendpadzoeker<T> vg{restnetwerk, producent, verbruiker, vergrotendpad};
+    LangPadZoeker<T> vg{restnetwerk, producent, verbruiker, vergrotendpad};
     while (vergrotendpad.size() > 0)
     {
         // += en -= hebben niets met elkaar te maken. Het een is voor het stroomnetwerk (enkel aanpassen takdata), het
@@ -216,13 +235,16 @@ Stroomnetwerk<T>::Stroomnetwerk(const GraafMetTakdata<GERICHT, T>& graaf, int pr
         // gebruiken zoals updateStroomnetwerk en updateRestnetwerk
         restnetwerk -= vergrotendpad;
         *this += vergrotendpad;
-        Vergrotendpadzoeker<T> vg{restnetwerk, producent, verbruiker, vergrotendpad};
+        LangPadZoeker<T> vg{restnetwerk, producent, verbruiker, vergrotendpad};
     }
 }
 
 template <class T>
 Stroomnetwerk<T>& Stroomnetwerk<T>::operator+=(const Pad<T>& vergrotendpad)
 {
+    // TODO als er al een verbinding in de andere richting is, die eerst reduceren alvorens in de juiste richting op te tellen
+    // Zie 1e voorbeeld in de main
+
     if (!vergrotendpad.empty())
     {
         assert(vergrotendpad.size() < std::numeric_limits<int>::max());
@@ -303,6 +325,24 @@ std::string Stroomnetwerk<T>::genereer_dot_code() const
     out << "}" << std::endl;
 
     return out.str();
+}
+
+template <class T>
+T Stroomnetwerk<T>::geef_capaciteit() const
+{
+    T som_capaciteiten = static_cast<T>(0);
+
+    for (const auto& it : (*this)[producent])
+    {
+        const T* capaciteit = this->geefTakdata(producent, it.first);
+
+        if (capaciteit)
+        {
+            som_capaciteiten += *capaciteit;
+        }
+    }
+
+    return som_capaciteiten;
 }
 #endif
 

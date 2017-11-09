@@ -18,6 +18,8 @@ endif()
 set(SOURCES
     main.cpp
     graaf.h
+    vergrotendpad.h
+    langpadzoeker.h
     stroomnetwerk.h
     )
 

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="generator" content="intranetr/0.10.0">
+        <title>OEFENINGEN: Stroomnetwerk | iii intranet</title>    <link rel="stylesheet" type="text/css" media="screen,handheld" href="/css/default.css?0.10.0">
+        <link rel="stylesheet" type="text/css" media="print" href="/css/print.css?0.10.0">
+        <link rel="stylesheet" type="text/css" media="screen,handheld" href="/css/sites/default.css">
+        <script type="text/javascript" src="/js/cache/0d6197553acf19ea859c96f7caf7d8fa6c6519b8.js?0.10.0"></script>
+        <!--[if lt IE 8]>
+            <link rel="stylesheet" type="text/css" href="/css/ie.css">
+        <![endif]-->
+        <script type="text/javascript">
+            (function() {
+                var month = 11;
+                iii.semester = month == 1 ? 1
+                    : month <= 6 ? 2
+                    : month <= 9 ? 0 : 1;
+                if (iii.semester > 0) {
+                    var hideOtherSemester = function() {
+                        var other = iii.semester == 1 ? 2 : 1;
+                        $('#breadcrumbs li.group-sem'
+                            + other
+                            + ':not(.group-sem'
+                            + iii.semester + '):not(.active)')
+                            .hide();
+                    };
+                    $(document)
+                        .ready(hideOtherSemester)
+                        .on("contentUpdate.iii", hideOtherSemester);
+                }
+            })();
+        </script>
+    </head>
+
+    <body>
+        <div id="header"><h1>
+                <a href="/" title="Naar de thuispagina">
+                    intranet
+                </a>
+            </h1>
+        </div>
+        <div id="main">    <div id="node-children">
+                <ul>
+                    <li><a href="/Algoritmen-II/reeks05/"><span style="float: right">&#8593;</span>Omhoog</a></li>
+                </ul>
+            </div>
+
+            <div id="content" class="">
+                <div id="breadcrumbs-container">
+                    <span id="you-are-here">Je bent hier:</span>
+                    <ul id="breadcrumbs">
+                        <li class="breadcrumb first"><a href="/" class="breadcrumb first">Intranet</a>
+                        </li>
+                        <li class="breadcrumb"><a href="/Algoritmen-II/" class="breadcrumb">Algoritmen-II</a>
+                            <ul class="breadcrumb-siblings">
+                                <li class="separator"><span>Eerste bachelor</span></li>
+                                <li class="breadcrumb-sibling group-sem1 group-sem2"><a class="breadcrumb-sibling group-sem1 group-sem2" href="/OpenLes/">Informatica I - Open Les</a></li>
+                                <li class="separator"><span>Tweede bachelor</span></li>
+                                <li class="breadcrumb-sibling group-sem2"><a class="breadcrumb-sibling group-sem2" href="/Besturingssystemen-I/">Besturingssystemen I</a></li>
+                                <li class="breadcrumb-sibling group-sem1 leaf"><a class="breadcrumb-sibling group-sem1 leaf" href="/Computernetwerken-I/">Computernetwerken I</a></li>
+                                <li class="separator"><span>Derde bachelor</span></li>
+                                <li class="breadcrumb-sibling group-sem2"><a class="breadcrumb-sibling group-sem2" href="/Algoritmen-I/">Algoritmen I</a></li>
+                                <li class="breadcrumb-sibling group-sem2"><a class="breadcrumb-sibling group-sem2" href="/Besturingssystemen-II/">Besturingssystemen II</a></li>
+                                <li class="breadcrumb-sibling group-sem2"><a class="breadcrumb-sibling group-sem2" href="/Computernetwerken-II/">Computernetwerken II</a></li>
+                                <li class="breadcrumb-sibling group-sem1"><a class="breadcrumb-sibling group-sem1" href="/Databanken/">Databanken</a></li>
+                                <li class="breadcrumb-sibling group-sem1"><a class="breadcrumb-sibling group-sem1" href="/Discrete-Wiskunde/">Discrete wiskunde</a></li>
+                                <li class="separator"><span>Master</span></li>
+                                <li class="breadcrumb-sibling group-sem1 leaf active"><a class="breadcrumb-sibling group-sem1 leaf active" href="/Algoritmen-II/">Algoritmen-II</a></li>
+                                <li class="breadcrumb-sibling group-sem1 leaf"><a class="breadcrumb-sibling group-sem1 leaf" href="/Computergrafiek/">Computergrafiek</a></li>
+                                <li class="breadcrumb-sibling group-sem1 group-sem2 leaf"><a class="breadcrumb-sibling group-sem1 group-sem2 leaf" href="/Masterproef/">Masterproef</a></li>
+                                <li class="breadcrumb-sibling group-sem1"><a class="breadcrumb-sibling group-sem1" href="/Besturingssystemen-III/">Windows</a></li>
+                                <li class="breadcrumb-sibling"><a class="breadcrumb-sibling" href="/Roosters/">Roosters</a></li>
+                            </ul>
+                        </li>
+                        <li class="breadcrumb"><a href="/Algoritmen-II/reeks05/" class="breadcrumb">reeks05</a>
+                        </li>
+                        <li class="breadcrumb"><a href="/Algoritmen-II/reeks05/opgave05.html" class="breadcrumb">OEFENINGEN: Stroomnetwerk</a>
+                        </li>
+                    </ul>
+                </div>
+                <h2>OEFENINGEN: Stroomnetwerk</h2>
+                <div id="page-content">
+                    <strong>OEFENINGEN bij ALGORITMEN en
+                        GEGEVENSSTRUCTUREN</strong><br>
+                    <p>2017-2018<br></p>
+                    <br>
+                    <h3>week 7 - 8 november 2017</h3>
+                    <ul>
+                        <li>Bekijk het volgende stroomnetwerk:<img src="stroom3.gif"><br>
+                            Los dit op, gebruik makend van breedte-eerst zoeken om een
+                            vergrotend pad te vinden.</li>
+                        <li>Implementeer een stroomnetwerk. Je krijgt een aantal bouwstenen
+                            van ons. In <a href="stroomnet.h">stroomnet.h</a> is een klasse van
+                            paden geïmplementeerd. Er zit ook een klasse Vergrotendpadzoeker
+                            in. Bovendien krijg je al de basiscode voor het zoeken van maximale
+                            stroomnetwerken in de klasse Stroomnetwerk. Vul deze code aan, en
+                            test ze uit met het testprogrammaatje <a href=
+                            "stroomnet.cpp">stroomnet.cpp</a>.</li>
+                    </ul>
+                    <p><br>
+                    <strong>Bijkomende opgave</strong></p>
+                    <p>De efficiëntie van de methode hangt af van de efficiëntie van de
+                    Vergrotendpadzoeker. Implementeer zelf twee
+                    vergrotendpadzoekers:</p>
+                    <ul>
+                        <li>Een Kortstepadzoeker. Deze geeft een vergrotend pad terug dat
+                            zo kort mogelijk is.</li>
+                        <li>Een Grootstecapaciteitszoeker. Deze geeft een vergrotend pad
+                            met maximale capaciteit.
+                            <p>Tip: als je voor een gegeven knoop <em>c</em>, <em>M(c)</em> de
+                            maximale capaciteit noemt van een pad van de producentknoop naar
+                            <em>c</em> dan kan je <em>M</em> zoeken voor alle mogelijke knopen
+                            (en dus ook voor de verbruiker) met een methode die zeer goed lijkt
+                            op het algoritme van Dijkstra.</p>
+                        </li>
+                    </ul>
+                    Welke van de twee is het efficiëntste? Om dat te testen krijg je
+                    van ons een <a href=
+                    "stroomnetwerkgenerator.h">stroomnetwerkgenerator</a> die random
+                stroomnetwerken genereert. Je kan twee maten gebruiken:
+                <ul>
+                    <li>Welke zoeker heeft het kleinste aantal vergrotende paden
+                        nodig?</li>
+                    <li>Welke zoeker bezoekt in het totaal het kleinste aantal
+                        knopen?</li>
+                </ul>
+                Maak een vergelijkende tabel voor verschillende groottes van
+                netwerken met verschillende aantallen takken.<br>
+                <h4>Een toepassing:</h4>
+                Galadiner
+                <p>Beschouw volgend probleem: Bij een galadiner wil men
+                afgevaardigden uit een aantal delegaties verdelen over de
+                beschikbare tafels, <strong>zo dat elke delegatie verdeeld is over
+                    zoveel mogelijk tafels</strong>.</p>
+                <p>Er zijn <code>D</code> delegaties en <code>T</code> tafels.
+                Delegatie <code>i</code> bestaat uit <code>P<sub>i</sub></code>
+                personen. Tafel <code>j</code> heeft <code>Z<sub>j</sub></code>
+                zitplaatsen. (het aantal personen per delegatie en het aantal
+                zitplaatsen per tafel kunnen dus verschillen) Er zijn genoeg
+                plaatsen voor alle afgevaardigden, maar er kunnen plaatsen op
+                overschot zijn.</p>
+                <p>Hoe kan je dit probleem beschrijven als een
+                stroomnetwerkprobleem? Is er altijd een oplossing?</p>
+                <p>Ontwerp en implementeer een programma dat een oplossing zoekt
+                voor dit probleem. Lees de nodige gegevens uit een eenvoudig
+                tekstbestand in.</p>
+
+                <div id="page-content-end"></div>
+                </div>
+                <div id="footer">    <div id="metadata">
+                        Laatst gewijzigd
+                        op
+                        08-11-2017
+                        om
+                        11:01
+
+                        door
+                        <a href="mailto:Jan.Cnops@UGent.be">Jan Cnops</a>
+
+
+                    </div>
+                    <div id="tag">intranetr/0.10.0</div>
+                    <div id="footer-end"></div>
+                </div>
+            </div>
+        </div>
+    </body>
+
+</html>
+
+<!-- 26 ms / 521 KB -->

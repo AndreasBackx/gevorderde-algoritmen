@@ -1,55 +1,84 @@
 
 #include "stroomnetwerk.h"
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
+
+void los_stroomnetwerk_op(const GraafMetTakdata<GERICHT, int>& capaciteiten,
+                          int van,
+                          int naar,
+                          const std::string& bestandsnaam,
+                          int verwachte_max_flow)
+{
+    std::cout << "Op te lossen graaf: " << std::endl << capaciteiten << std::endl;
+
+    Stroomnetwerk<int> sn{capaciteiten, van, naar};
+    int max_flow = sn.geef_capaciteit();    
+
+    std::cout << "Oplossing: " << std::endl;
+    std::cout << "Max flow: " << max_flow << std::endl;
+    assert(max_flow == verwachte_max_flow);
+    std::cout << std::endl << sn.genereer_dot_code() << std::endl;
+
+    std::ofstream out;
+    out.open(bestandsnaam);
+    out << sn.genereer_dot_code();
+    out.close();
+}
 
 int main()
 {
-    GraafMetTakdata<GERICHT, int> capaciteiten{4};
-    capaciteiten.voegVerbindingToe(0, 1, 4);
-    capaciteiten.voegVerbindingToe(0, 2, 2);
-    capaciteiten.voegVerbindingToe(1, 2, 6);
-    capaciteiten.voegVerbindingToe(1, 3, 2);
-    capaciteiten.voegVerbindingToe(2, 3, 4);
-    std::cout << capaciteiten << std::endl;
+    GraafMetTakdata<GERICHT, int> capaciteiten_klein_voorbeeld{4};
+    capaciteiten_klein_voorbeeld.voegVerbindingToe(0, 1, 4);
+    capaciteiten_klein_voorbeeld.voegVerbindingToe(0, 2, 2);
+    capaciteiten_klein_voorbeeld.voegVerbindingToe(1, 2, 6);
+    capaciteiten_klein_voorbeeld.voegVerbindingToe(1, 3, 2);
+    capaciteiten_klein_voorbeeld.voegVerbindingToe(2, 3, 4);
+    los_stroomnetwerk_op(capaciteiten_klein_voorbeeld, 0, 3, "klein_voorbeeld.dot", 6);
 
-    Stroomnetwerk<int> sn{capaciteiten, 0, 3}; // Max flow is 4
-    std::cout << sn.genereer_dot_code() << std::endl;
+    GraafMetTakdata<GERICHT, int> capaciteiten_labo_voorbeeld{8};
+    capaciteiten_labo_voorbeeld.voegVerbindingToe(0, 1, 7);
+    capaciteiten_labo_voorbeeld.voegVerbindingToe(0, 2, 10);
+    capaciteiten_labo_voorbeeld.voegVerbindingToe(1, 4, 4);
+    capaciteiten_labo_voorbeeld.voegVerbindingToe(2, 1, 3);
+    capaciteiten_labo_voorbeeld.voegVerbindingToe(2, 3, 5);
+    capaciteiten_labo_voorbeeld.voegVerbindingToe(2, 5, 6);
+    capaciteiten_labo_voorbeeld.voegVerbindingToe(3, 0, 2);
+    capaciteiten_labo_voorbeeld.voegVerbindingToe(3, 6, 6);
+    capaciteiten_labo_voorbeeld.voegVerbindingToe(4, 5, 6);
+    capaciteiten_labo_voorbeeld.voegVerbindingToe(5, 7, 8);
+    capaciteiten_labo_voorbeeld.voegVerbindingToe(6, 5, 2);
+    capaciteiten_labo_voorbeeld.voegVerbindingToe(6, 7, 7);
+    capaciteiten_labo_voorbeeld.voegVerbindingToe(7, 4, 1);
+    los_stroomnetwerk_op(capaciteiten_labo_voorbeeld, 0, 7, "labo_voorbeeld.dot", 13);
 
-    std::ofstream out;
-    out.open("stroomnetwerk.dot");
-    out << sn.genereer_dot_code();
-    out.close();
+    GraafMetTakdata<GERICHT, int> capaciteiten_terugverbindingen_voorbeeld{6};
+    capaciteiten_terugverbindingen_voorbeeld.voegVerbindingToe(0, 1, 1);
+    capaciteiten_terugverbindingen_voorbeeld.voegVerbindingToe(0, 2, 1);
+    capaciteiten_terugverbindingen_voorbeeld.voegVerbindingToe(1, 3, 1);
+    capaciteiten_terugverbindingen_voorbeeld.voegVerbindingToe(2, 3, 1);
+    capaciteiten_terugverbindingen_voorbeeld.voegVerbindingToe(2, 4, 1);
+    capaciteiten_terugverbindingen_voorbeeld.voegVerbindingToe(3, 5, 1);
+    capaciteiten_terugverbindingen_voorbeeld.voegVerbindingToe(4, 5, 1);
+    los_stroomnetwerk_op(capaciteiten_terugverbindingen_voorbeeld, 0, 5, "met_terugverbindingen.dot", 2);
 
-    GraafMetTakdata<GERICHT, int> capaciteiten_labo{8};
-    capaciteiten_labo.voegVerbindingToe(0, 1, 7);
-    capaciteiten_labo.voegVerbindingToe(0, 2, 10);
-    capaciteiten_labo.voegVerbindingToe(1, 4, 4);
-    capaciteiten_labo.voegVerbindingToe(2, 1, 3);
-    capaciteiten_labo.voegVerbindingToe(2, 3, 5);
-    capaciteiten_labo.voegVerbindingToe(2, 5, 6);
-    capaciteiten_labo.voegVerbindingToe(3, 0, 2);
-    capaciteiten_labo.voegVerbindingToe(3, 6, 6);
-    capaciteiten_labo.voegVerbindingToe(4, 5, 6);
-    capaciteiten_labo.voegVerbindingToe(5, 7, 8);
-    capaciteiten_labo.voegVerbindingToe(6, 5, 2);
-    capaciteiten_labo.voegVerbindingToe(6, 7, 7);
-    capaciteiten_labo.voegVerbindingToe(7, 4, 1);
-    std::cout << capaciteiten_labo << std::endl;
-
-    Stroomnetwerk<int> sn_labo{capaciteiten_labo, 0, 7}; // Max flow is 13
-    std::cout << sn_labo.genereer_dot_code() << std::endl;
-
-    std::ofstream out_labo;
-    out.open("stroomnetwerk_labo.dot");
-    out << sn_labo.genereer_dot_code();
-    out.close();
+    GraafMetTakdata<GERICHT, int> capaciteiten_voorbeeld_cnops{6}; // oplossen Met breedte eerst geeft 10
+    capaciteiten_voorbeeld_cnops.voegVerbindingToe(0, 1, 3);
+    capaciteiten_voorbeeld_cnops.voegVerbindingToe(0, 2, 7);
+    capaciteiten_voorbeeld_cnops.voegVerbindingToe(1, 3, 3);
+    capaciteiten_voorbeeld_cnops.voegVerbindingToe(1, 4, 7);
+    capaciteiten_voorbeeld_cnops.voegVerbindingToe(2, 3, 7);
+    capaciteiten_voorbeeld_cnops.voegVerbindingToe(3, 1, 5);
+    capaciteiten_voorbeeld_cnops.voegVerbindingToe(3, 5, 3);
+    capaciteiten_voorbeeld_cnops.voegVerbindingToe(4, 5, 7);
+    los_stroomnetwerk_op(capaciteiten_voorbeeld_cnops, 0, 5, "voorbeeld_cnops.dot", 10);
 
     std::cout << "Done..." << std::endl;
 }
 
-/* Back edges are necessary when doing the Ford-Fulkerson algorithm in case the path that you choose ends up not being a
+/* https://stackoverflow.com/questions/19453217/why-are-back-edges-required-in-the-ford-fulkerson-algorithm#19720139
+ *
+ * Back edges are necessary when doing the Ford-Fulkerson algorithm in case the path that you choose ends up not being a
  * part of the overall flow.
  * As an example where back edges are necessary, consider this flow network:
  *

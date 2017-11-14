@@ -1,6 +1,6 @@
 
 cmake_minimum_required(VERSION 3.9)
-project (labo6-kmp)
+project (labo7-kmp)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_BUILD_TYPE debug)

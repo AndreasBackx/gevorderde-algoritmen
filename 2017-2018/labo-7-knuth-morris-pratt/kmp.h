@@ -5,6 +5,7 @@
 #include <cassert>
 #include <iomanip>
 #include <iostream> // DEBUG
+#include <limits>
 #include <queue>
 #include <sstream>
 #include <vector>
@@ -55,8 +56,9 @@ KnuthMorrisPratt::KnuthMorrisPratt(const std::string& naald)
     prefix_lengte = -1; // == kmp_tabel[0]
     for (size_t i = 1; i < kmp_tabel.size(); i++)
     {
-        while ((prefix_lengte >= 0) && ((naald[i - 1] != naald[prefix_lengte]))
-               || ((naald[i - 1] == naald[prefix_lengte]) && naald[i] == naald[prefix_lengte + 1]))
+        while ((prefix_lengte >= 0)
+               && ((naald[i - 1] != naald[prefix_lengte])
+                   || ((naald[i - 1] == naald[prefix_lengte]) && (naald[i] == naald[prefix_lengte + 1]))))
         {
             prefix_lengte = kmp_tabel[prefix_lengte];
         }
@@ -87,7 +89,8 @@ std::queue<int> KnuthMorrisPratt::zoek(const std::string& hooiberg, std::vector<
 
         prefix_lengte++;
 
-        if (prefix_lengte == naald.size())
+        assert(prefix_lengte <= std::numeric_limits<int>::max());
+        if (prefix_lengte == static_cast<int>(naald.size()))
         {
             gevonden.push(i - naald.size());
         }
@@ -123,7 +126,7 @@ std::string KnuthMorrisPratt::to_string() const
     constexpr int BREEDTE = 4;
 
     out << std::setw(LEGENDE_BREEDTE) << "Indexen";
-    for (size_t i = 0; i < static_cast<int>(prefix_tabel.size()); i++)
+    for (size_t i = 0; i < prefix_tabel.size(); i++)
     {
         out << std::setw(BREEDTE) << i;
     }

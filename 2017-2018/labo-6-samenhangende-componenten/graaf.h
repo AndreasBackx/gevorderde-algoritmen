@@ -130,6 +130,43 @@ public:
     // Schrijft de gegevens van de verbinding met verbindingsnummer v naar outputstream os.
     virtual void schrijfVerbinding(std::ostream &os, int v) const;
 
+    void wordt_componentengraaf_van(const Graaf& andere)
+    {
+        // clear huidige graaf
+        wis();
+
+        if (andere.aantalKnopen() == 0)
+        {
+            return;
+        }
+
+        Graaf omgekeerde_graaf{ andere.aantalKnopen };
+        for (int i = 0; i < andere.aantalKnopen(); i++)
+        {
+            for (const auto& buur : andere[i])
+            {
+                voegVerbindingToe(buur, i);
+            }
+        }
+
+        // DFS omgekeerde graaf, duw nummers op stack
+        std::vector<bool> is_al_bezocht;
+        std::stack<int> te_bezoeken;
+
+        for (int i = 0; i < andere.aantalKnopen(); i++)
+        {
+            if (!is_al_bezocht[i])
+            {
+                te_bezoeken.push(i);
+
+                // DFS
+            }
+        }
+
+
+        // DFS gewoon graaf volgens stack, hou componenten bij
+    }
+
 protected:
     // hulpfuncties
     void controleerKnoopnummer(int k) const; // throw indien k ongeldig
@@ -142,6 +179,8 @@ protected:
     int hoogsteVerbindingsnummer;
     RichtType richttype;
     std::stack<int> vrijgekomenVerbindingsnummers;
+
+    std::vector<int> componentnummers; // vector[knoopnr] = componentnr
 };
 
 template <RichtType RT>

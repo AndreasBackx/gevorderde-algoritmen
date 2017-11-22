@@ -13,6 +13,29 @@ void schrijf_bestand(const std::string& bestandsnaam, const std::string& inhoud)
     out.close();
 }
 
+// digraph gr {
+//         0 -> 1
+//         1 -> 0
+//         2 -> 1
+//         2 -> 3
+//         3 -> 4
+//         4 -> 2
+//         4 -> 5
+//         5 -> 8
+//         6 -> 5
+//         7 -> 6
+//         8 -> 7
+//         9 -> 8
+// }
+//
+// componentnummers = { 2, 2, 3, 3, 3, 0, 0, 0, 0, 1 }
+//
+// digraph comp_gr {
+//         1 -> 0
+//         3 -> 0
+//         3 -> 2
+// }
+
 int main()
 {
     Graaf<GERICHT> gr{10};

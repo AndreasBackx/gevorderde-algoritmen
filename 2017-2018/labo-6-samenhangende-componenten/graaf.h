@@ -40,6 +40,7 @@
 #define __GRAAF_H
 
 #include <exception>
+#include <functional>
 #include <iostream>
 #include <map>
 #include <sstream>
@@ -141,11 +142,11 @@ protected:
     void controleerKnoopnummer(int k) const; // throw indien k ongeldig
     void voegVerbindingToeInDatastructuur(int van, int naar, int verbindingsnummer);
     void verwijderVerbindingUitDatastructuur(int van, int naar);
-    void bepaal_postorder_volgorde(const Graaf<RT>& graaf,
-                                   int knoop_nr,
-                                   std::vector<bool>& is_al_bezocht,
-                                   std::stack<int>& postorder_volgorde);
-    void bepaal_component_nr(const Graaf<RT>& graaf, int knoop_nr, std::vector<bool>& is_al_bezocht, int component_nr);
+    void diepte_eerst_zoeken(const Graaf<RT>& graaf,
+                             int knoop_nr,
+                             std::vector<bool>& is_al_bezocht,
+                             std::function<void(int knoop_nr)> prefix_function,
+                             std::function<void(int knoop_nr)> postfix_function);
 
 protected:
     // datavelden
@@ -219,12 +220,18 @@ void Graaf<GERICHT>::wordt_componentengraaf_van(const Graaf& andere)
     std::vector<bool> is_al_bezocht(omgekeerde_graaf.aantalKnopen(), false);
     std::stack<int> postorder_volgorde;
 
-    for (int i = 0; i < omgekeerde_graaf.aantalKnopen(); i++)
+    for (int knoop_nr = 0; knoop_nr < omgekeerde_graaf.aantalKnopen(); knoop_nr++)
     // Voor als de graaf uit meerdere bomen bestaat
     {
-        if (!is_al_bezocht[i])
+        if (!is_al_bezocht[knoop_nr])
         {
-            bepaal_postorder_volgorde(omgekeerde_graaf, i, is_al_bezocht, postorder_volgorde);
+            // bepaal_postorder_volgorde(omgekeerde_graaf, i, is_al_bezocht, postorder_volgorde);
+
+            diepte_eerst_zoeken(omgekeerde_graaf,
+                                knoop_nr,
+                                is_al_bezocht,
+                                [](int knoop_nr) {},
+                                [&postorder_volgorde](int knoop_nr) { postorder_volgorde.push(knoop_nr); });
         }
     }
 
@@ -240,7 +247,12 @@ void Graaf<GERICHT>::wordt_componentengraaf_van(const Graaf& andere)
         {
             int component_nr = this->voegKnoopToe();
 
-            bepaal_component_nr(andere, knoop_nr, is_al_bezocht, component_nr);
+            diepte_eerst_zoeken(
+                    andere,
+                    knoop_nr,
+                    is_al_bezocht,
+                    [this, &component_nr](int knoop_nr) { componentnummers[knoop_nr] = component_nr; },
+                    [](int knoop_nr) {});
         }
     }
 
@@ -256,47 +268,34 @@ void Graaf<GERICHT>::wordt_componentengraaf_van(const Graaf& andere)
             }
         }
     }
-}
 
-// Kan vermoedelijk korter met lambda-expressies
-
-template <RichtType RT>
-void Graaf<RT>::bepaal_postorder_volgorde(const Graaf<RT>& graaf,
-                                          int knoop_nr,
-                                          std::vector<bool>& is_al_bezocht,
-                                          std::stack<int>& postorder_volgorde)
-{
-    if (is_al_bezocht[knoop_nr])
+    for (int comp : componentnummers)
     {
-        return;
+        std::cout << comp << "   ";
     }
-
-    is_al_bezocht[knoop_nr] = true;
-    for (const auto& buur : graaf[knoop_nr])
-    {
-        bepaal_postorder_volgorde(graaf, buur.first, is_al_bezocht, postorder_volgorde);
-    }
-
-    postorder_volgorde.push(knoop_nr);
 }
 
 template <RichtType RT>
-void Graaf<RT>::bepaal_component_nr(const Graaf<RT>& graaf,
+void Graaf<RT>::diepte_eerst_zoeken(const Graaf<RT>& graaf,
                                     int knoop_nr,
                                     std::vector<bool>& is_al_bezocht,
-                                    int component_nr)
+                                    std::function<void(int knoop_nr)> prefix_function,
+                                    std::function<void(int knoop_nr)> postfix_function)
 {
     if (is_al_bezocht[knoop_nr])
     {
         return;
     }
 
+    prefix_function(knoop_nr);
+
     is_al_bezocht[knoop_nr] = true;
-    componentnummers[knoop_nr] = component_nr;
     for (const auto& buur : graaf[knoop_nr])
     {
-        bepaal_component_nr(graaf, buur.first, is_al_bezocht, component_nr);
+        diepte_eerst_zoeken(graaf, buur.first, is_al_bezocht, prefix_function, postfix_function);
     }
+
+    postfix_function(knoop_nr);
 }
 
 template <RichtType RT>

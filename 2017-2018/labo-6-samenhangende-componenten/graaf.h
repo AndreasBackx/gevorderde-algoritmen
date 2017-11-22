@@ -138,7 +138,6 @@ public:
     std::string genereer_dot_code() const;
 
 protected:
-    // hulpfuncties
     void controleerKnoopnummer(int k) const; // throw indien k ongeldig
     void voegVerbindingToeInDatastructuur(int van, int naar, int verbindingsnummer);
     void verwijderVerbindingUitDatastructuur(int van, int naar);
@@ -149,12 +148,10 @@ protected:
                              std::function<void(int knoop_nr)> postfix_function);
 
 protected:
-    // datavelden
     std::vector<Knoop> knopen;
     int hoogsteVerbindingsnummer;
     RichtType richttype;
     std::stack<int> vrijgekomenVerbindingsnummers;
-
     std::vector<int> componentnummers; // vector[knoopnr] = componentnr
 };
 
@@ -267,11 +264,6 @@ void Graaf<GERICHT>::wordt_componentengraaf_van(const Graaf& andere)
                 voegVerbindingToe(componentnummers[knoop_nr], componentnummers[buur_nr]);
             }
         }
-    }
-
-    for (int comp : componentnummers)
-    {
-        std::cout << comp << "   ";
     }
 }
 

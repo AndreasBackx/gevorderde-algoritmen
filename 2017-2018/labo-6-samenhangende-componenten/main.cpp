@@ -99,6 +99,7 @@ int main()
     Graaf<GERICHT> comp_woorden;
     comp_woorden.wordt_componentengraaf_van(woorden);
     // std::cout << comp_woorden.genereer_dot_code() << std::endl;
+    schrijf_bestand("componentengraaf_woorden.dot", comp_woorden.genereer_dot_code());
     std::cout << "Aantal componenten: " << comp_woorden.aantalKnopen() << std::endl;
 
     std::cout << "Done..." << std::endl;

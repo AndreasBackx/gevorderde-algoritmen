@@ -222,8 +222,6 @@ void Graaf<GERICHT>::wordt_componentengraaf_van(const Graaf& andere)
     {
         if (!is_al_bezocht[knoop_nr])
         {
-            // bepaal_postorder_volgorde(omgekeerde_graaf, i, is_al_bezocht, postorder_volgorde);
-
             diepte_eerst_zoeken(omgekeerde_graaf,
                                 knoop_nr,
                                 is_al_bezocht,

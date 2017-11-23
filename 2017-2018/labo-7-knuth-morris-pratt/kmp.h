@@ -53,6 +53,7 @@ KnuthMorrisPratt::KnuthMorrisPratt(const std::string& naald)
         prefix_tabel[i] = prefix_lengte;
     }
 
+    // TODO klopt de onderstaande code wel? bv. anan geeft alleen maar 0'en, wss moet ik ook kijken naar de prefixtabel
     prefix_lengte = -1; // == kmp_tabel[0]
     for (size_t i = 1; i < kmp_tabel.size(); i++)
     {
@@ -93,6 +94,7 @@ std::queue<int> KnuthMorrisPratt::zoek(const std::string& hooiberg, std::vector<
         if (prefix_lengte == static_cast<int>(naald.size()))
         {
             gevonden.push(i - naald.size());
+            // prefix_lengte = tabel[prefix_lengte]; // Is dit nodig? Zie CLRS
         }
     }
 

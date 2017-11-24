@@ -246,7 +246,7 @@ void Graaf<GERICHT>::wordt_componentengraaf_van(const Graaf& andere)
                     andere,
                     knoop_nr,
                     is_al_bezocht,
-                    [this, &component_nr](int knoop_nr) { componentnummers[knoop_nr] = component_nr; },
+                    [this, component_nr](int knoop_nr) { componentnummers[knoop_nr] = component_nr; },
                     [](int knoop_nr) {});
         }
     }

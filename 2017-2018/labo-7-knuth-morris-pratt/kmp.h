@@ -4,7 +4,7 @@
 
 #include <cassert>
 #include <iomanip>
-#include <iostream> // DEBUG
+// #include <iostream> // DEBUG
 #include <limits>
 #include <queue>
 #include <sstream>
@@ -53,19 +53,22 @@ KnuthMorrisPratt::KnuthMorrisPratt(const std::string& naald)
         prefix_tabel[i] = prefix_lengte;
     }
 
-    // TODO klopt de onderstaande code wel? bv. anan geeft alleen maar 0'en, wss moet ik ook kijken naar de prefixtabel
-    prefix_lengte = -1; // == kmp_tabel[0]
+    // Extra heuristiek in de cursus
+    // Zie CLRS 32.4-6 op p. 1012
     for (size_t i = 1; i < kmp_tabel.size(); i++)
     {
-        while ((prefix_lengte >= 0)
-               && ((naald[i - 1] != naald[prefix_lengte])
-                   || ((naald[i - 1] == naald[prefix_lengte]) && (naald[i] == naald[prefix_lengte + 1]))))
+        if (prefix_tabel[i] == 0)
         {
-            prefix_lengte = kmp_tabel[prefix_lengte];
+            kmp_tabel[i] = 0;
         }
-
-        prefix_lengte++;
-        kmp_tabel[i] = prefix_lengte;
+        else if (naald[i] != naald[prefix_tabel[i]])
+        {
+            kmp_tabel[i] = prefix_tabel[i];
+        }
+        else
+        {
+            kmp_tabel[i] = kmp_tabel[prefix_tabel[i]];
+        }
     }
 }
 
@@ -75,7 +78,8 @@ std::queue<int> KnuthMorrisPratt::zoek(const std::string& hooiberg, std::vector<
     {
         return std::queue<int>{};
     }
-    // aantal = 0;
+
+    // int aantal = 0; // DEBUG
 
     std::queue<int> gevonden;
 
@@ -85,7 +89,7 @@ std::queue<int> KnuthMorrisPratt::zoek(const std::string& hooiberg, std::vector<
         while ((prefix_lengte >= 0) && (hooiberg[i - 1] != naald[prefix_lengte]))
         {
             prefix_lengte = tabel[prefix_lengte];
-            // aantal++;
+            // aantal++; // DEBUG
         }
 
         prefix_lengte++;
@@ -97,6 +101,8 @@ std::queue<int> KnuthMorrisPratt::zoek(const std::string& hooiberg, std::vector<
             // prefix_lengte = tabel[prefix_lengte]; // Is dit nodig? Zie CLRS
         }
     }
+
+    // std::cout << "aantal:" << aantal << std::endl; // DEBUG
 
     return gevonden;
 }

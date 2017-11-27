@@ -4,6 +4,7 @@
 // http://www.inf.fh-flensburg.de/lang/algorithmen/pattern/sundayen.htm
 // http://www.inf.fh-flensburg.de/lang/algorithmen/pattern/bmen.htm
 
+#include <algorithm>
 #include <cctype>
 #include <iomanip>
 #include <queue>
@@ -18,6 +19,7 @@ class BoyerMoore
 public:
     BoyerMoore() = delete;
     BoyerMoore(const std::string& naald);
+    virtual ~BoyerMoore() = default;
 
     BoyerMoore(const BoyerMoore& andere) = delete;
     BoyerMoore& operator=(const BoyerMoore& andere) = delete;
@@ -32,7 +34,7 @@ public:
 private:
     std::string naald;
     std::vector<int> verkeerd_karakter;
-    std::vector<std::vector<int>> uitgebreid_verkeerd_karakter;
+    // std::vector<std::vector<int>> uitgebreid_verkeerd_karakter;
     // verkeerd_karakter kan met unordered map met een functie dat -1 teruggeeft als het karakter geen map entry heeft
 };
 
@@ -41,7 +43,7 @@ BoyerMoore::BoyerMoore(const std::string& naald) : naald{naald}, verkeerd_karakt
     for (int i = 0; i < naald.size(); i++)
     {
         verkeerd_karakter[static_cast<uchar>(naald[i])] = i;
-        uitgebreid_verkeerd_karakter.push_back(verkeerd_karakter);
+        // uitgebreid_verkeerd_karakter.push_back(verkeerd_karakter);
     }
 }
 
@@ -54,48 +56,35 @@ std::queue<int> BoyerMoore::zoek(const std::string& hooiberg)
         return resultaten;
     }
 
-    int hooiberg_index = 0;
+    int hooiberg_i = 0;
 
-    while (hooiberg_index <= (hooiberg.size() - naald.size()))
+    while (hooiberg_i <= (hooiberg.size() - naald.size()))
     {
-        int naald_index = (naald.size() - 1);
-        while ((naald_index >= 0) && (naald[naald_index] == hooiberg[hooiberg_index + naald_index]))
+        int naald_i = (naald.size() - 1);
+        while ((naald_i >= 0) && (naald[naald_i] == hooiberg[hooiberg_i + naald_i]))
         {
-            naald_index--;
+            naald_i--;
         }
 
-        if (naald_index < 0)
+        int verschuiving = 1;
+
+        if (naald_i < 0)
         {
-            resultaten.push(hooiberg_index);
+            resultaten.push(hooiberg_i);
 
-            int verschuiving;
-            if ((hooiberg_index + naald.size()) < hooiberg.size())
+            if ((hooiberg_i + naald.size()) < hooiberg.size())
             {
-                uchar gewenst_karakter = hooiberg[hooiberg_index + naald.size()];
-                verschuiving = (naald.size() - verkeerd_karakter[gewenst_karakter]);
-                if (verschuiving <= 0)
-                {
-                    verschuiving = 1;
-                }
+                uchar gewenst_karakter = hooiberg[hooiberg_i + naald.size()];
+                verschuiving = std::max<int>((naald.size() - verkeerd_karakter[gewenst_karakter]), 1);
             }
-            else
-            {
-                verschuiving = 1;
-            }
-
-            hooiberg_index += verschuiving;
         }
         else
         {
-            uchar gewenst_karakter = hooiberg[hooiberg_index + naald_index];
-            int verschuiving = (naald_index - verkeerd_karakter[gewenst_karakter]);
-            if (verschuiving <= 0)
-            {
-                verschuiving = 1;
-            }
-
-            hooiberg_index += verschuiving;
+            uchar gewenst_karakter = hooiberg[hooiberg_i + naald_i];
+            verschuiving = std::max((naald_i - verkeerd_karakter[gewenst_karakter]), 1);
         }
+
+        hooiberg_i += verschuiving;
     }
 
     return resultaten;
@@ -121,21 +110,21 @@ std::string BoyerMoore::to_string() const
     }
     out << std::endl;
 
-    for (int i = 0; i < GROOTTE_ALFABET; i++)
-    {
-        char c = static_cast<char>(i);
-
-        if (isprint(c))
-        {
-            out << std::setw(HOOFD_BREEDTE) << c;
-            for (int j = 0; j < naald.size(); j++)
-            {
-                out << std::setw(VELD_BREEDTE) << uitgebreid_verkeerd_karakter[j][i];
-            }
-            out << " | " << verkeerd_karakter[i] << std::endl;
-        }
-    }
-    out << std::endl;
+    // for (int i = 0; i < GROOTTE_ALFABET; i++)
+    // {
+    //     char c = static_cast<char>(i);
+    //
+    //     if (isprint(c))
+    //     {
+    //         out << std::setw(HOOFD_BREEDTE) << c;
+    //         for (int j = 0; j < naald.size(); j++)
+    //         {
+    //             out << std::setw(VELD_BREEDTE) << uitgebreid_verkeerd_karakter[j][i];
+    //         }
+    //         out << " | " << verkeerd_karakter[i] << std::endl;
+    //     }
+    // }
+    // out << std::endl;
 
     return out.str();
 }

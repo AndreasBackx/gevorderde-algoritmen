@@ -66,7 +66,7 @@ std::queue<int> BoyerMoore::zoek(const std::string& hooiberg)
             naald_i--;
         }
 
-        int verschuiving = 1;
+        int verschuiving = 0;
 
         if (naald_i < 0)
         {
@@ -75,16 +75,16 @@ std::queue<int> BoyerMoore::zoek(const std::string& hooiberg)
             if ((hooiberg_i + naald.size()) < hooiberg.size())
             {
                 uchar gewenst_karakter = hooiberg[hooiberg_i + naald.size()];
-                verschuiving = std::max<int>((naald.size() - verkeerd_karakter[gewenst_karakter]), 1);
+                verschuiving = (naald.size() - verkeerd_karakter[gewenst_karakter]);
             }
         }
         else
         {
             uchar gewenst_karakter = hooiberg[hooiberg_i + naald_i];
-            verschuiving = std::max((naald_i - verkeerd_karakter[gewenst_karakter]), 1);
+            verschuiving = (naald_i - verkeerd_karakter[gewenst_karakter]);
         }
 
-        hooiberg_i += verschuiving;
+        hooiberg_i += std::max(verschuiving, 1);
     }
 
     return resultaten;

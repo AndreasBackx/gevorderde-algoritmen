@@ -134,6 +134,7 @@ public:
     virtual void schrijfVerbinding(std::ostream& os, int v) const;
 
     void wordt_componentengraaf_van(const Graaf& andere);
+    int geef_component(int k) const;
 
     std::string genereer_dot_code() const;
 
@@ -263,6 +264,17 @@ void Graaf<GERICHT>::wordt_componentengraaf_van(const Graaf& andere)
             }
         }
     }
+}
+
+template <RichtType RT>
+int Graaf<RT>::geef_component(int k) const
+{
+    if (k < 0 || k >= componentnummers.size())
+    {
+        throw GraafExceptie("ongeldig knoopnummer van component");
+    }
+
+    return componentnummers[k];
 }
 
 template <RichtType RT>

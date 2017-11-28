@@ -9,5 +9,4 @@ http://www.inwe.be/smf/algoritmen-ii/
 TODO
 - RZ bomen: verwijderen implementeren
 - Stroomnetwerken: afwerken en vergrotendpadzoekers implementeren
-- Samenhangende componenten: interface schrijven om door de graaf te doorlopen
 - 2016-2017 nakijken en afwerken 

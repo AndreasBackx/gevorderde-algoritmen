@@ -97,8 +97,6 @@ void Stroomnetwerk<T>::voegStroomToe(int van, int naar, int stroom)
 template <class T>
 void Stroomnetwerk<T>::updateStroomnetwerk(Stroomnetwerk<T>& stroomnetwerk, const Pad<T>& vergrotendpad)
 {
-    // TODO testen
-
     if (vergrotendpad.empty())
     {
         return;
@@ -114,8 +112,8 @@ void Stroomnetwerk<T>::updateStroomnetwerk(Stroomnetwerk<T>& stroomnetwerk, cons
         if (this->verbindingsnummer(naar, van) == -1)
         {
             stroomnetwerk.voegStroomToe(van, naar, toe_te_voegen_stroom);
-        } 
-        else 
+        }
+        else
         {
             T* terugstroom = stroomnetwerk.geefTakdata(naar, van);
 

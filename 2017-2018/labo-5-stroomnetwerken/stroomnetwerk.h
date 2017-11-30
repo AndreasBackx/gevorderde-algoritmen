@@ -84,13 +84,13 @@ Stroomnetwerk<T>::Stroomnetwerk(const GraafMetTakdata<GERICHT, T>& graaf, int pr
 template <class T>
 void Stroomnetwerk<T>::voegStroomToe(int van, int naar, int stroom)
 {
-    if (this->verbindingsnummer(naar, van) == -1)
+    if (this->verbindingsnummer(van, naar) == -1)
     {
-        this->voegVerbindingToe(naar, van, stroom);
+        this->voegVerbindingToe(van, naar, stroom);
     }
     else
     {
-        *(this->geefTakdata(naar, van)) += stroom;
+        *(this->geefTakdata(van, naar)) += stroom;
     }
 }
 
@@ -127,7 +127,7 @@ void Stroomnetwerk<T>::updateStroomnetwerk(Stroomnetwerk<T>& stroomnetwerk, cons
             {
                 toe_te_voegen_stroom -= *terugstroom;
                 *terugstroom = 0;
-                voegStroomToe(van, naar, toe_te_voegen_stroom);
+                stroomnetwerk.voegStroomToe(van, naar, toe_te_voegen_stroom);
             }
         }
     }

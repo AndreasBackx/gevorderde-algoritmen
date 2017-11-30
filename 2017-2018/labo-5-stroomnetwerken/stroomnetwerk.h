@@ -39,8 +39,8 @@ public:
     Stroomnetwerk<T>(Stroomnetwerk<T>&& ander) = default;
     Stroomnetwerk<T>& operator=(Stroomnetwerk<T>&& ander) = default;
 
-    void updateStroomnetwerk(GraafMetTakdata<GERICHT, T>& stroomnerwerk, const Pad<T>& vergrotendpad);
-    void updateRestnetwerk(GraafMetTakdata<GERICHT, T>& restnerwerk, const Pad<T>& vergrotendpad);
+    void updateStroomnetwerk(Stroomnetwerk<T>& stroomnetwerk, const Pad<T>& vergrotendpad);
+    void updateRestnetwerk(Stroomnetwerk<T>& restnetwerk, const Pad<T>& vergrotendpad);
 
     std::string genereer_dot_code() const;
     T geef_capaciteit() const;
@@ -48,6 +48,9 @@ public:
 protected:
     int producent;
     int verbruiker;
+
+private:
+    void voegStroomToe(int van, int naar, int stroom);
 };
 
 template <class T>
@@ -79,7 +82,20 @@ Stroomnetwerk<T>::Stroomnetwerk(const GraafMetTakdata<GERICHT, T>& graaf, int pr
 }
 
 template <class T>
-void Stroomnetwerk<T>::updateStroomnetwerk(GraafMetTakdata<GERICHT, T>& stroomnetwerk, const Pad<T>& vergrotendpad)
+void Stroomnetwerk<T>::voegStroomToe(int van, int naar, int stroom)
+{
+    if (this->verbindingsnummer(naar, van) == -1)
+    {
+        this->voegVerbindingToe(naar, van, stroom);
+    }
+    else
+    {
+        *(this->geefTakdata(naar, van)) += stroom;
+    }
+}
+
+template <class T>
+void Stroomnetwerk<T>::updateStroomnetwerk(Stroomnetwerk<T>& stroomnetwerk, const Pad<T>& vergrotendpad)
 {
     // TODO testen
 
@@ -95,38 +111,30 @@ void Stroomnetwerk<T>::updateStroomnetwerk(GraafMetTakdata<GERICHT, T>& stroomne
 
         T toe_te_voegen_stroom = vergrotendpad.geef_capaciteit();
 
-        if (this->verbindingsnummer(naar, van) != -1)
+        if (this->verbindingsnummer(naar, van) == -1)
+        {
+            stroomnetwerk.voegStroomToe(van, naar, toe_te_voegen_stroom);
+        } 
+        else 
         {
             T* terugstroom = stroomnetwerk.geefTakdata(naar, van);
-            *terugstroom -= toe_te_voegen_stroom;
 
-            if (*terugstroom < 0)
+            if (*terugstroom >= toe_te_voegen_stroom)
             {
-                toe_te_voegen_stroom = -(*terugstroom);
+                *terugstroom -= toe_te_voegen_stroom;
+            }
+            else
+            {
+                toe_te_voegen_stroom -= *terugstroom;
                 *terugstroom = 0;
-            }
-            else
-            {
-                toe_te_voegen_stroom = 0;
-            }
-        }
-
-        if (toe_te_voegen_stroom > 0)
-        {
-            if (this->verbindingsnummer(van, naar) == -1)
-            {
-                this->voegVerbindingToe(van, naar, toe_te_voegen_stroom);
-            }
-            else
-            {
-                *(stroomnetwerk.geefTakdata(van, naar)) += toe_te_voegen_stroom;
+                voegStroomToe(van, naar, toe_te_voegen_stroom);
             }
         }
     }
 }
 
 template <class T>
-void Stroomnetwerk<T>::updateRestnetwerk(GraafMetTakdata<GERICHT, T>& restnetwerk, const Pad<T>& vergrotendpad)
+void Stroomnetwerk<T>::updateRestnetwerk(Stroomnetwerk<T>& restnetwerk, const Pad<T>& vergrotendpad)
 {
     if (vergrotendpad.empty())
     {
@@ -150,14 +158,7 @@ void Stroomnetwerk<T>::updateRestnetwerk(GraafMetTakdata<GERICHT, T>& restnetwer
             restnetwerk.verwijderVerbinding(van, naar);
         }
 
-        if (restnetwerk.verbindingsnummer(naar, van) == -1)
-        {
-            restnetwerk.voegVerbindingToe(naar, van, vergrotendpad.geef_capaciteit());
-        }
-        else
-        {
-            *(restnetwerk.geefTakdata(naar, van)) += vergrotendpad.geef_capaciteit();
-        }
+        restnetwerk.voegStroomToe(naar, van, vergrotendpad.geef_capaciteit());
     }
 }
 

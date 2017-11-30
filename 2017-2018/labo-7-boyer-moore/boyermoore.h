@@ -14,6 +14,44 @@
 using uchar = unsigned char;
 constexpr size_t GROOTTE_ALFABET = (1 << (sizeof(uchar) * 8));
 
+// Good Suffix heuristic
+//
+//  O(p^2)
+//
+//      i                   |   0   1   2   3   4   5   6
+//      p[i]                |   a   b   b   a   b   a   b
+//      --------------------+-------------------------------
+//      suffix[i]           |   2   1   3   2   1   0   0
+//      p-i-1               |   6   5   4   3   2   1   0
+//      k                   |   /   /   /   2   3   4   6
+//      i+1-k               |   /   /   /   2   2   2   1
+//      verschuiving[i]     |   5   5   5   2   2   2   1
+//                              ~~~~~~~~~
+//                                  |
+//                                  V
+//                              p - s[0] = 7 - 2 = 5
+//
+//  O(p)
+//
+//      i |     s[i]    v[i]
+//      --+-----------------------------
+//      0 |     2       5           5
+//      1 |     1       5           5
+//      2 |     3       5           5
+//      3 |     2       5 1     ==  1
+//      4 |     1       5 5 2       2
+//      5 |     0       5 5 2       2
+//      6 |     0       5 2 1       1
+//
+// Om de strong suffix tabel op te stellen, moet je de heuristic gebruiken voor de s[i] tabel
+// en daarop verder rekenen:
+//
+//      i                   |   0   1   2   3   4   5   6
+//      p[i]                |   a   b   b   a   b   a   b
+//      --------------------+-------------------------------
+//      suffix[i]           |   2   0   3   0   0   0   0
+//
+
 class BoyerMoore
 {
 public:

@@ -39,8 +39,8 @@ public:
     Stroomnetwerk<T>(Stroomnetwerk<T>&& ander) = default;
     Stroomnetwerk<T>& operator=(Stroomnetwerk<T>&& ander) = default;
 
-    Stroomnetwerk<T>& operator+=(const Pad<T>& vergrotendpad);
-    Stroomnetwerk<T>& operator-=(const Pad<T>& vergrotendpad);
+    void updateStroomnetwerk(GraafMetTakdata<GERICHT, T>& stroomnerwerk, const Pad<T>& vergrotendpad);
+    void updateRestnetwerk(GraafMetTakdata<GERICHT, T>& restnerwerk, const Pad<T>& vergrotendpad);
 
     std::string genereer_dot_code() const;
     T geef_capaciteit() const;
@@ -69,76 +69,96 @@ Stroomnetwerk<T>::Stroomnetwerk(const GraafMetTakdata<GERICHT, T>& graaf, int pr
         // += en -= hebben niets met elkaar te maken. Het een is voor het stroomnetwerk (enkel aanpassen takdata), het
         // ander voor het restnetwerk (aanpassen takdata en verbindingen). Je kan eventueel ook andere functienamen
         // gebruiken zoals updateStroomnetwerk en updateRestnetwerk
-        restnetwerk -= vergrotendpad;
-        *this += vergrotendpad;
+        //
+        // restnetwerk -= vergrotendpad;
+        // *this += vergrotendpad;
+        updateRestnetwerk(restnetwerk, vergrotendpad);
+        updateStroomnetwerk(*this, vergrotendpad);
         LangPadZoeker<T> vg{restnetwerk, producent, verbruiker, vergrotendpad};
     }
 }
 
 template <class T>
-Stroomnetwerk<T>& Stroomnetwerk<T>::operator+=(const Pad<T>& vergrotendpad)
+void Stroomnetwerk<T>::updateStroomnetwerk(GraafMetTakdata<GERICHT, T>& stroomnetwerk, const Pad<T>& vergrotendpad)
 {
-    // TODO als er al een verbinding in de andere richting is, die eerst reduceren alvorens in de juiste richting op te
-    // tellen
-    // Zie 1e voorbeeld in de main
+    // TODO testen
 
-    if (!vergrotendpad.empty())
+    if (vergrotendpad.empty())
     {
-        assert(vergrotendpad.size() < std::numeric_limits<int>::max());
-        for (int i = 1; i < static_cast<int>(vergrotendpad.size()); i++)
-        {
-            int van = vergrotendpad[i - 1];
-            int naar = vergrotendpad[i];
+        return;
+    }
 
-            if (this->verbindingsnummer(van, naar) == -1)
+    for (int i = 1; i < vergrotendpad.size(); i++)
+    {
+        int van = vergrotendpad[i - 1];
+        int naar = vergrotendpad[i];
+
+        T toe_te_voegen_stroom = vergrotendpad.geef_capaciteit();
+
+        if (this->verbindingsnummer(naar, van) != -1)
+        {
+            T* terugstroom = stroomnetwerk.geefTakdata(naar, van);
+            *terugstroom -= toe_te_voegen_stroom;
+
+            if (*terugstroom < 0)
             {
-                this->voegVerbindingToe(van, naar, vergrotendpad.geef_capaciteit());
+                toe_te_voegen_stroom = -(*terugstroom);
+                *terugstroom = 0;
             }
             else
             {
-                T* stroom = this->geefTakdata(van, naar);
-                *stroom += vergrotendpad.geef_capaciteit();
+                toe_te_voegen_stroom = 0;
+            }
+        }
+
+        if (toe_te_voegen_stroom > 0)
+        {
+            if (this->verbindingsnummer(van, naar) == -1)
+            {
+                this->voegVerbindingToe(van, naar, toe_te_voegen_stroom);
+            }
+            else
+            {
+                *(stroomnetwerk.geefTakdata(van, naar)) += toe_te_voegen_stroom;
             }
         }
     }
-
-    return (*this);
 }
 
 template <class T>
-Stroomnetwerk<T>& Stroomnetwerk<T>::operator-=(const Pad<T>& vergrotendpad)
+void Stroomnetwerk<T>::updateRestnetwerk(GraafMetTakdata<GERICHT, T>& restnetwerk, const Pad<T>& vergrotendpad)
 {
-    if (!vergrotendpad.empty())
+    if (vergrotendpad.empty())
     {
-        assert(vergrotendpad.size() < std::numeric_limits<int>::max());
-        for (int i = 1; i < static_cast<int>(vergrotendpad.size()); i++)
-        {
-            int van = vergrotendpad[i - 1];
-            int naar = vergrotendpad[i];
-
-            assert(this->verbindingsnummer(van, naar) != -1);
-
-            T* stroom = this->geefTakdata(van, naar);
-            *stroom -= vergrotendpad.geef_capaciteit();
-
-            if (*stroom == 0)
-            {
-                this->verwijderVerbinding(van, naar);
-            }
-
-            if (this->verbindingsnummer(naar, van) == -1)
-            {
-                this->voegVerbindingToe(naar, van, vergrotendpad.geef_capaciteit());
-            }
-            else
-            {
-                T* stroom = this->geefTakdata(naar, van);
-                *stroom += vergrotendpad.geef_capaciteit();
-            }
-        }
+        return;
     }
 
-    return (*this);
+    for (int i = 1; i < vergrotendpad.size(); i++)
+    {
+        int van = vergrotendpad[i - 1];
+        int naar = vergrotendpad[i];
+
+        assert(restnetwerk.verbindingsnummer(van, naar) != -1);
+
+        T* heenstroom = restnetwerk.geefTakdata(van, naar);
+
+        assert(*heenstroom >= vergrotendpad.geef_capaciteit());
+        *heenstroom -= vergrotendpad.geef_capaciteit();
+
+        if (*heenstroom == 0)
+        {
+            restnetwerk.verwijderVerbinding(van, naar);
+        }
+
+        if (restnetwerk.verbindingsnummer(naar, van) == -1)
+        {
+            restnetwerk.voegVerbindingToe(naar, van, vergrotendpad.geef_capaciteit());
+        }
+        else
+        {
+            *(restnetwerk.geefTakdata(naar, van)) += vergrotendpad.geef_capaciteit();
+        }
+    }
 }
 
 template <class T>

@@ -1,9 +1,6 @@
 #ifndef BOYERMOORE_H
 #define BOYERMOORE_H
 
-// http://www.inf.fh-flensburg.de/lang/algorithmen/pattern/sundayen.htm
-// http://www.inf.fh-flensburg.de/lang/algorithmen/pattern/bmen.htm
-
 #include <algorithm>
 #include <cctype>
 #include <iomanip>
@@ -29,27 +26,42 @@ constexpr size_t GROOTTE_ALFABET = (1 << (sizeof(uchar) * 8));
 //                              ~~~~~~~~~
 //                                  |
 //                                  V
-//                              p - s[0] = 7 - 2 = 5
+//
+//               p - s[0] = 7 - 2 = 5
 //
 //  O(p)
 //
-//      i |     s[i]    v[i]
-//      --+-----------------------------
-//      0 |     2       5           5
-//      1 |     1       5           5
-//      2 |     3       5           5
-//      3 |     2       5 1     ==  1
-//      4 |     1       5 5 2       2
-//      5 |     0       5 5 2       2
-//      6 |     0       5 2 1       1
+//      j |     s[j]    i       v[i]
+//      --+---------------------------------------------
+//      0 |     2       4       5                   5
+//      1 |     1       5       5                   5
+//      2 |     3       3       5                   5
+//      3 |     2       4       5     2         ==  2
+//      4 |     1       5       5 5     2           2
+//      5 |     0       6       5   5     2         2
+//      6 |     0       6       5           2 1     1
 //
-// Om de strong suffix tabel op te stellen, moet je de heuristic gebruiken voor de s[i] tabel
+// Om de *strong* good suffix tabel op te stellen, moet je de heuristic gebruiken voor de s[i] tabel
 // en daarop verder rekenen:
 //
 //      i                   |   0   1   2   3   4   5   6
 //      p[i]                |   a   b   b   a   b   a   b
 //      --------------------+-------------------------------
 //      suffix[i]           |   2   0   3   0   0   0   0
+//      p-i-1               |   6   5   4   3   2   1   0
+//      k                   |   /   /   /   2   0   /   6
+//      i+1-k               |   /   /   /   3   5   /   1
+//      verschuiving[i]     |   5   5   5   2   5   5   1
+//
+//      j |     s[j]    i       v[i]
+//      --+---------------------------------------------
+//      0 |     2       4       5                   5
+//      1 |     0       6       5                   5
+//      2 |     3       3       5                   5
+//      3 |     0       6       5     2         ==  2
+//      4 |     0       6       5 5                 5
+//      5 |     0       6       5                   5
+//      6 |     0       6       5   6   4 3 2 1     1
 //
 
 class BoyerMoore

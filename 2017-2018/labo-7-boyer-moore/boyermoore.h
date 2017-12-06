@@ -50,7 +50,7 @@ constexpr size_t GROOTTE_ALFABET = (1 << (sizeof(uchar) * 8));
 //      suffix[i]           |   2   0   3   0   0   0   0
 //      p-i-1               |   6   5   4   3   2   1   0
 //      k                   |   /   /   /   2   0   /   6
-//      i+1-k               |   /   /   /   3   5   /   1
+//      i+1-k               |   /   /   /   2   5   /   1
 //      verschuiving[i]     |   5   5   5   2   5   5   1
 //
 //      j |     s[j]    i       v[i]

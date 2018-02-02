@@ -3,4 +3,7 @@ language: cpp
 compiler:
   - clang
   - gcc
-
+env:
+  - TEST_DIR = libraries/graaf
+  - TEST_DIR = libraries/woordstroom
+script: cd TEST_DIR && ./generate_makefile.sh && cd build && make

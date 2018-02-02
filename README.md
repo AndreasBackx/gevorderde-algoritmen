@@ -1,4 +1,4 @@
-Persoonlijke speeltuin voor het vak Gevorderde Algoritmen (E765015)
+Persoonlijke speeltuin voor het vak Gevorderde Algoritmen (E765015) [![Build Status](https://travis-ci.org/MartenBE/gevorderde-algoritmen.svg?branch=master)](https://travis-ci.org/MartenBE/gevorderde-algoritmen)
 
 *Deze repository kan fouten en onjuistheden bevatten*
 

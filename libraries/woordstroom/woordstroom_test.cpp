@@ -21,7 +21,7 @@ TEST(woordstroom_test, lees)
     // Hello World! 123abcABC.987!poi{a1a}
     // 1A2Blolzor.
 
-    EXPECT_EQ(woorden.size(), 16);
+    EXPECT_EQ(woorden.size(), 10);
 
     EXPECT_EQ(woorden[0], "Hello");
     EXPECT_EQ(woorden[1], " ");

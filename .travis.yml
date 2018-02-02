@@ -7,7 +7,7 @@ compiler:
     - clang
 
 env:
-    - TEST_DIR = libraries/graaf
+    - TEST_DIR=libraries/graaf
 
 before_script:
     - cd $TEST_DIR

@@ -30,7 +30,7 @@ before_install:
 
 before_script:
     - cd $TEST_DIR
-    - ./generate_makefile.sh
+    - sh generate_makefile.sh
     - cd build
 
 script: make

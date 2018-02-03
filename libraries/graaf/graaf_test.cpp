@@ -44,7 +44,7 @@ TEST(graaf_test, voeg_knoop_toe)
     EXPECT_EQ(graaf.aantalKnopen(), 2);
 }
 
-TEST(graaf_test, voeg_verbinding_toe_ongericht)
+TEST(graaf_test, voeg_verbinding_toe)
 {
     Graaf<ONGERICHT> graaf{4};
 
@@ -52,6 +52,7 @@ TEST(graaf_test, voeg_verbinding_toe_ongericht)
 
     EXPECT_EQ(graaf.aantalVerbindingen(), 1);
     EXPECT_EQ(verbind_nr, 0);
+    EXPECT_EQ(graaf.verbindingsnummer(0, 1), graaf.verbindingsnummer(1, 0));
 
     verbind_nr = graaf.voegVerbindingToe(1, 2);
     verbind_nr = graaf.voegVerbindingToe(2, 3);
@@ -66,4 +67,27 @@ TEST(graaf_test, voeg_verbinding_toe_ongericht)
     EXPECT_NO_THROW(graaf.voegVerbindingToe(0, 0));
 
     EXPECT_EQ(graaf.aantalVerbindingen(), 5);
+}
+
+TEST(graaf_test, verwijder_verbinding)
+{
+    Graaf<ONGERICHT> graaf{4};
+
+    graaf.voegVerbindingToe(0, 1);
+    graaf.voegVerbindingToe(1, 2);
+    graaf.voegVerbindingToe(2, 3);
+    graaf.voegVerbindingToe(3, 0);
+
+    graaf.verwijderVerbinding(2, 3);
+
+    EXPECT_EQ(graaf.aantalVerbindingen(), 3);
+
+    EXPECT_NO_THROW(graaf.verwijderVerbinding(2, 3));
+    EXPECT_EQ(graaf.aantalVerbindingen(), 3);
+
+    EXPECT_NO_THROW(graaf.verwijderVerbinding(0, 3));
+    EXPECT_EQ(graaf.aantalVerbindingen(), 2);
+
+    EXPECT_THROW(graaf.verwijderVerbinding(0, graaf.aantalKnopen()), GraafExceptie);
+    EXPECT_THROW(graaf.verwijderVerbinding(0, -1), GraafExceptie);
 }

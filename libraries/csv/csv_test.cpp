@@ -30,7 +30,7 @@ TEST(csv_test, genereer_bestand_enkel_doubles)
     EXPECT_EQ(csv.to_string(), expected_content);
 }
 
-TEST(csv_test, genereer_bestand)
+TEST(csv_test, genereer_bestand_verschillende_datatypes)
 {
     const std::string filename{"test.csv"};
 
@@ -62,4 +62,28 @@ TEST(csv_test, geef_bestandsnaam)
     EXPECT_THROW(CsvData(""), const char*);
 }
 
-// TODO ander Scheidingsteken
+TEST(csv_test, genereer_bestand_custom_scheidingsteken)
+{
+    const std::string filename{"test.csv"};
+
+    CsvData csv(filename, ',');
+
+    csv.voeg_data_toe(std::vector<double>{3, 1.2, 123456.789, 100, 3.14});
+    csv.voeg_data_toe(std::vector<double>{8.6, 5, 10.9});
+    csv.voeg_data_toe(std::vector<double>{6.4, 8.3, 5.7, 7.1, 8.6, 9.9, 4.5, 1, 1.2, 2.0, 5.4});
+
+    std::string expected_content{
+            "3,000000e+00\t8,600000e+00\t6,400000e+00\n"
+            "1,200000e+00\t5,000000e+00\t8,300000e+00\n"
+            "1,234568e+05\t1,090000e+01\t5,700000e+00\n"
+            "1,000000e+02\t\t7,100000e+00\n"
+            "3,140000e+00\t\t8,600000e+00\n"
+            "\t\t9,900000e+00\n"
+            "\t\t4,500000e+00\n"
+            "\t\t1,000000e+00\n"
+            "\t\t1,200000e+00\n"
+            "\t\t2,000000e+00\n"
+            "\t\t5,400000e+00\n"};
+
+    EXPECT_EQ(csv.to_string(), expected_content);
+}

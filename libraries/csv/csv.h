@@ -1,6 +1,7 @@
 #ifndef CSV_H
 #define CSV_H
 
+#include <algorithm>
 #include <cstring>
 #include <iomanip>
 #include <iostream>
@@ -83,7 +84,10 @@ public:
             }
         }
 
-        return out.str();
+        std::string content = std::move(out.str());
+        std::replace(content.begin(), content.end(), '.', scheidingsteken);
+
+        return content;
     }
 
     std::string geef_bestandsnaam() const

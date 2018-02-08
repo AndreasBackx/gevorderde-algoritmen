@@ -10,6 +10,7 @@ compiler:
 env:
     - TEST_DIR=libraries/graaf
     - TEST_DIR=libraries/woordstroom
+    - TEST_DIR=libraries/csv
 
 before_script:
     - cd $TEST_DIR

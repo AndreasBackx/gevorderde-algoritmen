@@ -61,3 +61,5 @@ TEST(csv_test, geef_bestandsnaam)
     EXPECT_THROW(CsvData(".csv"), const char*);
     EXPECT_THROW(CsvData(""), const char*);
 }
+
+// TODO ander Scheidingsteken

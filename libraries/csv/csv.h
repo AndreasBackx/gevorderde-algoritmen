@@ -2,6 +2,8 @@
 #define CSV_H
 
 #include <cstring>
+#include <iomanip>
+#include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -30,9 +32,9 @@ public:
         {
             this->bestandsnaam.append(extensie);
         }
-    };
+    }
 
-    template <class T> // T kan int zijn, unsigned int, float, enz
+    template <class T> // T kan int, unsigned int, float, ... zijn
     void voeg_data_toe(const std::vector<T>& toe_te_voegen_data)
     {
         std::vector<double> nieuwe_data;
@@ -46,7 +48,6 @@ public:
         voeg_data_toe(nieuwe_data);
     }
 
-    // speciaal geval: geen dataconversie nodig
     void voeg_data_toe(const std::vector<double>& nieuwe_data)
     {
         data.push_back(nieuwe_data);
@@ -58,43 +59,29 @@ public:
         }
     }
 
-    char* formatteer(char* buf, double x)
-    {
-        char formstring[12];
-        sprintf(formstring, "%%%ie", kolombreedte);
-        sprintf(buf, formstring, x);
-        for (int i = 0; i < kolombreedte; i++)
-        {
-            if (buf[i] == '.')
-                buf[i] = scheidingsteken;
-        }
-        return buf;
-    }
-
-    std::string to_string() /* const */
+    std::string to_string() const
     {
         std::stringstream out;
-
-        char* uitbuf = new char[kolombreedte + 1];
-        int maxbuflen = 0;
 
         for (int i = 0; i < max_kolom_grootte; i++)
         {
             for (int j = 0; j < data.size(); j++)
             {
-                if (data[j].size() > i) // blanco als te kort
+                if (i < data[j].size())
                 {
-                    out << formatteer(uitbuf, data[j][i]);
+                    out << std::setprecision(precisie) << std::scientific << data[j][i];
                 }
-                if (strlen(uitbuf) > maxbuflen)
+
+                if (j == (data.size() - 1))
                 {
-                    maxbuflen = strlen(uitbuf);
+                    out << '\n';
                 }
-                out << (j == data.size() - 1 ? '\n' : '\t');
+                else
+                {
+                    out << '\t';
+                }
             }
         }
-        //     std::cerr <<" maxbuflen "<<maxbuflen <<" kolombreedte "<<kolombreedte <<"\n";
-        delete uitbuf;
 
         return out.str();
     }
@@ -111,6 +98,7 @@ protected:
     int max_kolom_grootte = 0;
 
     static constexpr int kolombreedte = 12;
+    static constexpr int precisie = 6;
     static const std::string extensie;
 };
 

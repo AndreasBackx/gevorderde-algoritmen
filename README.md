@@ -6,7 +6,7 @@ Persoonlijke speeltuin voor het vak Gevorderde Algoritmen (E765015)
 
 http://www.inwe.be/smf/algoritmen-ii/
 
----
+-----
 
 TODO
 - alle veelgebruikte header files in de map libraries steken (graaf.h, csv.h, ...) en herwerken naar C++

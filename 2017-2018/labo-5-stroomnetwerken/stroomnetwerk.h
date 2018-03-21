@@ -7,7 +7,7 @@
 #include <sstream>
 #include <string>
 
-#include "graaf.h"
+#include "../../libraries/graaf/graaf.h"
 #include "vergrotendpad.h"
 #include "volgendpadzoeker.h"
 

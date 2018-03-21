@@ -17,7 +17,7 @@ endif()
 
 set(SOURCES
     main.cpp
-    graaf.h
+    ../../libraries/graaf/graaf.h
     vergrotendpad.h
     langpadzoeker.h
     kortstepadzoeker.h

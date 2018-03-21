@@ -1,7 +1,7 @@
 #ifndef VOLGENDPADZOEKER_H
 #define VOLGENDPADZOEKER_H
 
-#include "graaf.h"
+#include "../../libraries/graaf/graaf.h"
 #include "vergrotendpad.h"
 
 template <class T>

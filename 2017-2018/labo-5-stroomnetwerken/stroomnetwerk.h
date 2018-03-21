@@ -8,8 +8,8 @@
 #include <string>
 
 #include "graaf.h"
-#include "volgendpadzoeker.h"
 #include "vergrotendpad.h"
+#include "volgendpadzoeker.h"
 
 /**********************************************************************
 
@@ -76,6 +76,8 @@ Stroomnetwerk<T>::Stroomnetwerk(const GraafMetTakdata<GERICHT, T>& graaf,
     Pad<T> vergrotendpad = padzoeker->zoek_volgend_vergrotend_pad(restnetwerk, producent, verbruiker);
     while (vergrotendpad.size() > 0)
     {
+        std::cout << "Vergrotendpad: " << vergrotendpad.to_string() << std::endl;
+
         // += en -= hebben niets met elkaar te maken. Het een is voor het stroomnetwerk (enkel aanpassen takdata), het
         // ander voor het restnetwerk (aanpassen takdata en verbindingen). Je kan eventueel ook andere functienamen
         // gebruiken zoals updateStroomnetwerk en updateRestnetwerk

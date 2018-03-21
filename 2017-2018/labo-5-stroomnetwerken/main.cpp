@@ -1,3 +1,4 @@
+#include "grootstecapaciteitenpadzoeker.h"
 #include "kortstepadzoeker.h"
 #include "langpadzoeker.h"
 #include "stroomnetwerk.h"
@@ -15,7 +16,8 @@ void los_stroomnetwerk_op(const GraafMetTakdata<GERICHT, int>& capaciteiten,
     std::cout << "Op te lossen graaf: " << std::endl << capaciteiten << std::endl;
 
     // std::unique_ptr<VolgendPadZoeker<int>> volgendpadzoeker = std::make_unique<LangPadZoeker<int>>();
-    std::unique_ptr<VolgendPadZoeker<int>> volgendpadzoeker = std::make_unique<KortstePadZoeker<int>>();
+    // std::unique_ptr<VolgendPadZoeker<int>> volgendpadzoeker = std::make_unique<KortstePadZoeker<int>>();
+    std::unique_ptr<VolgendPadZoeker<int>> volgendpadzoeker = std::make_unique<GrootsteCapaciteitenPadZoeker<int>>();
 
     Stroomnetwerk<int> sn{capaciteiten, van, naar, volgendpadzoeker.get()};
     int max_flow = sn.geef_capaciteit();
@@ -33,8 +35,6 @@ void los_stroomnetwerk_op(const GraafMetTakdata<GERICHT, int>& capaciteiten,
 
 int main()
 {
-    std::unique_ptr<VolgendPadZoeker<int>> volgendpadzoeker = std::make_unique<LangPadZoeker<int>>();
-
     GraafMetTakdata<GERICHT, int> capaciteiten_klein_voorbeeld{4};
     capaciteiten_klein_voorbeeld.voegVerbindingToe(0, 1, 4);
     capaciteiten_klein_voorbeeld.voegVerbindingToe(0, 2, 2);

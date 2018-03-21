@@ -1,4 +1,3 @@
-
 // Labo 6 2016-2017 heeft een gerefactorde versie voor stroomnetwerken
 
 #ifndef STROOMNETWERK_H
@@ -9,7 +8,7 @@
 #include <string>
 
 #include "graaf.h"
-#include "langpadzoeker.h"
+#include "volgendpadzoeker.h"
 #include "vergrotendpad.h"
 
 /**********************************************************************
@@ -28,7 +27,13 @@ public:
     // Graaf<GERICHT>(gr) moet toegevoegd, anders roept de copyconstructor van GraafMetTakdata de defaultconstructor van
     // Graaf op en krijgen we een lege graaf.
     Stroomnetwerk<T>(const GraafMetTakdata<GERICHT, T>& graaf);
-    Stroomnetwerk<T>(const GraafMetTakdata<GERICHT, T>& graaf, int producer, int verbruiker);
+    Stroomnetwerk<T>(const GraafMetTakdata<GERICHT, T>& graaf,
+                     int producent,
+                     int verbruiker,
+                     VolgendPadZoeker<T>* padzoeker);
+    // Geen unique_ptr voor padzoeker:
+    // https://herbsutter.com/2013/06/05/gotw-91-solution-smart-pointer-parameters/ en
+    // https://stackoverflow.com/questions/8114276/how-do-i-pass-a-unique-ptr-argument-to-a-constructor-or-a-function
 
     Stroomnetwerk<T>() = delete;
     virtual ~Stroomnetwerk<T>() = default;
@@ -60,13 +65,15 @@ Stroomnetwerk<T>::Stroomnetwerk(const GraafMetTakdata<GERICHT, T>& graaf)
 }
 
 template <class T>
-Stroomnetwerk<T>::Stroomnetwerk(const GraafMetTakdata<GERICHT, T>& graaf, int producent, int verbruiker)
+Stroomnetwerk<T>::Stroomnetwerk(const GraafMetTakdata<GERICHT, T>& graaf,
+                                int producent,
+                                int verbruiker,
+                                VolgendPadZoeker<T>* padzoeker)
     : Graaf<GERICHT>{graaf.aantalKnopen()}, producent{producent}, verbruiker{verbruiker}
 {
     Stroomnetwerk<T> restnetwerk{graaf};
 
-    Pad<T> vergrotendpad;
-    LangPadZoeker<T> vg{restnetwerk, producent, verbruiker, vergrotendpad};
+    Pad<T> vergrotendpad = padzoeker->zoek_volgend_vergrotend_pad(restnetwerk, producent, verbruiker);
     while (vergrotendpad.size() > 0)
     {
         // += en -= hebben niets met elkaar te maken. Het een is voor het stroomnetwerk (enkel aanpassen takdata), het
@@ -77,7 +84,7 @@ Stroomnetwerk<T>::Stroomnetwerk(const GraafMetTakdata<GERICHT, T>& graaf, int pr
         // *this += vergrotendpad;
         updateRestnetwerk(restnetwerk, vergrotendpad);
         updateStroomnetwerk(*this, vergrotendpad);
-        LangPadZoeker<T> vg{restnetwerk, producent, verbruiker, vergrotendpad};
+        vergrotendpad = padzoeker->zoek_volgend_vergrotend_pad(restnetwerk, producent, verbruiker);
     }
 }
 

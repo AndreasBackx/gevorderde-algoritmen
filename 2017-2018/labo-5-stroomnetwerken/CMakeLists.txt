@@ -20,6 +20,8 @@ set(SOURCES
     graaf.h
     vergrotendpad.h
     langpadzoeker.h
+    kortstepadzoeker.h
+    volgendpadzoeker.h
     stroomnetwerk.h
     )
 

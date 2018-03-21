@@ -1,4 +1,3 @@
-
 #ifndef VERGROTENDPAD_H
 #define VERGROTENDPAD_H
 
@@ -35,19 +34,18 @@ std::string Pad<T>::to_string() const
 {
     std::stringstream out;
 
-    out << "Capaciteit: " << capaciteit << ", ";
     if (!empty())
     {
-        out << (*this)[0];
-        for (const T& k : (*this))
+        for (const T& knoopnr : (*this))
         {
-            out << ", " << k;
+            out << knoopnr << ", ";
         }
     }
     else
     {
         out << "leeg";
     }
+    out << "(capaciteit: " << capaciteit << ")";
 
     return out.str();
 }

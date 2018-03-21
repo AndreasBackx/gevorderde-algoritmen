@@ -7,79 +7,8 @@
 #include <iostream>
 #include <memory>
 
-void los_stroomnetwerk_op(const GraafMetTakdata<GERICHT, int>& capaciteiten,
-                          int van,
-                          int naar,
-                          const std::string& bestandsnaam,
-                          int verwachte_max_flow)
-{
-    std::cout << "Op te lossen graaf: " << std::endl << capaciteiten << std::endl;
-
-    // std::unique_ptr<VolgendPadZoeker<int>> volgendpadzoeker = std::make_unique<LangPadZoeker<int>>();
-    // std::unique_ptr<VolgendPadZoeker<int>> volgendpadzoeker = std::make_unique<KortstePadZoeker<int>>();
-    std::unique_ptr<VolgendPadZoeker<int>> volgendpadzoeker = std::make_unique<GrootsteCapaciteitenPadZoeker<int>>();
-
-    Stroomnetwerk<int> sn{capaciteiten, van, naar, volgendpadzoeker.get()};
-    int max_flow = sn.geef_capaciteit();
-
-    std::cout << "Oplossing: " << std::endl;
-    std::cout << "Max flow: " << max_flow << std::endl;
-    assert(max_flow == verwachte_max_flow);
-    std::cout << std::endl << sn.genereer_dot_code() << std::endl;
-
-    std::ofstream out;
-    out.open(bestandsnaam);
-    out << sn.genereer_dot_code();
-    out.close();
-}
-
 int main()
 {
-    GraafMetTakdata<GERICHT, int> capaciteiten_klein_voorbeeld{4};
-    capaciteiten_klein_voorbeeld.voegVerbindingToe(0, 1, 4);
-    capaciteiten_klein_voorbeeld.voegVerbindingToe(0, 2, 2);
-    capaciteiten_klein_voorbeeld.voegVerbindingToe(1, 2, 6);
-    capaciteiten_klein_voorbeeld.voegVerbindingToe(1, 3, 2);
-    capaciteiten_klein_voorbeeld.voegVerbindingToe(2, 3, 4);
-    los_stroomnetwerk_op(capaciteiten_klein_voorbeeld, 0, 3, "klein_voorbeeld.dot", 6);
-
-    GraafMetTakdata<GERICHT, int> capaciteiten_labo_voorbeeld{8};
-    capaciteiten_labo_voorbeeld.voegVerbindingToe(0, 1, 7);
-    capaciteiten_labo_voorbeeld.voegVerbindingToe(0, 2, 10);
-    capaciteiten_labo_voorbeeld.voegVerbindingToe(1, 4, 4);
-    capaciteiten_labo_voorbeeld.voegVerbindingToe(2, 1, 3);
-    capaciteiten_labo_voorbeeld.voegVerbindingToe(2, 3, 5);
-    capaciteiten_labo_voorbeeld.voegVerbindingToe(2, 5, 6);
-    capaciteiten_labo_voorbeeld.voegVerbindingToe(3, 0, 2);
-    capaciteiten_labo_voorbeeld.voegVerbindingToe(3, 6, 6);
-    capaciteiten_labo_voorbeeld.voegVerbindingToe(4, 5, 6);
-    capaciteiten_labo_voorbeeld.voegVerbindingToe(5, 7, 8);
-    capaciteiten_labo_voorbeeld.voegVerbindingToe(6, 5, 2);
-    capaciteiten_labo_voorbeeld.voegVerbindingToe(6, 7, 7);
-    capaciteiten_labo_voorbeeld.voegVerbindingToe(7, 4, 1);
-    los_stroomnetwerk_op(capaciteiten_labo_voorbeeld, 0, 7, "labo_voorbeeld.dot", 13);
-
-    GraafMetTakdata<GERICHT, int> capaciteiten_terugverbindingen_voorbeeld{6};
-    capaciteiten_terugverbindingen_voorbeeld.voegVerbindingToe(0, 1, 1);
-    capaciteiten_terugverbindingen_voorbeeld.voegVerbindingToe(0, 2, 1);
-    capaciteiten_terugverbindingen_voorbeeld.voegVerbindingToe(1, 3, 1);
-    capaciteiten_terugverbindingen_voorbeeld.voegVerbindingToe(2, 3, 1);
-    capaciteiten_terugverbindingen_voorbeeld.voegVerbindingToe(2, 4, 1);
-    capaciteiten_terugverbindingen_voorbeeld.voegVerbindingToe(3, 5, 1);
-    capaciteiten_terugverbindingen_voorbeeld.voegVerbindingToe(4, 5, 1);
-    los_stroomnetwerk_op(capaciteiten_terugverbindingen_voorbeeld, 0, 5, "met_terugverbindingen.dot", 2);
-
-    GraafMetTakdata<GERICHT, int> capaciteiten_voorbeeld_cnops{6}; // oplossen Met breedte eerst geeft 10
-    capaciteiten_voorbeeld_cnops.voegVerbindingToe(0, 1, 3);
-    capaciteiten_voorbeeld_cnops.voegVerbindingToe(0, 2, 7);
-    capaciteiten_voorbeeld_cnops.voegVerbindingToe(1, 3, 3);
-    capaciteiten_voorbeeld_cnops.voegVerbindingToe(1, 4, 7);
-    capaciteiten_voorbeeld_cnops.voegVerbindingToe(2, 3, 7);
-    capaciteiten_voorbeeld_cnops.voegVerbindingToe(3, 1, 5);
-    capaciteiten_voorbeeld_cnops.voegVerbindingToe(3, 5, 3);
-    capaciteiten_voorbeeld_cnops.voegVerbindingToe(4, 5, 7);
-    los_stroomnetwerk_op(capaciteiten_voorbeeld_cnops, 0, 5, "voorbeeld_cnops.dot", 10);
-
     std::cout << "Done..." << std::endl;
 }
 

@@ -11,7 +11,7 @@ http://www.inwe.be/smf/algoritmen-ii/
 TODO
 - alle veelgebruikte header files in de map libraries steken (graaf.h, csv.h, ...) en herwerken naar C++
 - RZ bomen: verwijderen implementeren
-- Stroomnetwerken: vergrotendpadzoekers implementeren
+- Stroomnetwerken: statistieken genereren en probleem oplossen
 - Boyer Moore 2e suffix en extra varianten 1e suffix implementeren
 - Automaten NA -> DA implementeren
 - Simulated Annealing probprob afwerken (zie vorig jaar)

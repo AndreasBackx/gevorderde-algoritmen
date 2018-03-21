@@ -231,7 +231,7 @@ TEST(stroomnetwerk, cnops_voorbeeld_grootstecapaciteitenpadzoeker)
     const int producent = 0;
     const int verbruiker = 5;
 
-    GraafMetTakdata<GERICHT, int> voorbeeld_cnops{6}; // oplossen Met breedte eerst geeft 10
+    GraafMetTakdata<GERICHT, int> voorbeeld_cnops{6};
     voorbeeld_cnops.voegVerbindingToe(0, 1, 3);
     voorbeeld_cnops.voegVerbindingToe(0, 2, 7);
     voorbeeld_cnops.voegVerbindingToe(1, 3, 3);
@@ -255,7 +255,7 @@ TEST(stroomnetwerk, cnops_voorbeeld_langpadzoeker)
     const int producent = 0;
     const int verbruiker = 5;
 
-    GraafMetTakdata<GERICHT, int> voorbeeld_cnops{6}; // oplossen Met breedte eerst geeft 10
+    GraafMetTakdata<GERICHT, int> voorbeeld_cnops{6};
     voorbeeld_cnops.voegVerbindingToe(0, 1, 3);
     voorbeeld_cnops.voegVerbindingToe(0, 2, 7);
     voorbeeld_cnops.voegVerbindingToe(1, 3, 3);
@@ -279,7 +279,7 @@ TEST(stroomnetwerk, cnops_voorbeeld_kortstepadzoeker)
     const int producent = 0;
     const int verbruiker = 5;
 
-    GraafMetTakdata<GERICHT, int> voorbeeld_cnops{6}; // oplossen Met breedte eerst geeft 10
+    GraafMetTakdata<GERICHT, int> voorbeeld_cnops{6};
     voorbeeld_cnops.voegVerbindingToe(0, 1, 3);
     voorbeeld_cnops.voegVerbindingToe(0, 2, 7);
     voorbeeld_cnops.voegVerbindingToe(1, 3, 3);

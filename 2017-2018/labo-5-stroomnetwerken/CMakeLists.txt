@@ -7,6 +7,7 @@ set(SOURCES
     kortstepadzoeker.h
     volgendpadzoeker.h
     stroomnetwerk.h
+    stroomnetwerkgenerator.h
     )
 
 set(TEST_SOURCES

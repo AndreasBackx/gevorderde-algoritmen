@@ -2,10 +2,9 @@
 #include "kortstepadzoeker.h"
 #include "langpadzoeker.h"
 #include "stroomnetwerk.h"
+#include "stroomnetwerkgenerator.h"
 
-#include <fstream>
 #include <iostream>
-#include <memory>
 
 int main()
 {

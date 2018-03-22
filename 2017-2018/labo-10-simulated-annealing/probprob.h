@@ -60,21 +60,20 @@ protected:
     virtual std::vector<std::pair<T, double>> geefVoortzetting(const std::vector<T>& deeloplossing) = 0;
 };
 
-// stel deeloplossing = {(o1, f1), (o2, f2), (o3, f3), (o4, f4)}
 //
-// sum = f1 + f2 + f3 + f4
-// lot0 = a*(f1 + f2 + f3 + f4)                     = a * f1 + a * f2 + a * f3 + a * f4
-// lot1 = a*(f1 + f2 + f3 + f4) - f1                = (a-1) * f1 + a * f2 + a * f3 + a * f4
-// lot2 = a*(f1 + f2 + f3 + f4) - f1 - f2           = (a-1) * f1 + (a-1) * f2 + a * f3 + a * f4
-// lot3 = a*(f1 + f2 + f3 + f4) - f1 - f2 - f3      = (a-1) * f1 + (a-1) * f2 + (a-1) * f3 + a * f4
+// Stel h0 = 8, h1 = 4, h2 = 12, h3 = 6
+// som = 30
 //
-// bv. f1 = 36, f2 = 53, f3 = 23, f4 = 41, a = 0.6
-// sum = 153
-// (a-1) = -0.4
-// lot0 = a * sum = 91.8
-// lot1 = 38.8
-// lot2 = 15.8
-// lot3 = -7.2
+// We willen dat de grootste h het meeste kans heeft om geselecteerd te worden. De vector kan visueel voorgesteld worden
+// als volgt:
+//
+// <----8---><--4-><-----12-----><---6-->
+//
+// --------------------^ = de geselecteerde waarde door kans: s = a * som = 0.667 * 30 = 20
+//
+// lot0 = 20: 8 < 20 dus we gaan door en lot1 = (lot0 - 8)
+// lot1 = 12: 4 < 12 dus we gaan door en lot2 = (lot1 - 4)
+// lot2 = 8 : 12 > 8 dus het geselecteerde heuristisch gewicht is gevonden
 //
 template <class T>
 std::vector<T> ProbProb<T>::geefProbOplossing()

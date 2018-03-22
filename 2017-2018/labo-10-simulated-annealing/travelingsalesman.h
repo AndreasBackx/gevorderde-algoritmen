@@ -1,27 +1,13 @@
-
 #ifndef TRAVELINGSALESMAN_H
 #define TRAVELINGSALESMAN_H
 
 #include "simulanneal11.h"
+#include "stad.h"
 
 #include <algorithm>
-#include <cmath>
 #include <random>
-#include <sstream>
 #include <string>
 #include <vector>
-
-class Stad
-{
-public:
-    Stad(double x, double y);
-    double bereken_afstand(const Stad& ander) const;
-
-    std::string to_string() const;
-
-    double x;
-    double y;
-};
 
 class TravelingSalesman : public SimulatedAnnealing<std::vector<Stad>>
 {
@@ -37,31 +23,8 @@ protected:
     double p(double T, double deltaf) override;
     void updateT() override;
 
-    double alpha = 0.999999; // Zelfgekozen
+    double alpha = 0.999999; // Zelf gekozen
 };
-
-////////////////////////////////////////////////////////////////////////////////
-
-Stad::Stad(double x, double y) : x{x}, y{y}
-{
-}
-
-double Stad::bereken_afstand(const Stad& ander) const
-{
-    double x_verschil = x - ander.x;
-    double y_verschil = y - ander.y;
-
-    return sqrt((x_verschil * x_verschil) + (y_verschil * y_verschil));
-}
-
-std::string Stad::to_string() const
-{
-    std::stringstream out;
-
-    out << "(" << x << ", " << y << ")";
-
-    return out.str();
-}
 
 TravelingSalesman::TravelingSalesman(const std::vector<Stad>& steden)
 {
@@ -106,9 +69,11 @@ std::vector<Stad> TravelingSalesman::initialSolution()
 
 std::vector<Stad> TravelingSalesman::pickAtRandom(const std::vector<Stad>& s)
 {
+    assert(s.size() > 0);
+
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(0, (s.size() - 1));
+    std::uniform_int_distribution<int> dis(0, (s.size() - 1));
 
     int random_stad_1 = dis(gen);
     int random_stad_2 = dis(gen);

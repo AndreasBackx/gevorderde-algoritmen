@@ -24,6 +24,15 @@ set(SOURCES
     pugixml.hpp
     simulanneal11.h
     travelingsalesman.h
+    travelingsalesman-probprob.h
     )
+
+set(ADDITIONAL_INPUT_FILES
+    kerstnet.xml
+    )
+
+foreach(file ${ADDITIONAL_INPUT_FILES})
+    configure_file(${file} ${file} COPYONLY)
+endforeach(file)
 
 add_executable(${PROJECT_NAME} ${SOURCES})

@@ -14,5 +14,4 @@ TODO
 - Stroomnetwerken: statistieken genereren en probleem oplossen
 - Boyer Moore 2e suffix en extra varianten 1e suffix implementeren
 - Automaten NA -> DA implementeren
-- Simulated Annealing probprob afwerken (zie vorig jaar)
 - 2016-2017 nakijken en afwerken

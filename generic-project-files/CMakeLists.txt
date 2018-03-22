@@ -2,13 +2,13 @@
 set(SOURCES
     )
 
+set(ADDITIONAL_INPUT_FILES
+    )
+
 set(TEST_SOURCES
-    woordstroom.h
-    woordstroom_test.cpp
     )
 
 set(ADDITIONAL_TEST_FILES
-    test.txt
     )
 
 ### executable #################################################################
@@ -29,6 +29,10 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 endif()
 
 if (SOURCES)
+    foreach(file ${ADDITIONAL_INPUT_FILES})
+        configure_file(${file} ${file} COPYONLY)
+    endforeach(file)
+
     add_executable(${PROJECT_NAME} ${SOURCES})
 endif()
 
@@ -70,9 +74,9 @@ if (TEST_SOURCES)
         include_directories("${gtest_SOURCE_DIR}/include")
     endif()
 
-    foreach(test_file ${ADDITIONAL_TEST_FILES})
-        configure_file(${test_file} ${test_file} COPYONLY)
-    endforeach(test_file)
+    foreach(file ${ADDITIONAL_TEST_FILES})
+        configure_file(${file} ${file} COPYONLY)
+    endforeach(file)
 
     enable_testing()
     add_executable(unittests ${TEST_SOURCES})

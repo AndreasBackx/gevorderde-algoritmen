@@ -8,6 +8,16 @@ http://www.inwe.be/smf/algoritmen-ii/
 
 -----
 
+Hoe te builden:
+
+- Ga naar de gewenste folder
+- $ ./generate_makefile.sh
+- $ cd build
+- voor gcc/clang: make
+- voor visual studio: open het gegenereerde project in Visual Studio
+
+-----
+
 TODO
 - alle veelgebruikte header files in de map libraries steken (graaf.h, csv.h, ...) en herwerken naar C++
 - RZ bomen: verwijderen implementeren

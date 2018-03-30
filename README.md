@@ -13,7 +13,7 @@ Hoe te builden:
 - Ga naar de gewenste folder
 - $ ./generate_makefile.sh
 - $ cd build
-- voor gcc/clang: make
+- voor gcc/clang: $ make
 - voor visual studio: open het gegenereerde project in Visual Studio
 
 -----

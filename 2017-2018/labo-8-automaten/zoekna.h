@@ -1,11 +1,11 @@
 #include "thompsonna.h"
 
+#include <map>
 #include <stack>
+#include <utility>
 
 #ifndef ZOEKNA_H
 #define ZOEKNA_H
-
-// De keuze van datastructuren kan beter (nu werkt alles met vectoren)
 
 class ZoekNA
 {
@@ -25,10 +25,17 @@ protected:
                                                           uchar karakter) const;
 
     const ThompsonNA& nda;
+    std::vector<std::multimap<uchar, int>> transitietabel;
 };
 
-ZoekNA::ZoekNA(const ThompsonNA& nda) : nda{nda}
+ZoekNA::ZoekNA(const ThompsonNA& nda) : nda{nda}, transitietabel(nda.geefAantalStatenbits())
 {
+    for (int i = 0; i < nda.geefAantalStatenbits(); i++)
+    {
+        const Verbinding& verbinding = nda[i];
+
+        transitietabel[verbinding.bron].insert(std::make_pair(verbinding.karakter, verbinding.doel));
+    }
 }
 
 std::vector<bool> ZoekNA::bepaal_epsilon_sluiting(const std::vector<bool>& geactiveerde_staten) const
@@ -49,15 +56,12 @@ std::vector<bool> ZoekNA::bepaal_epsilon_sluiting(const std::vector<bool>& geact
         int huidige_staat = te_overlopen_staten.top();
         te_overlopen_staten.pop();
 
-        for (int i = 0; i < nda.geefAantalStatenbits(); i++)
-        {
-            const Verbinding& verbinding = nda[i];
+        auto overgangen = transitietabel[huidige_staat].equal_range(epsilon);
 
-            if ((verbinding.bron == huidige_staat) && (verbinding.karakter == epsilon))
-            {
-                nieuwe_geactiveerde_staten[verbinding.doel] = true;
-                te_overlopen_staten.push(verbinding.doel);
-            }
+        for (auto it = overgangen.first; it != overgangen.second; it++)
+        {
+            nieuwe_geactiveerde_staten[it->second] = true;
+            te_overlopen_staten.push(it->second);
         }
     }
 
@@ -69,13 +73,16 @@ std::vector<bool> ZoekNA::bepaal_volgende_geactiveerde_staten(const std::vector<
 {
     std::vector<bool> nieuwe_geactiveerde_staten(nda.geefAantalStatenbits(), false);
 
-    for (int i = 0; i < nda.geefAantalStatenbits(); i++)
+    for (int i = 0; i < geactiveerde_staten.size(); i++)
     {
-        const Verbinding& verbinding = nda[i];
-
-        if (geactiveerde_staten[verbinding.bron] && (verbinding.karakter == karakter))
+        if (geactiveerde_staten[i])
         {
-            nieuwe_geactiveerde_staten[verbinding.doel] = true;
+            auto overgangen = transitietabel[i].equal_range(karakter);
+
+            for (auto it = overgangen.first; it != overgangen.second; it++)
+            {
+                nieuwe_geactiveerde_staten[it->second] = true;
+            }
         }
     }
 
@@ -99,13 +106,6 @@ std::set<int> ZoekNA::bevat_regexp(const std::string& regel) const
         geactiveerde_staten[0] = true;
         geactiveerde_staten = bepaal_epsilon_sluiting(geactiveerde_staten);
 
-        // std::cout << "Voor \"" << regel[i] << "\" : ";
-        // for (const auto& s : geactiveerde_staten)
-        // {
-        //     std::cout << (s ? "1" : "0");
-        // }
-        // std::cout << "\t";
-
         std::vector<bool> nieuwe_geactiveerde_staten =
                 bepaal_volgende_geactiveerde_staten(geactiveerde_staten, regel[i]);
 
@@ -115,13 +115,6 @@ std::set<int> ZoekNA::bevat_regexp(const std::string& regel) const
         }
 
         geactiveerde_staten = std::move(nieuwe_geactiveerde_staten);
-
-        // std::cout << "Na \"" << regel[i] << "\" : ";
-        // for (const auto& s : geactiveerde_staten)
-        // {
-        //     std::cout << (s ? "1" : "0");
-        // }
-        // std::cout << std::endl;
     }
 
     return gevonden_indexen;

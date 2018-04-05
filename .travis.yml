@@ -7,11 +7,6 @@ compiler:
     - clang
     # - gcc
 
-addons:
-    apt:
-        packages:
-            - clang-5.0
-    
 env:
     - TEST_DIR=libraries/graaf
     - TEST_DIR=libraries/woordstroom

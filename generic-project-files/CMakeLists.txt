@@ -80,7 +80,7 @@ if (TEST_SOURCES)
 
     enable_testing()
     add_executable(unittests ${TEST_SOURCES})
-    target_link_libraries(unittests gtest_main)
+    target_link_libraries(unittests gtest_main gmock)
     add_test(unittests unittests)
 
     add_custom_command(TARGET unittests

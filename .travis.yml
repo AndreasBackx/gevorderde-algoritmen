@@ -11,8 +11,8 @@ env:
     - TEST_DIR=libraries/graaf
     - TEST_DIR=libraries/woordstroom
     - TEST_DIR=libraries/csv
-    - TEST_DIR=2017-2018/labo-5-stroomnetwerken
-    # - TEST_DIR=2017-2018/labo-8-automaten # travis kent nog geen c++14
+    # - TEST_DIR=2017-2018/labo-5-stroomnetwerken # travis kent nog geen c++14
+    - TEST_DIR=2017-2018/labo-8-automaten
 
 before_script:
     - cd $TEST_DIR

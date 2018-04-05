@@ -1,6 +1,9 @@
 #include "thompsonna.h"
 
+#include <cassert>
+#include <fstream>
 #include <map>
+#include <set>
 #include <stack>
 #include <utility>
 
@@ -18,6 +21,7 @@ public:
     virtual ~ZoekNA() = default;
 
     std::set<int> bevat_regexp(const std::string& regel) const;
+    std::vector<std::pair<int, std::string>> grep_bestand(const std::string& bestandsnaam) const;
 
 protected:
     std::vector<bool> bepaal_epsilon_sluiting(const std::vector<bool>& geactiveerde_staten) const;
@@ -118,6 +122,32 @@ std::set<int> ZoekNA::bevat_regexp(const std::string& regel) const
     }
 
     return gevonden_indexen;
+}
+
+std::vector<std::pair<int, std::string>> ZoekNA::grep_bestand(const std::string& bestandsnaam) const
+{
+    std::vector<std::pair<int, std::string>> gevonden_regels;
+
+    std::ifstream in(bestandsnaam);
+    assert(in);
+
+    int regelnr = 1;
+    std::string regel;
+    while (getline(in, regel))
+    {
+        std::set<int> gevonden_indexen = bevat_regexp(regel);
+
+        if (!gevonden_indexen.empty())
+        {
+            gevonden_regels.push_back(std::make_pair(regelnr, regel));
+        }
+
+        regelnr++;
+    }
+
+    in.close();
+
+    return gevonden_regels;
 }
 
 #endif

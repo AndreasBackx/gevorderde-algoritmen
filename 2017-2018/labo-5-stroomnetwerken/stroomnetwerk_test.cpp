@@ -24,7 +24,7 @@ TEST(stroomnetwerk, klein_voorbeeld_grootstecapaciteitenpadzoeker)
     Stroomnetwerk<int> sn{klein_voorbeeld, producent, verbruiker, volgendpadzoeker.get()};
     int max_flow = sn.geef_capaciteit();
 
-    assert(max_flow == verwachte_max_flow);
+    ASSERT_EQ(max_flow, verwachte_max_flow);
 }
 
 TEST(stroomnetwerk, klein_voorbeeld_langpadzoeker)
@@ -45,7 +45,7 @@ TEST(stroomnetwerk, klein_voorbeeld_langpadzoeker)
     Stroomnetwerk<int> sn{klein_voorbeeld, producent, verbruiker, volgendpadzoeker.get()};
     int max_flow = sn.geef_capaciteit();
 
-    assert(max_flow == verwachte_max_flow);
+    ASSERT_EQ(max_flow, verwachte_max_flow);
 }
 
 TEST(stroomnetwerk, klein_voorbeeld_kortstepadzoeker)
@@ -66,7 +66,7 @@ TEST(stroomnetwerk, klein_voorbeeld_kortstepadzoeker)
     Stroomnetwerk<int> sn{klein_voorbeeld, producent, verbruiker, volgendpadzoeker.get()};
     int max_flow = sn.geef_capaciteit();
 
-    assert(max_flow == verwachte_max_flow);
+    ASSERT_EQ(max_flow, verwachte_max_flow);
 }
 
 TEST(stroomnetwerk, labo_voorbeeld_grootstecapaciteitenpadzoeker)
@@ -95,7 +95,7 @@ TEST(stroomnetwerk, labo_voorbeeld_grootstecapaciteitenpadzoeker)
     Stroomnetwerk<int> sn{labo_voorbeeld, producent, verbruiker, volgendpadzoeker.get()};
     int max_flow = sn.geef_capaciteit();
 
-    assert(max_flow == verwachte_max_flow);
+    ASSERT_EQ(max_flow, verwachte_max_flow);
 }
 
 TEST(stroomnetwerk, labo_voorbeeld_langpadzoeker)
@@ -124,7 +124,7 @@ TEST(stroomnetwerk, labo_voorbeeld_langpadzoeker)
     Stroomnetwerk<int> sn{labo_voorbeeld, producent, verbruiker, volgendpadzoeker.get()};
     int max_flow = sn.geef_capaciteit();
 
-    assert(max_flow == verwachte_max_flow);
+    ASSERT_EQ(max_flow, verwachte_max_flow);
 }
 
 TEST(stroomnetwerk, labo_voorbeeld_kortstepadzoeker)
@@ -153,7 +153,7 @@ TEST(stroomnetwerk, labo_voorbeeld_kortstepadzoeker)
     Stroomnetwerk<int> sn{labo_voorbeeld, producent, verbruiker, volgendpadzoeker.get()};
     int max_flow = sn.geef_capaciteit();
 
-    assert(max_flow == verwachte_max_flow);
+    ASSERT_EQ(max_flow, verwachte_max_flow);
 }
 
 TEST(stroomnetwerk, terugverbindingen_voorbeeld_grootstecapaciteitenpadzoeker)
@@ -176,7 +176,7 @@ TEST(stroomnetwerk, terugverbindingen_voorbeeld_grootstecapaciteitenpadzoeker)
     Stroomnetwerk<int> sn{terugverbindingen_voorbeeld, producent, verbruiker, volgendpadzoeker.get()};
     int max_flow = sn.geef_capaciteit();
 
-    assert(max_flow == verwachte_max_flow);
+    ASSERT_EQ(max_flow, verwachte_max_flow);
 }
 
 TEST(stroomnetwerk, terugverbindingen_voorbeeld_langpadzoeker)
@@ -199,7 +199,7 @@ TEST(stroomnetwerk, terugverbindingen_voorbeeld_langpadzoeker)
     Stroomnetwerk<int> sn{terugverbindingen_voorbeeld, producent, verbruiker, volgendpadzoeker.get()};
     int max_flow = sn.geef_capaciteit();
 
-    assert(max_flow == verwachte_max_flow);
+    ASSERT_EQ(max_flow, verwachte_max_flow);
 }
 
 TEST(stroomnetwerk, terugverbindingen_voorbeeld_kortstepadzoeker)
@@ -222,7 +222,7 @@ TEST(stroomnetwerk, terugverbindingen_voorbeeld_kortstepadzoeker)
     Stroomnetwerk<int> sn{terugverbindingen_voorbeeld, producent, verbruiker, volgendpadzoeker.get()};
     int max_flow = sn.geef_capaciteit();
 
-    assert(max_flow == verwachte_max_flow);
+    ASSERT_EQ(max_flow, verwachte_max_flow);
 }
 
 TEST(stroomnetwerk, cnops_voorbeeld_grootstecapaciteitenpadzoeker)
@@ -246,7 +246,7 @@ TEST(stroomnetwerk, cnops_voorbeeld_grootstecapaciteitenpadzoeker)
     Stroomnetwerk<int> sn{voorbeeld_cnops, producent, verbruiker, volgendpadzoeker.get()};
     int max_flow = sn.geef_capaciteit();
 
-    assert(max_flow == verwachte_max_flow);
+    ASSERT_EQ(max_flow, verwachte_max_flow);
 }
 
 TEST(stroomnetwerk, cnops_voorbeeld_langpadzoeker)
@@ -270,7 +270,7 @@ TEST(stroomnetwerk, cnops_voorbeeld_langpadzoeker)
     Stroomnetwerk<int> sn{voorbeeld_cnops, producent, verbruiker, volgendpadzoeker.get()};
     int max_flow = sn.geef_capaciteit();
 
-    assert(max_flow == verwachte_max_flow);
+    ASSERT_EQ(max_flow, verwachte_max_flow);
 }
 
 TEST(stroomnetwerk, cnops_voorbeeld_kortstepadzoeker)
@@ -294,5 +294,5 @@ TEST(stroomnetwerk, cnops_voorbeeld_kortstepadzoeker)
     Stroomnetwerk<int> sn{voorbeeld_cnops, producent, verbruiker, volgendpadzoeker.get()};
     int max_flow = sn.geef_capaciteit();
 
-    assert(max_flow == verwachte_max_flow);
+    ASSERT_EQ(max_flow, verwachte_max_flow);
 }

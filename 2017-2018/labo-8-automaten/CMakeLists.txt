@@ -10,6 +10,7 @@ set(ADDITIONAL_INPUT_FILES
     )
 
 set(TEST_SOURCES
+    zoekna_test.cpp
     )
 
 set(ADDITIONAL_TEST_FILES
@@ -25,7 +26,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_BUILD_TYPE debug)
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -pg")
     set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*;-header-filter=.*")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra")
@@ -85,7 +86,7 @@ if (TEST_SOURCES)
 
     enable_testing()
     add_executable(unittests ${TEST_SOURCES})
-    target_link_libraries(unittests gtest_main)
+    target_link_libraries(unittests gtest_main gmock)
     add_test(unittests unittests)
 
     add_custom_command(TARGET unittests

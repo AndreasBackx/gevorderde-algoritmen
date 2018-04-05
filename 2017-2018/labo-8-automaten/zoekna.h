@@ -24,35 +24,31 @@ public:
     std::vector<std::pair<int, std::string>> grep_bestand(const std::string& bestandsnaam) const;
 
 protected:
-    std::vector<bool> bepaal_epsilon_sluiting(const std::vector<bool>& geactiveerde_staten) const;
-    std::vector<bool> bepaal_volgende_geactiveerde_staten(const std::vector<bool>& geactiveerde_staten,
-                                                          uchar karakter) const;
+    std::set<int> bepaal_epsilon_sluiting(const std::set<int>& geactiveerde_staten) const;
+    std::set<int> bepaal_volgende_geactiveerde_staten(const std::set<int>& geactiveerde_staten, uchar karakter) const;
 
     const ThompsonNA& nda;
-    std::vector<std::multimap<uchar, int>> transitietabel;
+    std::vector<std::multimap<uchar, int>> overgangstabel;
 };
 
-ZoekNA::ZoekNA(const ThompsonNA& nda) : nda{nda}, transitietabel(nda.geefAantalStatenbits())
+ZoekNA::ZoekNA(const ThompsonNA& nda) : nda{nda}, overgangstabel(nda.geefAantalStatenbits())
 {
     for (int i = 0; i < nda.geefAantalStatenbits(); i++)
     {
         const Verbinding& verbinding = nda[i];
 
-        transitietabel[verbinding.bron].insert(std::make_pair(verbinding.karakter, verbinding.doel));
+        overgangstabel[verbinding.bron].insert(std::make_pair(verbinding.karakter, verbinding.doel));
     }
 }
 
-std::vector<bool> ZoekNA::bepaal_epsilon_sluiting(const std::vector<bool>& geactiveerde_staten) const
+std::set<int> ZoekNA::bepaal_epsilon_sluiting(const std::set<int>& geactiveerde_staten) const
 {
-    std::vector<bool> nieuwe_geactiveerde_staten(geactiveerde_staten);
+    std::set<int> nieuwe_geactiveerde_staten(geactiveerde_staten);
     std::stack<int> te_overlopen_staten;
 
-    for (int i = 0; i < geactiveerde_staten.size(); i++)
+    for (const auto& staat : geactiveerde_staten)
     {
-        if (geactiveerde_staten[i])
-        {
-            te_overlopen_staten.push(i);
-        }
+        te_overlopen_staten.push(staat);
     }
 
     while (!te_overlopen_staten.empty())
@@ -60,11 +56,11 @@ std::vector<bool> ZoekNA::bepaal_epsilon_sluiting(const std::vector<bool>& geact
         int huidige_staat = te_overlopen_staten.top();
         te_overlopen_staten.pop();
 
-        auto overgangen = transitietabel[huidige_staat].equal_range(epsilon);
+        auto overgangen = overgangstabel[huidige_staat].equal_range(epsilon);
 
         for (auto it = overgangen.first; it != overgangen.second; it++)
         {
-            nieuwe_geactiveerde_staten[it->second] = true;
+            nieuwe_geactiveerde_staten.insert(it->second);
             te_overlopen_staten.push(it->second);
         }
     }
@@ -72,21 +68,18 @@ std::vector<bool> ZoekNA::bepaal_epsilon_sluiting(const std::vector<bool>& geact
     return nieuwe_geactiveerde_staten;
 }
 
-std::vector<bool> ZoekNA::bepaal_volgende_geactiveerde_staten(const std::vector<bool>& geactiveerde_staten,
-                                                              uchar karakter) const
+std::set<int> ZoekNA::bepaal_volgende_geactiveerde_staten(const std::set<int>& geactiveerde_staten,
+                                                          uchar karakter) const
 {
-    std::vector<bool> nieuwe_geactiveerde_staten(nda.geefAantalStatenbits(), false);
+    std::set<int> nieuwe_geactiveerde_staten;
 
-    for (int i = 0; i < geactiveerde_staten.size(); i++)
+    for (const auto& staat : geactiveerde_staten)
     {
-        if (geactiveerde_staten[i])
-        {
-            auto overgangen = transitietabel[i].equal_range(karakter);
+        auto overgangen = overgangstabel[staat].equal_range(karakter);
 
-            for (auto it = overgangen.first; it != overgangen.second; it++)
-            {
-                nieuwe_geactiveerde_staten[it->second] = true;
-            }
+        for (auto it = overgangen.first; it != overgangen.second; it++)
+        {
+            nieuwe_geactiveerde_staten.insert(it->second);
         }
     }
 
@@ -103,17 +96,16 @@ std::set<int> ZoekNA::bevat_regexp(const std::string& regel) const
     }
 
     std::set<int> gevonden_indexen;
-    std::vector<bool> geactiveerde_staten(nda.geefAantalStatenbits(), false);
+    std::set<int> geactiveerde_staten;
 
     for (int i = 0; i < regel.size(); i++)
     {
-        geactiveerde_staten[0] = true;
+        geactiveerde_staten.insert(0);
         geactiveerde_staten = bepaal_epsilon_sluiting(geactiveerde_staten);
 
-        std::vector<bool> nieuwe_geactiveerde_staten =
-                bepaal_volgende_geactiveerde_staten(geactiveerde_staten, regel[i]);
+        std::set<int> nieuwe_geactiveerde_staten = bepaal_volgende_geactiveerde_staten(geactiveerde_staten, regel[i]);
 
-        if (nieuwe_geactiveerde_staten[nda.geefAantalStatenbits() - 1])
+        if (nieuwe_geactiveerde_staten.find(nda.geefAantalStatenbits() - 1) != nieuwe_geactiveerde_staten.end())
         {
             gevonden_indexen.insert(i);
         }

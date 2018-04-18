@@ -8,7 +8,7 @@ http://www.inwe.be/smf/algoritmen-ii/
 
 -----
 
-Hoe te builden:
+### Hoe te builden:
 
 - Ga naar de gewenste folder
 - $ ./generate_makefile.sh
@@ -18,10 +18,7 @@ Hoe te builden:
 
 -----
 
-TODO
-- alle veelgebruikte header files in de map libraries steken (graaf.h, csv.h, ...) en herwerken naar C++
-- RZ bomen: verwijderen implementeren
+### TODO
+
 - Stroomnetwerken: statistieken genereren en probleem oplossen
 - Boyer Moore 2e suffix en extra varianten 1e suffix implementeren
-- Automaten NA -> DA implementeren
-- 2016-2017 nakijken en afwerken

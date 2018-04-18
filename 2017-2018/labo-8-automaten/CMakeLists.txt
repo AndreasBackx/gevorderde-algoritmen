@@ -4,6 +4,7 @@ set(SOURCES
     regexp11.h
     thompsonna.h
     zoekna.h
+    zoekda.h
     )
 
 set(ADDITIONAL_INPUT_FILES
@@ -11,10 +12,11 @@ set(ADDITIONAL_INPUT_FILES
 
 set(TEST_SOURCES
     zoekna_test.cpp
+    zoekda_test.cpp
     )
 
 set(ADDITIONAL_TEST_FILES
-    thompsonna.h
+    test_input.txt
     )
 
 ### executable #################################################################
@@ -26,7 +28,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_BUILD_TYPE debug)
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -pg")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra")
     set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*;-header-filter=.*")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra")
@@ -35,9 +37,9 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 endif()
 
 if (SOURCES)
-    foreach(file ${ADDITIONAL_INPUT_FILES})
-        configure_file(${file} ${file} COPYONLY)
-    endforeach(file)
+    foreach(FILE ${ADDITIONAL_INPUT_FILES})
+        configure_file(${FILE} ${FILE} COPYONLY)
+    endforeach(FILE)
 
     add_executable(${PROJECT_NAME} ${SOURCES})
 endif()
@@ -80,18 +82,27 @@ if (TEST_SOURCES)
         include_directories("${gtest_SOURCE_DIR}/include")
     endif()
 
-    foreach(file ${ADDITIONAL_TEST_FILES})
-        configure_file(${file} ${file} COPYONLY)
-    endforeach(file)
+    foreach(FILE ${ADDITIONAL_TEST_FILES})
+        configure_file(${FILE} ${FILE} COPYONLY)
+    endforeach(FILE)
 
     enable_testing()
-    add_executable(unittests ${TEST_SOURCES})
-    target_link_libraries(unittests gtest_main gmock)
-    add_test(unittests unittests)
 
-    add_custom_command(TARGET unittests
-        POST_BUILD
-        COMMAND $<TARGET_FILE:unittests>
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        COMMENT "Running ${PROJECT_NAME} unittests" VERBATIM)
+    foreach(FILE ${TEST_SOURCES})
+        # TODO bekijken of we een executable kunnen maken met alle tests erin, 
+        # ipv een executable per test file
+
+        string(REGEX REPLACE "\\.[^.]*$" "" FILE_WITHOUT_EXT ${FILE})
+        set(TEST_EXECUTABLE_NAME "unittest_${FILE_WITHOUT_EXT}")
+
+        add_executable(${TEST_EXECUTABLE_NAME} ${FILE})
+        target_link_libraries(${TEST_EXECUTABLE_NAME} gtest_main gmock)
+        add_test("${TEST_EXECUTABLE_NAME}_ctest" ${TEST_EXECUTABLE_NAME})
+
+        add_custom_command(TARGET ${TEST_EXECUTABLE_NAME}
+            POST_BUILD
+            COMMAND $<TARGET_FILE:${TEST_EXECUTABLE_NAME}>
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            COMMENT "Running ${PROJECT_NAME} ${TEST_EXECUTABLE_NAME}" VERBATIM)
+    endforeach(FILE)
 endif()

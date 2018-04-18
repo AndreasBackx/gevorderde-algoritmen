@@ -1,15 +1,16 @@
 #ifndef THOMPSONNA_H
 #define THOMPSONNA_H
 
+#include "regexp11.h"
+
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
+#include <limits>
 
-#include "regexp11.h"
-
-const uchar epsilon = 0;
+const uchar epsilon = std::numeric_limits<uchar>::max();
 // ThompsonNA: met een beginstatenbit (index 0) en een eindstatenbit (index aantalStatenbits-1). Alleen gebruikt om
 // algoritme van Thompson te implementeren
 
@@ -42,6 +43,8 @@ protected:
     int aantalStatenbits;
     std::vector<Verbinding> overgang;
 };
+
+/******************************************************************************/
 
 Verbinding::Verbinding(int bron, int doel, uchar karakter) : bron{bron}, doel{doel}, karakter{karakter}
 {

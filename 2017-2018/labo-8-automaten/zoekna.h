@@ -1,19 +1,21 @@
+#ifndef ZOEKNA_H
+#define ZOEKNA_H
+
 #include "thompsonna.h"
 
 #include <cassert>
 #include <fstream>
 #include <map>
 #include <set>
+#include <sstream>
 #include <stack>
 #include <utility>
-
-#ifndef ZOEKNA_H
-#define ZOEKNA_H
 
 class ZoekNA
 {
 public:
-    ZoekNA(const ThompsonNA& nda);
+    ZoekNA(const ThompsonNA& na_thompson);
+    ZoekNA(const std::vector<Verbinding>& verbindingen);
     ZoekNA(const ZoekNA& other) = default;
     ZoekNA(ZoekNA&& other) = default;
     ZoekNA& operator=(const ZoekNA& other) = default;
@@ -22,23 +24,36 @@ public:
 
     std::set<int> bevat_regexp(const std::string& regel) const;
     std::vector<std::pair<int, std::string>> grep_bestand(const std::string& bestandsnaam) const;
-
-protected:
     std::set<int> bepaal_epsilon_sluiting(const std::set<int>& geactiveerde_staten) const;
     std::set<int> bepaal_volgende_geactiveerde_staten(const std::set<int>& geactiveerde_staten, uchar karakter) const;
+    int geef_eindstaat_index() const;
+    std::vector<std::multimap<uchar, int>> geef_overgangstabel() const;
+    std::string to_string() const;
 
-    const ThompsonNA& nda;
+protected:
+    const ThompsonNA& na_thompson;
     std::vector<std::multimap<uchar, int>> overgangstabel;
 };
 
-ZoekNA::ZoekNA(const ThompsonNA& nda) : nda{nda}, overgangstabel(nda.geefAantalStatenbits())
+ZoekNA::ZoekNA(const ThompsonNA& na_thompson)
+: na_thompson{na_thompson}, overgangstabel(na_thompson.geefAantalStatenbits())
 {
-    for (int i = 0; i < nda.geefAantalStatenbits(); i++)
+    for (int i = 0; i < na_thompson.geefAantalVerbindingen(); i++)
     {
-        const Verbinding& verbinding = nda[i];
+        const Verbinding& verbinding = na_thompson[i];
 
         overgangstabel[verbinding.bron].insert(std::make_pair(verbinding.karakter, verbinding.doel));
     }
+}
+
+std::vector<std::multimap<uchar, int>> ZoekNA::geef_overgangstabel() const
+{
+    return overgangstabel;
+}
+
+int ZoekNA::geef_eindstaat_index() const
+{
+    return (na_thompson.geefAantalStatenbits() - 1);
 }
 
 std::set<int> ZoekNA::bepaal_epsilon_sluiting(const std::set<int>& geactiveerde_staten) const
@@ -90,7 +105,7 @@ std::set<int> ZoekNA::bepaal_volgende_geactiveerde_staten(const std::set<int>& g
 
 std::set<int> ZoekNA::bevat_regexp(const std::string& regel) const
 {
-    if (regel.size() == 0)
+    if (regel.empty())
     {
         return std::set<int>{};
     }
@@ -105,7 +120,7 @@ std::set<int> ZoekNA::bevat_regexp(const std::string& regel) const
 
         std::set<int> nieuwe_geactiveerde_staten = bepaal_volgende_geactiveerde_staten(geactiveerde_staten, regel[i]);
 
-        if (nieuwe_geactiveerde_staten.find(nda.geefAantalStatenbits() - 1) != nieuwe_geactiveerde_staten.end())
+        if (nieuwe_geactiveerde_staten.find(na_thompson.geefAantalStatenbits() - 1) != nieuwe_geactiveerde_staten.end())
         {
             gevonden_indexen.insert(i);
         }
@@ -120,7 +135,7 @@ std::vector<std::pair<int, std::string>> ZoekNA::grep_bestand(const std::string&
 {
     std::vector<std::pair<int, std::string>> gevonden_regels;
 
-    std::ifstream in(bestandsnaam);
+    std::ifstream in{bestandsnaam};
     assert(in);
 
     int regelnr = 1;
@@ -131,7 +146,7 @@ std::vector<std::pair<int, std::string>> ZoekNA::grep_bestand(const std::string&
 
         if (!gevonden_indexen.empty())
         {
-            gevonden_regels.push_back(std::make_pair(regelnr, regel));
+            gevonden_regels.emplace_back(regelnr, regel);
         }
 
         regelnr++;
@@ -140,6 +155,37 @@ std::vector<std::pair<int, std::string>> ZoekNA::grep_bestand(const std::string&
     in.close();
 
     return gevonden_regels;
+}
+
+std::string ZoekNA::to_string() const
+{
+    std::stringstream out;
+
+    out << "digraph zoekna {" << std::endl;
+    out << "\trankdir=\"LR\"" << std::endl;
+
+    for (int i = 0; i < overgangstabel.size(); i++)
+    {
+        for (const auto& overgang : overgangstabel[i])
+        {
+            out << "\t" << i << " -> " << overgang.second << " [label=\"";
+
+            if (overgang.first != epsilon)
+            {
+                out << overgang.first;
+            }
+            else
+            {
+                out << "epsilon";
+            }
+
+            out << "\"];" << std::endl;
+        }
+    }
+
+    out << "}" << std::endl;
+
+    return out.str();
 }
 
 #endif

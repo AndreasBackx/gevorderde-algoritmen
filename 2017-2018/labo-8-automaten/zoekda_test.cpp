@@ -25,6 +25,7 @@ TEST(zoekda, grep_bestand)
     std::vector<std::pair<int, std::string>> resultaten = da_zoeker.grep_bestand(bestandsnaam);
 
     ASSERT_THAT(resultaten, ::testing::ContainerEq(verwachte_waarden));
+    ASSERT_THAT(resultaten, ::testing::ContainerEq(na_zoeker.grep_bestand(bestandsnaam)));
 }
 
 TEST(zoekda, genereer_grafiek_voorbeeld1)

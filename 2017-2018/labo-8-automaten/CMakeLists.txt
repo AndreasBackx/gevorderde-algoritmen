@@ -38,6 +38,7 @@ endif()
 
 if (SOURCES)
     foreach(FILE ${ADDITIONAL_INPUT_FILES})
+        message("Copying file ${FILE}")
         configure_file(${FILE} ${FILE} COPYONLY)
     endforeach(FILE)
 
@@ -83,6 +84,7 @@ if (TEST_SOURCES)
     endif()
 
     foreach(FILE ${ADDITIONAL_TEST_FILES})
+        message("Copying file ${FILE}")
         configure_file(${FILE} ${FILE} COPYONLY)
     endforeach(FILE)
 

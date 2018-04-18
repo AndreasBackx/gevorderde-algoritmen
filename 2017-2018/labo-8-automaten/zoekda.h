@@ -50,33 +50,30 @@ ZoekDA::ZoekDA(const ZoekNA& na)
         te_bezoeken_toestanden.pop();
 
         for (int i = 0; i < std::numeric_limits<uchar>::max(); i++)
-        // for (int i = (int) 'a'; i <= (int) 'c'; i++)
         {
             uchar karakter = static_cast<uchar>(i);
+            assert(karakter != epsilon);
 
-            if (karakter != epsilon)
+            std::set<int> volgende_toestand =
+                    na.bepaal_epsilon_sluiting(na.bepaal_volgende_geactiveerde_staten(toestand, karakter));
+
+            if (!volgende_toestand.empty())
             {
-                std::set<int> volgende_toestand =
-                        na.bepaal_epsilon_sluiting(na.bepaal_volgende_geactiveerde_staten(toestand, karakter));
-
-                if (!volgende_toestand.empty())
+                if (volgnummers.find(volgende_toestand) == volgnummers.end())
                 {
-                    if (volgnummers.find(volgende_toestand) == volgnummers.end())
+                    volgnummers[volgende_toestand] = volgnummer;
+
+                    if (volgende_toestand.find(na.geef_eindstaat_index()) != volgende_toestand.end())
                     {
-                        volgnummers[volgende_toestand] = volgnummer;
-
-                        if (volgende_toestand.find(na.geef_eindstaat_index()) != volgende_toestand.end())
-                        {
-                            eindstaten.insert(volgnummer);
-                        }
-
-                        volgnummer++;
-                        overgangstabel.resize(volgnummer);
-                        te_bezoeken_toestanden.push(volgende_toestand);
+                        eindstaten.insert(volgnummer);
                     }
 
-                    overgangstabel[volgnummers[toestand]][karakter] = volgnummers[volgende_toestand];
+                    volgnummer++;
+                    overgangstabel.resize(volgnummer);
+                    te_bezoeken_toestanden.push(volgende_toestand);
                 }
+
+                overgangstabel[volgnummers[toestand]][karakter] = volgnummers[volgende_toestand];
             }
             else
             {
@@ -84,29 +81,6 @@ ZoekDA::ZoekDA(const ZoekNA& na)
             }
         }
     }
-
-    // std::cout << std::endl << "   ";
-    // for (int i = 32; i < 127; i++)
-    // {
-    //     uchar karakter = static_cast<uchar>(i);
-    //
-    //     std::cout << (isprint(karakter) ? (char) karakter : ' ') << " ";
-    // }
-    // std::cout << std::endl;
-    //
-    // for (int van_staat = 0; van_staat < overgangstabel.size(); van_staat++)
-    // {
-    //     std::cout << van_staat << ": ";
-    //
-    //     for (int i = 32; i < 127; i++)
-    //     {
-    //         uchar karakter = static_cast<uchar>(i);
-    //
-    //         std::cout << overgangstabel[van_staat][karakter] << " ";
-    //     }
-    //
-    //     std::cout << std::endl;
-    // }
 }
 
 std::vector<std::map<uchar, int>> ZoekDA::geef_overgangstabel() const
@@ -130,20 +104,15 @@ std::set<int> ZoekDA::bevat_regexp(const std::string& regel) const
         uchar huidig_karakter = static_cast<uchar>(regel[i]);
 
         int vorige_staat = huidige_staat;
-        std::cout << "(" << vorige_staat << ", " << (int) huidig_karakter << "\"" << huidig_karakter << "\") " << std::flush;
+        assert(huidig_karakter < 128); // ASCII
 
         huidige_staat = overgangstabel[huidige_staat].at(huidig_karakter);
-
-        // std::cout << "(" << vorige_staat << ", " << (int) huidig_karakter << "\"" << huidig_karakter << "\") ";
-        // std::cout << " -> " << huidige_staat << std::endl;
 
         if (eindstaten.find(huidige_staat) != eindstaten.end())
         {
             gevonden_indexen.insert(i);
-            // std::cout << "GEVONDEN" << std::endl;
         }
     }
-    // std::cout << std::endl;
 
     return gevonden_indexen;
 }

@@ -1,5 +1,5 @@
 
-#include "zoekboom14.h"
+#include "../../libraries/binaire-boom/boom.h"
 
 #include <algorithm>
 #include <cassert>
@@ -11,7 +11,7 @@
 
 void test_evenwichtig()
 {
-    Zoekboom<int, int> zb;
+    BinaireBoom<int, int> bb;
 
     constexpr int AANTAL = 16384;
 
@@ -29,12 +29,12 @@ void test_evenwichtig()
     std::cout << "> sleutels toevoegen" << std::endl;
     for (size_t i = 0; i < sleutels.size(); i++)
     {
-        zb.voeg_toe(sleutels[i], 2 * sleutels[i]);
+        bb.voeg_toe(sleutels[i], 2 * sleutels[i]);
     }
 
     auto begin = std::chrono::steady_clock::now();
 
-    zb.maak_evenwichtig();
+    bb.maak_evenwichtig();
 
     auto end = std::chrono::steady_clock::now();
 
@@ -43,42 +43,42 @@ void test_evenwichtig()
 
 void test_iterator()
 {
-    Zoekboom<int, int> zb;
+    BinaireBoom<int, int> bb;
 
     int keys[] = {13, 3, 4, 12, 14, 10, 5, 1, 8, 2, 7, 9, 11, 6, 18}; // http://lcm.csa.iisc.ernet.in/dsa/node91.html
 
     for (int key : keys)
     {
-        zb.voeg_toe(key, 2 * key);
+        bb.voeg_toe(key, 2 * key);
     }
 
-    for (const auto& knoop : zb)
+    for (const auto& knoop : bb)
     {
         std::cout << knoop.geef_sleutel() << ", ";
     }
 
     std::cout << std::endl;
 
-    Zoekboom<int, int> zb_copy{zb};
-    zb.roteer(Richting::LINKS);
-    zb.roteer(Richting::LINKS);
-    zb.roteer(Richting::LINKS);
-    zb.roteer(Richting::LINKS);
-    zb.roteer(Richting::LINKS);
-    zb.roteer(Richting::LINKS);
+    BinaireBoom<int, int> bb_copy{bb};
+    bb.roteer(Richting::LINKS);
+    bb.roteer(Richting::LINKS);
+    bb.roteer(Richting::LINKS);
+    bb.roteer(Richting::LINKS);
+    bb.roteer(Richting::LINKS);
+    bb.roteer(Richting::LINKS);
 
-    for (const auto& knoop : zb_copy)
+    for (const auto& knoop : bb_copy)
     {
         std::cout << knoop.geef_sleutel() << ", ";
     }
 
     std::cout << std::endl;
-    std::cout << zb_copy.is_content_gelijk(zb) << std::endl;
+    std::cout << bb_copy.is_enkel_content_gelijk(bb) << std::endl;
 }
 
 void test_groot_aantal_sleutels()
 {
-    Zoekboom<int, int> groot_zb;
+    BinaireBoom<int, int> groot_bb;
 
     constexpr int AANTAL = 100'000'000;
 
@@ -96,7 +96,7 @@ void test_groot_aantal_sleutels()
     std::cout << "> sleutels toevoegen" << std::endl;
     for (size_t i = 0; i < sleutels.size(); i++)
     {
-        groot_zb.voeg_toe(sleutels[i], 2 * sleutels[i]);
+        groot_bb.voeg_toe(sleutels[i], 2 * sleutels[i]);
 
         if ((i % (AANTAL / 100)) == 0)
         {
@@ -108,103 +108,103 @@ void test_groot_aantal_sleutels()
     //
     //    std::ofstream out;
     //    out.open("boom_groot.dot");
-    //    out << groot_zb.get_dot_code();
+    //    out << groot_bb.get_dot_code();
     //    out.close();
 }
 
 int main()
 {
-    Zoekboom<int, int> zb;
+    BinaireBoom<int, int> bb;
 
     std::cout << "Leeg:" << std::endl;
-    std::cout << zb.get_dot_code() << std::endl;
+    std::cout << bb.get_dot_code() << std::endl;
     std::ofstream out;
     out.open("lege_boom.dot");
-    out << zb.get_dot_code();
+    out << bb.get_dot_code();
     out.close();
 
     int keys[] = {13, 3, 4, 12, 14, 10, 5, 1, 8, 2, 7, 9, 11, 6, 18}; // http://lcm.csa.iisc.ernet.in/dsa/node91.html
 
     for (int key : keys)
     {
-        zb.voeg_toe(key, 2 * key);
+        bb.voeg_toe(key, 2 * key);
     }
 
-    std::cout << "Diepte: " << zb.diepte() << std::endl;
-    assert(zb.diepte() == 8);
+    std::cout << "Diepte: " << bb.diepte() << std::endl;
+    assert(bb.diepte() == 8);
 
-    std::cout << "Rep OK: " << (zb.is_rep_ok() ? "OK" : "Niet OK") << std::endl;
-    assert(zb.is_rep_ok());
+    std::cout << "Rep OK: " << (bb.is_rep_ok() ? "OK" : "Niet OK") << std::endl;
+    assert(bb.is_rep_ok());
 
-    Zoekknoop<int, int> zk2{*zb};
+    Knoop<int, int> zk2{*bb};
 
     std::cout << "Gevuld:" << std::endl;
-    std::cout << zb.get_dot_code() << std::endl;
+    std::cout << bb.get_dot_code() << std::endl;
     out.open("boom_gevuld.dot");
-    out << zb.get_dot_code();
+    out << bb.get_dot_code();
     out.close();
 
-    Zoekboom<int, int> zb_copy{zb};
+    BinaireBoom<int, int> bb_copy{bb};
     std::cout << "Origineel na copy:" << std::endl;
-    std::cout << zb.get_dot_code() << std::endl;
+    std::cout << bb.get_dot_code() << std::endl;
     out.open("originele_boom_na_copy.dot");
-    out << zb.get_dot_code();
+    out << bb.get_dot_code();
     out.close();
     std::cout << "Copy:" << std::endl;
-    std::cout << zb_copy.get_dot_code() << std::endl;
+    std::cout << bb_copy.get_dot_code() << std::endl;
     out.open("boom_copy.dot");
-    out << zb_copy.get_dot_code();
+    out << bb_copy.get_dot_code();
     out.close();
 
-    Zoekboom<int, int> zb_testcopy{zb};
-    std::cout << "Zijn gelijk: " << zb_testcopy.is_gelijk(zb) << std::endl;
-    assert(zb_testcopy.is_gelijk(zb));
-    zb_testcopy.voeg_toe(111, 1337);
-    std::cout << "Zijn gelijk: " << zb_testcopy.is_gelijk(zb) << std::endl;
-    assert(!zb_testcopy.is_gelijk(zb));
+    BinaireBoom<int, int> bb_testcopy{bb};
+    std::cout << "Zijn gelijk: " << (bb_testcopy == bb) << std::endl;
+    assert(bb_testcopy == bb);
+    bb_testcopy.voeg_toe(111, 1337);
+    std::cout << "Zijn gelijk: " << (bb_testcopy == bb) << std::endl;
+    assert(bb_testcopy != bb);
 
-    Zoekboom<int, int> zb_move{std::move(zb)};
+    BinaireBoom<int, int> bb_move{std::move(bb)};
     std::cout << "Origineel na move:" << std::endl;
-    std::cout << zb.get_dot_code() << std::endl;
+    std::cout << bb.get_dot_code() << std::endl;
     out.open("originele_boom_na_move.dot");
-    out << zb.get_dot_code();
+    out << bb.get_dot_code();
     out.close();
     std::cout << "Move:" << std::endl;
-    std::cout << zb_move.get_dot_code() << std::endl;
+    std::cout << bb_move.get_dot_code() << std::endl;
     out.open("boom_move.dot");
-    out << zb_move.get_dot_code();
+    out << bb_move.get_dot_code();
     out.close();
 
-    Zoekboom<int, int> zb_links{zb_copy};
-    zb_links.roteer(Richting::LINKS);
+    BinaireBoom<int, int> bb_links{bb_copy};
+    bb_links.roteer(Richting::LINKS);
     std::cout << "Roteer links:" << std::endl;
-    std::cout << zb_links.get_dot_code() << std::endl;
+    std::cout << bb_links.get_dot_code() << std::endl;
     out.open("boom_roteer_links.dot");
-    out << zb_links.get_dot_code();
+    out << bb_links.get_dot_code();
     out.close();
 
-    Zoekboom<int, int> zb_rechts{zb_copy};
-    zb_rechts.roteer(Richting::RECHTS);
+    BinaireBoom<int, int> bb_rechts{bb_copy};
+    bb_rechts.roteer(Richting::RECHTS);
     std::cout << "Roteer rechts:" << std::endl;
-    std::cout << zb_rechts.get_dot_code() << std::endl;
+    std::cout << bb_rechts.get_dot_code() << std::endl;
     out.open("boom_roteer_rechts.dot");
-    out << zb_rechts.get_dot_code();
+    out << bb_rechts.get_dot_code();
     out.close();
 
-    Zoekboom<int, int> zb_onevenwichtig{zb_copy};
-    zb_onevenwichtig.maak_onevenwichtig();
+    BinaireBoom<int, int> bb_onevenwichtig{bb_copy};
+    bb_onevenwichtig.maak_onevenwichtig();
     std::cout << "Onevenwichtig:" << std::endl;
-    std::cout << zb_onevenwichtig.get_dot_code() << std::endl;
+    std::cout << bb_onevenwichtig.get_dot_code() << std::endl;
     out.open("boom_onevenwichtig.dot");
-    out << zb_onevenwichtig.get_dot_code();
+    out << bb_onevenwichtig.get_dot_code();
     out.close();
 
-    Zoekboom<int, int> zb_evenwichtig{zb_copy};
-    zb_evenwichtig.maak_evenwichtig();
+    BinaireBoom<int, int> bb_evenwichtig{bb_copy};
+    bb_evenwichtig.maak_evenwichtig();
     std::cout << "Evenwichtig:" << std::endl;
-    std::cout << zb_evenwichtig.get_dot_code() << std::endl;
+    std::cout << bb_evenwichtig.get_dot_code() << std::endl;
     out.open("boom_evenwichtig.dot");
-    out << zb_evenwichtig.get_dot_code();
+    out << bb_evenwichtig.get_dot_code();
     out.close();
 
     //    test_groot_aantal_sleutels();

@@ -16,8 +16,8 @@ endif()
 
 set(SOURCES
     main.cpp
-    zoekknoop14.h
-    zoekboom14.h
+    ../../libraries/binaire-boom/boom.h
+    ../../libraries/binaire-boom/knoop.h
     )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

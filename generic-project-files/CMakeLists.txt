@@ -1,22 +1,14 @@
 
 set(SOURCES
-    main.cpp
-    regexp11.h
-    thompsonna.h
-    zoekna.h
-    zoekda.h
     )
 
 set(ADDITIONAL_INPUT_FILES
     )
 
 set(TEST_SOURCES
-    zoekna_test.cpp
-    zoekda_test.cpp
     )
 
 set(ADDITIONAL_TEST_FILES
-    test_input.txt
     )
 
 ### executable #################################################################
@@ -28,8 +20,8 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_BUILD_TYPE debug)
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra")
-    set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*;-header-filter=.*")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -O0")
+    set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*,-boost-*,-google-*,-llvm-*;-header-filter=.*")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")

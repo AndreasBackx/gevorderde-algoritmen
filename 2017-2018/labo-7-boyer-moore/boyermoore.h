@@ -4,30 +4,33 @@
 #include <algorithm>
 #include <cctype>
 #include <iomanip>
+#include <iostream> // DEBUG
 #include <queue>
 #include <sstream>
 #include <string>
-
-using uchar = unsigned char;
-constexpr size_t GROOTTE_ALFABET = (1 << (sizeof(uchar) * 8));
 
 // Good Suffix heuristic
 //
 //  O(p^2)
 //
 //      i                   |   0   1   2   3   4   5   6
+//      p-i-1               |   6   5   4   3   2   1   0
+//      --------------------+-------------------------------
 //      p[i]                |   a   b   b   a   b   a   b
 //      --------------------+-------------------------------
 //      suffix[i]           |   2   1   3   2   1   0   0
-//      p-i-1               |   6   5   4   3   2   1   0
 //      k                   |   /   /   /   2   3   4   6
 //      i+1-k               |   /   /   /   2   2   2   1
 //      verschuiving[i]     |   5   5   5   2   2   2   1
-//                              ~~~~~~~~~
+//                             ~~~~~~~~~~~             ~~~
+//                                  |                   |
+//                                  |                   V
 //                                  |
+//                                  |         Er is geen juiste suffix
 //                                  V
 //
-//               p - s[0] = 7 - 2 = 5
+//              Het juiste suffix komt niet meer in P voor:
+//              p - s[0] = 7 - 2 = 5
 //
 //  O(p)
 //
@@ -45,10 +48,11 @@ constexpr size_t GROOTTE_ALFABET = (1 << (sizeof(uchar) * 8));
 // en daarop verder rekenen:
 //
 //      i                   |   0   1   2   3   4   5   6
+//      p-i-1               |   6   5   4   3   2   1   0
+//      --------------------+-------------------------------
 //      p[i]                |   a   b   b   a   b   a   b
 //      --------------------+-------------------------------
 //      suffix[i]           |   2   0   3   0   0   0   0
-//      p-i-1               |   6   5   4   3   2   1   0
 //      k                   |   /   /   /   2   0   /   6
 //      i+1-k               |   /   /   /   2   5   /   1
 //      verschuiving[i]     |   5   5   5   2   5   5   1
@@ -63,118 +67,184 @@ constexpr size_t GROOTTE_ALFABET = (1 << (sizeof(uchar) * 8));
 //      5 |     0       6       5                   5
 //      6 |     0       6       5   6   4 3 2 1     1
 //
+//
+// Extra: relatie tussen pre- en suffixtabellen
+//
+//              i = n - (j + 1)
+//
+//              |i= 0   1   2   3   4   5   6   7       |j= 0   1   2   3   4   5   6   7
+//              |   a   a   m   u   n   a   m   u       |   u   m   a   n   u   m   a   a ("aamunamu" omgekeerd)
+//      --------+---------------------------------------+--------------------------------------------------------
+//      pre     |  -1   0   1   0   0   0   1   0   0   |  -1   0   0   0   0   1   2   3   0
+//      suffix  |   0   3   2   1   0   0   0   0  -1   |   0   0   1   0   0   0   1   0  -1
+//
+
+using uchar = unsigned char;
+constexpr size_t alphabet_size = (1 << (sizeof(uchar) * 8));
 
 class BoyerMoore
 {
 public:
     BoyerMoore() = delete;
-    BoyerMoore(const std::string& naald);
+    BoyerMoore(const std::string& pattern);
+    BoyerMoore(const BoyerMoore& other) = default;
+    BoyerMoore(BoyerMoore&& other) = default;
+    BoyerMoore& operator=(const BoyerMoore& other) = default;
+    BoyerMoore& operator=(BoyerMoore&& other) = default;
     virtual ~BoyerMoore() = default;
 
-    BoyerMoore(const BoyerMoore& andere) = delete;
-    BoyerMoore& operator=(const BoyerMoore& andere) = delete;
-
-    BoyerMoore(BoyerMoore&& andere) = delete;
-    BoyerMoore& operator=(BoyerMoore&& andere) = delete;
-
-    std::queue<int> zoek(const std::string& hooiberg);
-
+    std::queue<int> search(const std::string& text) const;
+    std::vector<int> get_bad_character_table() const;
+    std::vector<int> get_weak_common_suffix_table() const;
+    std::vector<int> get_weak_good_suffix_shift_table() const;
     std::string to_string() const;
 
 private:
-    std::string naald;
-    std::vector<int> verkeerd_karakter;
-    // std::vector<std::vector<int>> uitgebreid_verkeerd_karakter;
-    // verkeerd_karakter kan met unordered map met een functie dat -1 teruggeeft als het karakter geen map entry heeft
+    int reverse_pattern_index(int index) const;
+
+    std::string pattern;
+    std::vector<int> bad_character_table;
+    std::vector<int> weak_common_suffix_table;
+    std::vector<int> strong_common_suffix_table;
+    std::vector<int> weak_good_suffix_shift_table;
+    std::vector<int> strong_good_suffix_shift_table;
 };
 
-BoyerMoore::BoyerMoore(const std::string& naald) : naald{naald}, verkeerd_karakter(GROOTTE_ALFABET, -1)
+BoyerMoore::BoyerMoore(const std::string& pattern)
+: pattern{pattern}, bad_character_table(alphabet_size, -1), weak_common_suffix_table(pattern.length(), 0)
 {
-    for (int i = 0; i < naald.size(); i++)
+    for (int i = 0; i < pattern.size(); i++)
     {
-        verkeerd_karakter[static_cast<uchar>(naald[i])] = i;
-        // uitgebreid_verkeerd_karakter.push_back(verkeerd_karakter);
+        bad_character_table[static_cast<uchar>(pattern[i])] = i;
+    }
+
+    int common_suffix_length = 0;
+    for (int i = (weak_common_suffix_table.size() - 2); i >= 0; i--)
+    {
+        while ((common_suffix_length > 0) && (pattern[i] != pattern[reverse_pattern_index(common_suffix_length)]))
+        {
+            common_suffix_length = weak_common_suffix_table[reverse_pattern_index(common_suffix_length) + 1];
+        }
+
+        if (pattern[i] == pattern[reverse_pattern_index(common_suffix_length)])
+        {
+            common_suffix_length++;
+        }
+
+        weak_common_suffix_table[i] = common_suffix_length;
+    }
+
+    weak_good_suffix_shift_table = std::vector<int>(pattern.length(), (pattern.length() - weak_common_suffix_table[0]));
+    for (int i = 0; i < weak_good_suffix_shift_table.size(); i++)
+    {
+        int suffix_index = (pattern.length() - weak_common_suffix_table[i] - 1);
+        weak_good_suffix_shift_table[suffix_i] = (suffix_index + 1 - i);
     }
 }
 
-std::queue<int> BoyerMoore::zoek(const std::string& hooiberg)
+int BoyerMoore::reverse_pattern_index(int index) const
 {
-    std::queue<int> resultaten;
+    return (pattern.length() - index - 1);
+}
 
-    if (hooiberg.size() < naald.size())
+std::vector<int> BoyerMoore::get_bad_character_table() const
+{
+    return bad_character_table;
+}
+
+std::vector<int> BoyerMoore::get_weak_common_suffix_table() const
+{
+    return weak_common_suffix_table;
+}
+
+std::vector<int> BoyerMoore::get_weak_good_suffix_shift_table() const
+{
+    return weak_good_suffix_shift_table;
+}
+
+std::queue<int> BoyerMoore::search(const std::string& text) const
+{
+    if (text.size() < pattern.size())
     {
-        return resultaten;
+        return std::queue<int>{};
     }
 
-    int hooiberg_i = 0;
+    std::queue<int> results;
 
-    while (hooiberg_i <= (hooiberg.size() - naald.size()))
+    int text_i = 0;
+
+    while (text_i <= (text.size() - pattern.size()))
     {
-        int naald_i = (naald.size() - 1);
-        while ((naald_i >= 0) && (naald[naald_i] == hooiberg[hooiberg_i + naald_i]))
+        int pattern_i = (pattern.size() - 1);
+        while ((pattern_i >= 0) && (pattern[pattern_i] == text[text_i + pattern_i]))
         {
-            naald_i--;
+            pattern_i--;
         }
 
-        int verschuiving = 0;
+        int shift = 0;
 
-        if (naald_i < 0)
+        if (pattern_i < 0)
         {
-            resultaten.push(hooiberg_i);
+            results.push(text_i);
 
-            if ((hooiberg_i + naald.size()) < hooiberg.size())
+            if ((text_i + pattern.size()) < text.size())
             {
-                uchar gewenst_karakter = hooiberg[hooiberg_i + naald.size()];
-                verschuiving = (naald.size() - verkeerd_karakter[gewenst_karakter]);
+                uchar desired_character = text[text_i + pattern.size()];
+                shift = (pattern.size() - bad_character_table[desired_character]);
             }
         }
         else
         {
-            uchar gewenst_karakter = hooiberg[hooiberg_i + naald_i];
-            verschuiving = (naald_i - verkeerd_karakter[gewenst_karakter]);
+            uchar desired_character = text[text_i + pattern_i];
+            shift = (pattern_i - bad_character_table[desired_character]);
         }
 
-        hooiberg_i += std::max(verschuiving, 1);
+        text_i += std::max(shift, 1);
     }
 
-    return resultaten;
+    return results;
 }
 
 std::string BoyerMoore::to_string() const
 {
     std::stringstream out;
-    constexpr int VELD_BREEDTE = 4;
-    constexpr int HOOFD_BREEDTE = 40;
+    constexpr int field_width = 4;
+    constexpr int header_width = 40;
 
-    out << std::setw(HOOFD_BREEDTE) << "i";
-    for (int i = 0; i < naald.size(); i++)
+    out << std::setw(header_width) << "i";
+    for (int i = 0; i < pattern.size(); i++)
     {
-        out << std::setw(VELD_BREEDTE) << i;
+        out << std::setw(field_width) << i;
     }
     out << std::endl;
 
-    out << std::setw(HOOFD_BREEDTE) << "naald";
-    for (char c : naald)
+    out << std::setw(header_width) << "reverse i";
+    for (int i = 0; i < pattern.size(); i++)
     {
-        out << std::setw(VELD_BREEDTE) << c;
+        out << std::setw(field_width) << reverse_pattern_index(i);
     }
     out << std::endl;
 
-    // for (int i = 0; i < GROOTTE_ALFABET; i++)
-    // {
-    //     char c = static_cast<char>(i);
-    //
-    //     if (isprint(c))
-    //     {
-    //         out << std::setw(HOOFD_BREEDTE) << c;
-    //         for (int j = 0; j < naald.size(); j++)
-    //         {
-    //             out << std::setw(VELD_BREEDTE) << uitgebreid_verkeerd_karakter[j][i];
-    //         }
-    //         out << " | " << verkeerd_karakter[i] << std::endl;
-    //     }
-    // }
-    // out << std::endl;
+    out << std::setw(header_width) << "pattern";
+    for (char c : pattern)
+    {
+        out << std::setw(field_width) << c;
+    }
+    out << std::endl;
+
+    out << std::setw(header_width) << "weak common suffix";
+    for (int i : weak_common_suffix_table)
+    {
+        out << std::setw(field_width) << i;
+    }
+    out << std::endl;
+
+    out << std::setw(header_width) << "weak shift";
+    for (int i : weak_good_suffix_shift_table)
+    {
+        out << std::setw(field_width) << i;
+    }
+    out << std::endl;
 
     return out.str();
 }

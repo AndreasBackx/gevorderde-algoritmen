@@ -6,10 +6,10 @@
 
 int main()
 {
-    BoyerMoore bm{"onaonaanaona"};
+    BoyerMoore bm{"ababdab"};
     std::cout << bm.to_string() << std::endl;
 
-    std::queue<int> resultaten = BoyerMoore{"abc"}.zoek("abcabc");
+    std::queue<int> resultaten = BoyerMoore{"abc"}.search("abcabc");
 
     while (!resultaten.empty())
     {

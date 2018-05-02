@@ -54,7 +54,7 @@ KnuthMorrisPratt::KnuthMorrisPratt(const std::string& naald)
     }
 
     // Extra heuristiek in de cursus
-    // Zie CLRS 32.4-6 op p. 1012
+    // Zie CLRS 32.4-6 op p. 1012 of Gusfield op p. 51
     for (size_t i = 1; i < kmp_tabel.size(); i++)
     {
         if (prefix_tabel[i] == 0)

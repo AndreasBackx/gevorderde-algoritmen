@@ -1,10 +1,10 @@
-#include "woordstroom.h"
-#include "gtest/gtest.h"
-
 #include <iostream>
 #include <istream>
 #include <string>
 #include <vector>
+
+#include "gtest/gtest.h"
+#include "woordstroom.h"
 
 TEST(woordstroom_test, lees)
 {

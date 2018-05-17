@@ -21,4 +21,4 @@ http://www.inwe.be/smf/algoritmen-ii/
 ### TODO
 
 - Stroomnetwerken: statistieken genereren en probleem oplossen
-- Boyer Moore 2e suffix en extra varianten 1e suffix implementeren
+- Boyer Moore 2e suffix en extra varianten 1e suffix implementeren (strong suffix toevoegen en in de zoekfunctie opnemen)

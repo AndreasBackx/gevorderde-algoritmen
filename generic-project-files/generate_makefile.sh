@@ -14,7 +14,9 @@ if [ -x "$(command -v clang)" ]
 then
     cmake .. \
         -DCMAKE_C_COMPILER=clang \
-        -DCMAKE_CXX_COMPILER=clang++
+        -DCMAKE_CXX_COMPILER=clang++ \
+        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+    cp compile_commands.json ..
 else
     cmake ..
     echo "Warning: clang is not installed, using default compiler." >&2

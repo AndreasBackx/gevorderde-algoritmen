@@ -83,7 +83,7 @@ if (TEST_SOURCES)
     enable_testing()
 
     foreach(FILE ${TEST_SOURCES})
-        # TODO bekijken of we een executable kunnen maken met alle tests erin, 
+        # TODO bekijken of we een executable kunnen maken met alle tests erin,
         # ipv een executable per test file
 
         string(REGEX REPLACE "\\.[^.]*$" "" FILE_WITHOUT_EXT ${FILE})
@@ -93,10 +93,19 @@ if (TEST_SOURCES)
         target_link_libraries(${TEST_EXECUTABLE_NAME} gtest_main gmock)
         add_test("${TEST_EXECUTABLE_NAME}_ctest" ${TEST_EXECUTABLE_NAME})
 
-        add_custom_command(TARGET ${TEST_EXECUTABLE_NAME}
-            POST_BUILD
-            COMMAND $<TARGET_FILE:${TEST_EXECUTABLE_NAME}>
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-            COMMENT "Running ${PROJECT_NAME} ${TEST_EXECUTABLE_NAME}" VERBATIM)
+        # When not commented out, it will execute the tests.
+        #   Unfortunately, the executable will be removed bij CMake if the tests fail.
+        # When commented out, the executable will always be available.
+        #   It will howver not be executed automatically when build.
+        #   Use this to debug using the tests.
+        #   You can use "make && ./test" to execute the test on make.
+        #
+        # add_custom_command(TARGET ${TEST_EXECUTABLE_NAME}
+        #     POST_BUILD
+        #     COMMAND $<TARGET_FILE:${TEST_EXECUTABLE_NAME}>
+        #     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        #     COMMENT "Running ${PROJECT_NAME} ${TEST_EXECUTABLE_NAME}" VERBATIM)
+
+        message("Created test \"${TEST_EXECUTABLE_NAME}\"")
     endforeach(FILE)
 endif()

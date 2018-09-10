@@ -185,6 +185,7 @@ std::string Graaf<GERICHT>::genereer_dot_code() const
     return out.str();
 }
 
+#pragma message ("Verwijder deze functie bij testen")
 template <RichtType RT>
 void Graaf<RT>::diepte_eerst_zoeken(const Graaf<RT>& graaf,
                                     int knoop_nr,

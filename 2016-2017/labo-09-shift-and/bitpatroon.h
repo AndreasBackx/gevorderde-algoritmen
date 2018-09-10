@@ -1,40 +1,39 @@
-
-#ifndef __BITPATROON
-#define __BITPATROON
+#ifndef BITPATROON_H
+#define BITPATROON_H
 
 #include <iostream>
 
 using std::ostream;
 typedef unsigned int uint;
-const int patroonlengte = sizeof (uint)*8;
+constexpr int patroonlengte = sizeof(uint) * 8;
 
 class Bitpatroon
 {
 public:
     uint bits;
 
-    Bitpatroon(uint u = 0) : bits(u) { };
-    //EN-operator
+    Bitpatroon(uint u = 0) : bits(u){};
 
+    // EN-operator
     const Bitpatroon operator&(const Bitpatroon& b) const
     {
         return Bitpatroon(bits & b.bits);
     }
-    //OF-operator
 
+    // OF-operator
     const Bitpatroon operator|(const Bitpatroon& b) const
     {
         return Bitpatroon(bits | b.bits);
     }
-    //EN-=-operator
 
+    // EN-=-operator
     const Bitpatroon& operator&=(const Bitpatroon& b)
     {
         bits &= b.bits;
         return *this;
     }
-    //OF-=-operator
 
+    // OF-=-operator
     const Bitpatroon& operator|=(const Bitpatroon& b)
     {
         bits |= b.bits;
@@ -52,8 +51,8 @@ public:
     {
         return (bits | b.bits) != 0;
     }
-    //let op: shiftoperaties verplaatsen niets als verplaatsing >= patroonlengte.
 
+    // Let op: shiftoperaties verplaatsen niets als verplaatsing >= patroonlengte.
     const Bitpatroon shiftlinks(uint verplaatsing) const
     {
         return Bitpatroon(bits << verplaatsing);
@@ -63,8 +62,8 @@ public:
     {
         return Bitpatroon(bits >> verplaatsing);
     }
-    //niet beveiligd: u moet kleiner dan patroonlengte zijn.
 
+    // Niet beveiligd: u moet kleiner dan patroonlengte zijn.
     static Bitpatroon eenbit(uint u)
     {
         return Bitpatroon(uint(1) << (patroonlengte - 1 - u));
@@ -80,4 +79,3 @@ public:
     }
 };
 #endif
-

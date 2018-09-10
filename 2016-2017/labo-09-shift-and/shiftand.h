@@ -1,34 +1,26 @@
-
 #ifndef SHIFTAND_H
 #define SHIFTAND_H
 
 #include "bitpatroon.h"
 
-#include <sstream>
 #include <iomanip>
 #include <queue>
+#include <sstream>
 
 typedef unsigned int uint;
 typedef unsigned char uchar;
 
+constexpr static int ALFABET_GROOTTE = 256; // 2^8
+
 class ShiftAnd
 {
 public:
-    //naaldlengte moet kleiner dan patroonlengte zijn,
-    //anders wordt een exceptie opgegooid.
     ShiftAnd(const uchar* naald, uint _naaldlengte);
     std::queue<const uchar*> zoek_exact(const uchar* hooiberg, uint hooiberglengte, bool overlap = false);
     std::queue<const uchar*> zoek_1_vervanging(const uchar* hooiberg, uint hooiberglengte, bool overlap = false);
     std::string to_string() const;
 
-    // puur om te debuggen
-//    std::vector<std::pair<uchar, Bitpatroon>> debug_zonder_fouten;
-//    std::vector<std::pair<uchar, Bitpatroon>> debug_1_vervanging;
-//    std::string to_string_debug_zonder_fouten() const;
-//    std::string to_string_debug_1_vervanging() const;
-
 private:
-    const static int ALFABET_GROOTTE = 256; // 2^8
     Bitpatroon letter_patroon[ALFABET_GROOTTE];
     const uchar* naald;
     uint naald_lengte;
@@ -68,8 +60,6 @@ std::queue<const uchar*> ShiftAnd::zoek_exact(const uchar* hooiberg, uint hooibe
                 huidig &= Bitpatroon();
             }
         }
-
-//        debug_zonder_fouten.push_back(std::pair<uchar, Bitpatroon>(hooiberg[i], huidig));
     }
 
     return gevonden;
@@ -113,53 +103,10 @@ std::queue<const uchar*> ShiftAnd::zoek_1_vervanging(const uchar* hooiberg, uint
                 schuif_huidig_zonder_fout &= Bitpatroon();
             }
         }
-
-//        debug_zonder_fouten.push_back(std::pair<uchar, Bitpatroon>(hooiberg[i], huidig_zonder_fout));
-//        debug_1_vervanging.push_back(std::pair<uchar, Bitpatroon>(hooiberg[i], huidig_1_vervanging));
     }
 
     return gevonden;
 }
-
-//std::string ShiftAnd::to_string_debug_zonder_fouten() const
-//{
-//    std::stringstream out;
-//
-//    out << "Debug zonder fouten:" << std::endl
-//        << std::setw(6) << "";
-//    for (int i = 0; i < naald_lengte; i++)
-//    {
-//        out << naald[i];
-//    }
-//    out << std::endl;
-//
-//    for (std::pair<uchar, Bitpatroon> debug : debug_zonder_fouten)
-//    {
-//        out << std::setw(6) << std::left << static_cast<char> (debug.first) << debug.second << std::endl;
-//    }
-//
-//    return out.str();
-//}
-//
-//std::string ShiftAnd::to_string_debug_1_vervanging() const
-//{
-//    std::stringstream out;
-//
-//    out << "Debug 1 vervanging:" << std::endl
-//        << std::setw(6) << "";
-//    for (int i = 0; i < naald_lengte; i++)
-//    {
-//        out << naald[i];
-//    }
-//    out << std::endl;
-//
-//    for (std::pair<uchar, Bitpatroon> debug : debug_1_vervanging)
-//    {
-//        out << std::setw(6) << std::left << static_cast<char> (debug.first) << debug.second << std::endl;
-//    }
-//
-//    return out.str();
-//}
 
 std::string ShiftAnd::to_string() const
 {
@@ -173,20 +120,18 @@ std::string ShiftAnd::to_string() const
     {
         out << naald[i];
     }
-    out << std::endl
-        << "Naaldlengte:" << naald_lengte << std::endl
-        << std::endl;
+    out << std::endl << "Naaldlengte:" << naald_lengte << std::endl << std::endl;
 
     out << std::setw(6) << "";
     for (int i = 0; i < naald_lengte; i++)
     {
-        out << static_cast<char> (naald[i]);
+        out << static_cast<char>(naald[i]);
     }
     out << std::endl;
 
     for (int i = LOWER_READABLE_BOUND; i <= UPPER_READABLE_BOUND; i++)
     {
-        out << std::setw(6) << std::left << static_cast<char> (i) << letter_patroon[i] << std::endl;
+        out << std::setw(6) << std::left << static_cast<char>(i) << letter_patroon[i] << std::endl;
     }
 
     return out.str();

@@ -1,10 +1,9 @@
-
-#include <iostream>
 #include <cassert>
 #include <fstream>
-#include <string>
-#include <sstream>
+#include <iostream>
 #include <map>
+#include <sstream>
+#include <string>
 
 #include "../libraries/termcolor.hpp"
 #include "shiftand.h"
@@ -61,14 +60,15 @@ void display_results(ostream& out, std::queue<const uchar*> gevonden, const ucha
 void test_zoek()
 {
     const uchar naald[] = {'a', 'b', 'a', 'b'};
-    const uint naald_lengte = static_cast<uint> (sizeof (naald) / sizeof (naald[0]));
+    const uint naald_lengte = static_cast<uint>(sizeof(naald) / sizeof(naald[0]));
 
     ShiftAnd sa(naald, naald_lengte);
 
     // std::cout << sa.to_string() << std::endl;
 
-    const uchar hooiberg[] = {'d', 'd', 'a', 'b', 'd', 'd', 'a', 'b', 'a', 'b', 'c', 'd', 'a', 'b', 'a', 'b', 'a', 'b', 'a', 'b', 'a', 'b'};
-    const uint hooiberg_lengte = static_cast<uint> (sizeof (hooiberg) / sizeof (hooiberg[0]));
+    const uchar hooiberg[] = {'d', 'd', 'a', 'b', 'd', 'd', 'a', 'b', 'a', 'b', 'c',
+                              'd', 'a', 'b', 'a', 'b', 'a', 'b', 'a', 'b', 'a', 'b'};
+    const uint hooiberg_lengte = static_cast<uint>(sizeof(hooiberg) / sizeof(hooiberg[0]));
 
     std::queue<const uchar*> gevonden = sa.zoek_exact(hooiberg, hooiberg_lengte);
     assert(gevonden.size() == 3);
@@ -112,14 +112,14 @@ void test_zoek()
 void test_zoek_met_1_vervanging()
 {
     const uchar naald[] = {'a', 'b', 'c', 'd'};
-    const uint naald_lengte = static_cast<uint> (sizeof (naald) / sizeof (naald[0]));
+    const uint naald_lengte = static_cast<uint>(sizeof(naald) / sizeof(naald[0]));
 
     ShiftAnd sa(naald, naald_lengte);
 
     // std::cout << sa.to_string() << std::endl;
 
     const uchar hooiberg[] = {'d', 'd', 'a', 'b', 'd', 'd', 'a', 'b', 'a', 'd', 'c', 'd'};
-    const uint hooiberg_lengte = static_cast<uint> (sizeof (hooiberg) / sizeof (hooiberg[0]));
+    const uint hooiberg_lengte = static_cast<uint>(sizeof(hooiberg) / sizeof(hooiberg[0]));
 
     std::queue<const uchar*> gevonden = sa.zoek_1_vervanging(hooiberg, hooiberg_lengte);
     assert(gevonden.size() == 2);
@@ -164,14 +164,16 @@ void print_error(const char* error)
     std::cerr << std::endl << termcolor::red << error << termcolor::reset << std::endl;
 }
 
-std::string retrieve_replacement(std::string woord, std::map<std::string, std::queue<const uchar*>>&vorige_matches,
-    const uchar* hooiberg, const uint hooiberg_lengte)
+std::string retrieve_replacement(std::string woord,
+                                 std::map<std::string, std::queue<const uchar*>>& vorige_matches,
+                                 const uchar* hooiberg,
+                                 const uint hooiberg_lengte)
 {
-    const uint naald_lengte = static_cast<uint> (woord.size());
+    const uint naald_lengte = static_cast<uint>(woord.size());
 
     if (vorige_matches.find(woord) == vorige_matches.end())
     {
-        const uchar* naald = reinterpret_cast<const uchar*> (woord.c_str());
+        const uchar* naald = reinterpret_cast<const uchar*>(woord.c_str());
 
         try
         {
@@ -213,7 +215,7 @@ int main()
     test_zoek();
     test_zoek_met_1_vervanging();
 
-    std::map <std::string, std::queue<const uchar*>> vorige_matches;
+    std::map<std::string, std::queue<const uchar*>> vorige_matches;
 
     std::ifstream in("donquijote.txt");
     std::stringstream buffer;
@@ -221,8 +223,8 @@ int main()
     in.close();
     std::string donquijote = buffer.str();
 
-    const uchar* hooiberg = reinterpret_cast<const uchar*> (donquijote.c_str());
-    const uint hooiberg_lengte = static_cast<uint> (donquijote.size());
+    const uchar* hooiberg = reinterpret_cast<const uchar*>(donquijote.c_str());
+    const uint hooiberg_lengte = static_cast<uint>(donquijote.size());
 
     std::ofstream out("output.txt");
     std::ofstream debug_out("output_with_debug.txt");
@@ -262,14 +264,11 @@ int main()
 
                 woord.clear();
             }
-            std::cout <<  termcolor::green << c << termcolor::reset << std::flush;
+            std::cout << termcolor::green << c << termcolor::reset << std::flush;
             out << c;
             debug_out << c;
-
-
         }
     }
-
 
     // DIT WERKT
     // Maar houdt geen rekening met leestekens, cijfers, whitespace, ...
@@ -301,7 +300,6 @@ int main()
 
     return 0;
 }
-
 
 // SHIFT AND
 

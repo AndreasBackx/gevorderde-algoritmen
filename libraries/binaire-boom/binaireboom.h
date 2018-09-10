@@ -215,11 +215,7 @@ int BinaireBoom<Sleutel, Data>::diepte() const
 template <class Sleutel, class Data>
 void BinaireBoom<Sleutel, Data>::voeg_toe(const Sleutel& sleutel, const Data& data)
 {
-    BinaireBoom<Sleutel, Data>* plaats;
-    Knoop<Sleutel, Data>* ouder;
-
-    std::tie(plaats, ouder) = zoek(sleutel);
-    // C++17 (nog niet ondersteund): auto [plaats, ouder] = zoek(sleutel);
+    auto [plaats, ouder] = zoek(sleutel);
 
     if (!(*plaats))
     {

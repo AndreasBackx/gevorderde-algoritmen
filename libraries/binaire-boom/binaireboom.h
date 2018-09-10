@@ -1,8 +1,7 @@
 #ifndef BINAIREBOOM_H
 #define BINAIREBOOM_H
 
-#include "knoop.h"
-#include "richting.h"
+// Het is echt prutswerk om dit in meerdere klassen te splitsen zonder allerlei rare edge cases dankzij de templates ...
 
 #include <algorithm>
 #include <functional>
@@ -12,17 +11,38 @@
 #include <tuple>
 #include <vector>
 
+enum class Richting
+{
+    LINKS,
+    RECHTS
+};
+
+Richting operator!(const Richting& richting)
+{
+    if (richting == Richting::LINKS)
+    {
+        return Richting::RECHTS;
+    }
+    else if (richting == Richting::RECHTS)
+    {
+        return Richting::LINKS;
+    }
+    else {
+        throw "Verkeerde richting";
+    }
+}
+
 template <class Sleutel, class Data>
 class Knoop;
 
 // http://www.cs.technion.ac.il/users/yechiel/c++-faq/template-friends.html
 template <class Sleutel, class Data>
 class BinaireBoom;
-template <class Sleutel, class Data>
+/*template <class Sleutel, class Data>
 bool operator==(const BinaireBoom<Sleutel, Data>& b1, const BinaireBoom<Sleutel, Data>& b2);
 template <class Sleutel, class Data>
 bool operator!=(const BinaireBoom<Sleutel, Data>& b1, const BinaireBoom<Sleutel, Data>& b2);
-
+*/
 template <class Sleutel, class Data>
 class BinaireBoom : public std::unique_ptr<Knoop<Sleutel, Data>>
 {
@@ -45,8 +65,8 @@ public:
     std::vector<std::pair<Sleutel, Data>> geef_inhoud_inorder() const;
     bool is_enkel_content_gelijk(const BinaireBoom<Sleutel, Data>& andere) const;
 
-    friend bool operator==<>(const BinaireBoom<Sleutel, Data>& b1, const BinaireBoom<Sleutel, Data>& b2);
-    friend bool operator!=<>(const BinaireBoom<Sleutel, Data>& b1, const BinaireBoom<Sleutel, Data>& b2);
+    //friend bool operator==<>(const BinaireBoom<Sleutel, Data>& b1, const BinaireBoom<Sleutel, Data>& b2);
+    //friend bool operator!=<>(const BinaireBoom<Sleutel, Data>& b1, const BinaireBoom<Sleutel, Data>& b2);
 
     std::string get_dot_code() const;
 
@@ -81,6 +101,36 @@ protected:
     void maak_lijst_evenwichtig();
     void controleer_is_gelijk(const BinaireBoom<Sleutel, Data>& andere, bool& is_gelijk) const;
     std::tuple<BinaireBoom<Sleutel, Data>*, Knoop<Sleutel, Data>*> zoek(const Sleutel& sleutel);
+};
+
+template <class Sleutel, class Data>
+class Knoop
+{
+public:
+    friend class BinaireBoom<Sleutel, Data>;
+
+    Knoop(const Sleutel& sleutel, const Data& data);
+    Knoop(const Knoop<Sleutel, Data>& andere);
+    Knoop<Sleutel, Data>& operator=(const Knoop<Sleutel, Data>& andere) = delete;
+    Knoop(Knoop<Sleutel, Data>&& andere) = delete;
+    Knoop<Sleutel, Data>& operator=(Knoop<Sleutel, Data>&& andere) = delete;
+    virtual ~Knoop() = default;
+
+    friend bool operator==<>(const Knoop<Sleutel, Data>& k1, const Knoop<Sleutel, Data>& k2);
+    friend bool operator!=<>(const Knoop<Sleutel, Data>& k1, const Knoop<Sleutel, Data>& k3);
+
+    const Sleutel& geef_sleutel() const;
+    const Data& geef_data() const;
+
+protected:
+    BinaireBoom<Sleutel, Data>& geef_kind(const Richting& richting);
+
+    Sleutel sleutel;
+    Data data;
+
+    Knoop<Sleutel, Data>* ouder;
+    BinaireBoom<Sleutel, Data> links;
+    BinaireBoom<Sleutel, Data> rechts;
 };
 
 /******************************************************************************/
@@ -489,15 +539,15 @@ const typename BinaireBoom<Sleutel, Data>::const_iterator& BinaireBoom<Sleutel, 
 }
 
 template <class Sleutel, class Data>
-bool BinaireBoom<Sleutel, Data>::const_iterator::operator==(
-        const BinaireBoom<Sleutel, Data>::const_iterator& andere) const
+bool BinaireBoom<Sleutel, Data>::const_iterator::
+operator==(const BinaireBoom<Sleutel, Data>::const_iterator& andere) const
 {
     return (huidige_knoop == andere.huidige_knoop);
 }
 
 template <class Sleutel, class Data>
-bool BinaireBoom<Sleutel, Data>::const_iterator::operator!=(
-        const BinaireBoom<Sleutel, Data>::const_iterator& andere) const
+bool BinaireBoom<Sleutel, Data>::const_iterator::
+operator!=(const BinaireBoom<Sleutel, Data>::const_iterator& andere) const
 {
     return !((*this) == andere);
 }
@@ -530,6 +580,72 @@ template <class Sleutel, class Data>
 typename BinaireBoom<Sleutel, Data>::const_iterator BinaireBoom<Sleutel, Data>::end() const
 {
     return BinaireBoom<Sleutel, Data>::const_iterator{nullptr};
+}
+
+template <class Sleutel, class Data>
+Knoop<Sleutel, Data>::Knoop(const Sleutel& sleutel, const Data& data) : sleutel{sleutel}, data{data}, ouder{nullptr}
+{
+}
+
+template <class Sleutel, class Data>
+Knoop<Sleutel, Data>::Knoop(const Knoop<Sleutel, Data>& andere)
+{
+    sleutel = andere.sleutel;
+    data = andere.data;
+    ouder = nullptr; // Belangrijk voor root
+
+    links = BinaireBoom<Sleutel, Data>{andere.links};
+    if (links)
+    {
+        links->ouder = this;
+    }
+
+    rechts = BinaireBoom<Sleutel, Data>{andere.rechts};
+    if (rechts)
+    {
+        rechts->ouder = this;
+    }
+}
+
+template <class Sleutel, class Data>
+bool operator==(const Knoop<Sleutel, Data>& k1, const Knoop<Sleutel, Data>& k2)
+{
+    return ((k1.sleutel == k2.sleutel) && (k1.data == k2.data));
+}
+
+template <class Sleutel, class Data>
+bool operator!=(const Knoop<Sleutel, Data>& k1, const Knoop<Sleutel, Data>& k2)
+{
+    return !(k1 == k2);
+}
+
+template <class Sleutel, class Data>
+const Sleutel& Knoop<Sleutel, Data>::geef_sleutel() const
+{
+    return sleutel;
+}
+
+template <class Sleutel, class Data>
+const Data& Knoop<Sleutel, Data>::geef_data() const
+{
+    return data;
+}
+
+template <class Sleutel, class Data>
+BinaireBoom<Sleutel, Data>& Knoop<Sleutel, Data>::geef_kind(const Richting& richting)
+{
+    if (richting == Richting::LINKS)
+    {
+        return links;
+    }
+    else if (richting == Richting::RECHTS)
+    {
+        return rechts;
+    }
+    else
+    {
+        throw "Verkeerde richting";
+    }
 }
 
 #endif /* ZOEKBOOM_H */

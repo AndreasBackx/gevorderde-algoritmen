@@ -27,7 +27,8 @@ Richting operator!(const Richting& richting)
     {
         return Richting::LINKS;
     }
-    else {
+    else
+    {
         throw "Verkeerde richting";
     }
 }
@@ -35,14 +36,19 @@ Richting operator!(const Richting& richting)
 template <class Sleutel, class Data>
 class Knoop;
 
-// http://www.cs.technion.ac.il/users/yechiel/c++-faq/template-friends.html
 template <class Sleutel, class Data>
 class BinaireBoom;
-/*template <class Sleutel, class Data>
+
+// http://www.cs.technion.ac.il/users/yechiel/c++-faq/template-friends.html
+template <class Sleutel, class Data>
 bool operator==(const BinaireBoom<Sleutel, Data>& b1, const BinaireBoom<Sleutel, Data>& b2);
 template <class Sleutel, class Data>
 bool operator!=(const BinaireBoom<Sleutel, Data>& b1, const BinaireBoom<Sleutel, Data>& b2);
-*/
+template <class Sleutel, class Data>
+bool operator==(const Knoop<Sleutel, Data>& k1, const Knoop<Sleutel, Data>& k2);
+template <class Sleutel, class Data>
+bool operator!=(const Knoop<Sleutel, Data>& k1, const Knoop<Sleutel, Data>& k2);
+
 template <class Sleutel, class Data>
 class BinaireBoom : public std::unique_ptr<Knoop<Sleutel, Data>>
 {
@@ -65,8 +71,8 @@ public:
     std::vector<std::pair<Sleutel, Data>> geef_inhoud_inorder() const;
     bool is_enkel_content_gelijk(const BinaireBoom<Sleutel, Data>& andere) const;
 
-    //friend bool operator==<>(const BinaireBoom<Sleutel, Data>& b1, const BinaireBoom<Sleutel, Data>& b2);
-    //friend bool operator!=<>(const BinaireBoom<Sleutel, Data>& b1, const BinaireBoom<Sleutel, Data>& b2);
+    friend bool operator==<>(const BinaireBoom<Sleutel, Data>& b1, const BinaireBoom<Sleutel, Data>& b2);
+    friend bool operator!=<>(const BinaireBoom<Sleutel, Data>& b1, const BinaireBoom<Sleutel, Data>& b2);
 
     std::string get_dot_code() const;
 

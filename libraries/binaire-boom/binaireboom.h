@@ -1,7 +1,9 @@
 #ifndef BINAIREBOOM_H
 #define BINAIREBOOM_H
 
-// Het is echt prutswerk om dit in meerdere klassen te splitsen zonder allerlei rare edge cases dankzij de templates ...
+// Het is echt prutswerk om dit in meerdere klassen te splitsen zonder allerlei rare edge cases dankzij templates ...
+
+#include "richting.h"
 
 #include <algorithm>
 #include <functional>
@@ -10,28 +12,6 @@
 #include <stack>
 #include <tuple>
 #include <vector>
-
-enum class Richting
-{
-    LINKS,
-    RECHTS
-};
-
-Richting operator!(const Richting& richting)
-{
-    if (richting == Richting::LINKS)
-    {
-        return Richting::RECHTS;
-    }
-    else if (richting == Richting::RECHTS)
-    {
-        return Richting::LINKS;
-    }
-    else
-    {
-        throw "Verkeerde richting";
-    }
-}
 
 template <class Sleutel, class Data>
 class Knoop;
@@ -54,7 +34,6 @@ class BinaireBoom : public std::unique_ptr<Knoop<Sleutel, Data>>
 {
 public:
     BinaireBoom();
-    BinaireBoom(const Sleutel& sleutel, const Data& data);
     BinaireBoom(const BinaireBoom<Sleutel, Data>& andere);
     BinaireBoom<Sleutel, Data>& operator=(const BinaireBoom<Sleutel, Data>& andere);
     BinaireBoom(BinaireBoom<Sleutel, Data>&& andere);
@@ -70,52 +49,59 @@ public:
     void overloop_inorder(std::function<void(const Knoop<Sleutel, Data>&)> bezoek) const;
     std::vector<std::pair<Sleutel, Data>> geef_inhoud_inorder() const;
     bool is_enkel_content_gelijk(const BinaireBoom<Sleutel, Data>& andere) const;
+    bool is_leeg() const;
 
     friend bool operator==<>(const BinaireBoom<Sleutel, Data>& b1, const BinaireBoom<Sleutel, Data>& b2);
     friend bool operator!=<>(const BinaireBoom<Sleutel, Data>& b1, const BinaireBoom<Sleutel, Data>& b2);
 
     std::string get_dot_code() const;
+    std::string to_string() const;
 
-    // TODO nakijken of de constness correct is geimplementeerd
-    class const_iterator
-    // https://www.cs.northwestern.edu/~riesbeck/programming/c++/stl-iterator-define.html#TOC11
-    // http://collaboration.cmc.ec.gc.ca/science/rpn/biblio/ddj/Website/articles/CUJ/2001/0101/austern/austern.htm
-    {
-    public:
-        const_iterator(Knoop<Sleutel, Data>* huidige_knoop);
-        const_iterator(const const_iterator& andere) = default;
-        const_iterator(const_iterator&&) = default;
-        const_iterator& operator=(const const_iterator& andere) = default;
-        const_iterator& operator=(const_iterator&& andere) = default;
-        virtual ~const_iterator() = default;
-
-        const_iterator operator++(int);
-        const const_iterator& operator++();
-        bool operator==(const const_iterator& andere) const;
-        bool operator!=(const const_iterator& andere) const;
-        const Knoop<Sleutel, Data>& operator*();
-        const Knoop<Sleutel, Data>* operator->();
-
-    private:
-        const Knoop<Sleutel, Data>* huidige_knoop;
-    };
+    class const_iterator;
 
     const_iterator begin() const;
     const_iterator end() const;
 
-protected:
+private:
+    BinaireBoom(const Sleutel& sleutel, const Data& data);
     void maak_lijst_evenwichtig();
     void controleer_is_gelijk(const BinaireBoom<Sleutel, Data>& andere, bool& is_gelijk) const;
     std::tuple<BinaireBoom<Sleutel, Data>*, Knoop<Sleutel, Data>*> zoek(const Sleutel& sleutel);
+};
+
+// TODO nakijken of de constness correct is geimplementeerd
+template <class Sleutel, class Data>
+class BinaireBoom<Sleutel, Data>::const_iterator
+// https://www.cs.northwestern.edu/~riesbeck/programming/c++/stl-iterator-define.html#TOC11
+// http://collaboration.cmc.ec.gc.ca/science/rpn/biblio/ddj/Website/articles/CUJ/2001/0101/austern/austern.htm
+{
+public:
+    const_iterator(Knoop<Sleutel, Data>* huidige_knoop);
+    const_iterator(const const_iterator& andere) = default;
+    const_iterator(const_iterator&&) = default;
+    const_iterator& operator=(const const_iterator& andere) = default;
+    const_iterator& operator=(const_iterator&& andere) = default;
+    virtual ~const_iterator() = default;
+
+    const_iterator operator++(int);
+    const const_iterator& operator++();
+    bool operator==(const const_iterator& andere) const;
+    bool operator!=(const const_iterator& andere) const;
+    const Knoop<Sleutel, Data>& operator*();
+    const Knoop<Sleutel, Data>* operator->();
+
+private:
+    const Knoop<Sleutel, Data>* huidige_knoop;
 };
 
 template <class Sleutel, class Data>
 class Knoop
 {
 public:
-    friend class BinaireBoom<Sleutel, Data>;
+    friend class BinaireBoom<Sleutel, Data>; 
 
     Knoop(const Sleutel& sleutel, const Data& data);
+    Knoop(const Sleutel& sleutel, const Data& data, Knoop<Sleutel, Data>* ouder);
     Knoop(const Knoop<Sleutel, Data>& andere);
     Knoop<Sleutel, Data>& operator=(const Knoop<Sleutel, Data>& andere) = delete;
     Knoop(Knoop<Sleutel, Data>&& andere) = delete;
@@ -128,8 +114,12 @@ public:
     const Sleutel& geef_sleutel() const;
     const Data& geef_data() const;
 
-protected:
+    std::string to_string() const;
+
     BinaireBoom<Sleutel, Data>& geef_kind(const Richting& richting);
+    Richting is_linker_of_rechter_kind() const;
+
+private:
 
     Sleutel sleutel;
     Data data;
@@ -142,7 +132,7 @@ protected:
 /******************************************************************************/
 
 template <class Sleutel, class Data>
-BinaireBoom<Sleutel, Data>::BinaireBoom() : std::unique_ptr<Knoop<Sleutel, Data>>{nullptr}
+BinaireBoom<Sleutel, Data>::BinaireBoom() : std::unique_ptr<Knoop<Sleutel, Data>>{}
 {
 }
 
@@ -159,6 +149,13 @@ BinaireBoom<Sleutel, Data>::BinaireBoom(const BinaireBoom<Sleutel, Data>& andere
     if (andere)
     {
         this->reset(new Knoop<Sleutel, Data>{*andere});
+
+        // Of als we new willen vermijden:
+        //
+        // In de class declaratie:
+        //      using std::unique_ptr<Knoop<Sleutel, Data>>::operator=;
+        // hier in de functie:
+        //      (*this) = std::make_unique<Knoop<Sleutel, Data>>(*andere);
     }
 }
 
@@ -199,6 +196,12 @@ template <class Sleutel, class Data>
 bool operator!=(const BinaireBoom<Sleutel, Data>& b1, const BinaireBoom<Sleutel, Data>& b2)
 {
     return !(b1 == b2);
+}
+
+template <class Sleutel, class Data>
+bool BinaireBoom<Sleutel, Data>::is_leeg() const
+{
+    return ((*this) == nullptr);
 }
 
 template <class Sleutel, class Data>
@@ -494,8 +497,6 @@ std::string BinaireBoom<Sleutel, Data>::get_dot_code() const
     return out.str();
 }
 
-/******************************************************************************/
-
 template <class Sleutel, class Data>
 BinaireBoom<Sleutel, Data>::const_iterator::const_iterator(Knoop<Sleutel, Data>* huidige_knoop)
 : huidige_knoop{huidige_knoop}
@@ -590,6 +591,12 @@ Knoop<Sleutel, Data>::Knoop(const Sleutel& sleutel, const Data& data) : sleutel{
 }
 
 template <class Sleutel, class Data>
+Knoop<Sleutel, Data>::Knoop(const Sleutel& sleutel, const Data& data, Knoop<Sleutel, Data>* ouder)
+: sleutel{sleutel}, data{data}, ouder{ouder}
+{
+}
+
+template <class Sleutel, class Data>
 Knoop<Sleutel, Data>::Knoop(const Knoop<Sleutel, Data>& andere)
 {
     sleutel = andere.sleutel;
@@ -650,4 +657,45 @@ BinaireBoom<Sleutel, Data>& Knoop<Sleutel, Data>::geef_kind(const Richting& rich
     }
 }
 
-#endif /* ZOEKBOOM_H */
+template <class Sleutel, class Data>
+std::string BinaireBoom<Sleutel, Data>::to_string() const
+{
+    if (!is_leeg())
+    {
+        return (*this)->to_string();
+    }
+    else
+    {
+        return "NULL";
+    }
+}
+
+template <class Sleutel, class Data>
+std::string Knoop<Sleutel, Data>::to_string() const
+{
+    std::stringstream ss;
+
+    ss << "(" << this->links.to_string() << " <- " << this->sleutel << " -> " << this->rechts.to_string() << ")";
+
+    return ss.str();
+}
+
+template <class Sleutel, class Data>
+Richting Knoop<Sleutel, Data>::is_linker_of_rechter_kind() const
+{
+    if (!ouder)
+    {
+        throw "Er is geen ouder.";
+    }
+
+    if ((ouder->links).get() == this)
+    {
+        return Richting::LINKS;
+    }
+    else
+    {
+        return Richting::RECHTS;
+    }
+}
+
+#endif

@@ -1,5 +1,6 @@
 
 #include "binaireboom.h"
+
 #include "gtest/gtest.h"
 
 #include <string>
@@ -94,6 +95,19 @@ TEST(binaire_boom, move)
 
     ASSERT_EQ(bb_move, bb);
     ASSERT_EQ(bb_testcopy, (BinaireBoom<int, int>{}));
+}
+
+TEST(binaire_boom, is_leeg)
+{
+    BinaireBoom<int, int> bb;
+
+    ASSERT_TRUE(bb.is_leeg());
+
+    bb.voeg_toe(1, 11);
+
+    ASSERT_FALSE(bb.is_leeg());
+
+    // TODO terug legen en testen
 }
 
 TEST(binaire_boom, diepte)

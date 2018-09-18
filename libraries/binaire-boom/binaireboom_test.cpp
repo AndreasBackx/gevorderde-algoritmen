@@ -1,9 +1,13 @@
 
 #include "binaireboom.h"
 
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
 #include <string>
+
+using ::testing::ElementsAreArray;
+using ::testing::Pair;
 
 TEST(binaire_boom, voeg_toe)
 {
@@ -27,37 +31,24 @@ TEST(binaire_boom, voeg_toe)
 
     std::vector<std::pair<int, std::string>> inhoud_bb = bb.geef_inhoud_inorder();
 
-    ASSERT_EQ(inhoud_bb.size(), 15);
-    ASSERT_EQ(inhoud_bb[0].first, 4);
-    ASSERT_EQ(inhoud_bb[0].second, "4");
-    ASSERT_EQ(inhoud_bb[1].first, 10);
-    ASSERT_EQ(inhoud_bb[1].second, "10");
-    ASSERT_EQ(inhoud_bb[2].first, 12);
-    ASSERT_EQ(inhoud_bb[2].second, "12");
-    ASSERT_EQ(inhoud_bb[3].first, 15);
-    ASSERT_EQ(inhoud_bb[3].second, "15");
-    ASSERT_EQ(inhoud_bb[4].first, 18);
-    ASSERT_EQ(inhoud_bb[4].second, "18");
-    ASSERT_EQ(inhoud_bb[5].first, 22);
-    ASSERT_EQ(inhoud_bb[5].second, "22");
-    ASSERT_EQ(inhoud_bb[6].first, 24);
-    ASSERT_EQ(inhoud_bb[6].second, "24");
-    ASSERT_EQ(inhoud_bb[7].first, 25);
-    ASSERT_EQ(inhoud_bb[7].second, "25");
-    ASSERT_EQ(inhoud_bb[8].first, 31);
-    ASSERT_EQ(inhoud_bb[8].second, "31");
-    ASSERT_EQ(inhoud_bb[9].first, 35);
-    ASSERT_EQ(inhoud_bb[9].second, "35");
-    ASSERT_EQ(inhoud_bb[10].first, 44);
-    ASSERT_EQ(inhoud_bb[10].second, "44");
-    ASSERT_EQ(inhoud_bb[11].first, 50);
-    ASSERT_EQ(inhoud_bb[11].second, "50");
-    ASSERT_EQ(inhoud_bb[12].first, 66);
-    ASSERT_EQ(inhoud_bb[12].second, "66");
-    ASSERT_EQ(inhoud_bb[13].first, 70);
-    ASSERT_EQ(inhoud_bb[13].second, "70");
-    ASSERT_EQ(inhoud_bb[14].first, 90);
-    ASSERT_EQ(inhoud_bb[14].second, "90");
+    ASSERT_THAT(inhoud_bb,
+                ElementsAreArray({
+                        Pair(4, "4"),
+                        Pair(10, "10"),
+                        Pair(12, "12"),
+                        Pair(15, "15"),
+                        Pair(18, "18"),
+                        Pair(22, "22"),
+                        Pair(24, "24"),
+                        Pair(25, "25"),
+                        Pair(31, "31"),
+                        Pair(35, "35"),
+                        Pair(44, "44"),
+                        Pair(50, "50"),
+                        Pair(66, "66"),
+                        Pair(70, "70"),
+                        Pair(90, "90"),
+                }));
 }
 
 TEST(binaire_boom, deepcopy)
@@ -137,28 +128,34 @@ TEST(binaire_boom, roteer_links)
 
     std::vector<std::pair<int, int>> inhoud_bb = bb.geef_inhoud_inorder();
 
-    ASSERT_EQ(inhoud_bb.size(), 7);
-    ASSERT_EQ(inhoud_bb[0].first, 8);
-    ASSERT_EQ(inhoud_bb[1].first, 16);
-    ASSERT_EQ(inhoud_bb[2].first, 25);
-    ASSERT_EQ(inhoud_bb[3].first, 42);
-    ASSERT_EQ(inhoud_bb[4].first, 49);
-    ASSERT_EQ(inhoud_bb[5].first, 58);
-    ASSERT_EQ(inhoud_bb[6].first, 62);
+    ASSERT_THAT(inhoud_bb,
+                ElementsAreArray({
+                        Pair(8, 16),
+                        Pair(16, 32),
+                        Pair(25, 50),
+                        Pair(42, 84),
+                        Pair(49, 98),
+                        Pair(58, 116),
+                        Pair(62, 124),
+                }));
+
     ASSERT_EQ(bb->geef_sleutel(), 42);
 
     BinaireBoom<int, int> bb_links{bb};
     bb_links.roteer(Richting::LINKS);
     inhoud_bb = bb_links.geef_inhoud_inorder();
 
-    ASSERT_EQ(inhoud_bb.size(), 7);
-    ASSERT_EQ(inhoud_bb[0].first, 8);
-    ASSERT_EQ(inhoud_bb[1].first, 16);
-    ASSERT_EQ(inhoud_bb[2].first, 25);
-    ASSERT_EQ(inhoud_bb[3].first, 42);
-    ASSERT_EQ(inhoud_bb[4].first, 49);
-    ASSERT_EQ(inhoud_bb[5].first, 58);
-    ASSERT_EQ(inhoud_bb[6].first, 62);
+    ASSERT_THAT(inhoud_bb,
+                ElementsAreArray({
+                        Pair(8, 16),
+                        Pair(16, 32),
+                        Pair(25, 50),
+                        Pair(42, 84),
+                        Pair(49, 98),
+                        Pair(58, 116),
+                        Pair(62, 124),
+                }));
+
     ASSERT_EQ(bb_links->geef_sleutel(), 58);
 
     bb_links.roteer(Richting::RECHTS);
@@ -178,28 +175,34 @@ TEST(binaire_boom, roteer_rechts)
 
     std::vector<std::pair<int, int>> inhoud_bb = bb.geef_inhoud_inorder();
 
-    ASSERT_EQ(inhoud_bb.size(), 7);
-    ASSERT_EQ(inhoud_bb[0].first, 8);
-    ASSERT_EQ(inhoud_bb[1].first, 16);
-    ASSERT_EQ(inhoud_bb[2].first, 25);
-    ASSERT_EQ(inhoud_bb[3].first, 42);
-    ASSERT_EQ(inhoud_bb[4].first, 49);
-    ASSERT_EQ(inhoud_bb[5].first, 58);
-    ASSERT_EQ(inhoud_bb[6].first, 62);
+    ASSERT_THAT(inhoud_bb,
+                ElementsAreArray({
+                        Pair(8, 16),
+                        Pair(16, 32),
+                        Pair(25, 50),
+                        Pair(42, 84),
+                        Pair(49, 98),
+                        Pair(58, 116),
+                        Pair(62, 124),
+                }));
+
     ASSERT_EQ(bb->geef_sleutel(), 42);
 
     BinaireBoom<int, int> bb_rechts{bb};
     bb_rechts.roteer(Richting::RECHTS);
     inhoud_bb = bb_rechts.geef_inhoud_inorder();
 
-    ASSERT_EQ(inhoud_bb.size(), 7);
-    ASSERT_EQ(inhoud_bb[0].first, 8);
-    ASSERT_EQ(inhoud_bb[1].first, 16);
-    ASSERT_EQ(inhoud_bb[2].first, 25);
-    ASSERT_EQ(inhoud_bb[3].first, 42);
-    ASSERT_EQ(inhoud_bb[4].first, 49);
-    ASSERT_EQ(inhoud_bb[5].first, 58);
-    ASSERT_EQ(inhoud_bb[6].first, 62);
+    ASSERT_THAT(inhoud_bb,
+                ElementsAreArray({
+                        Pair(8, 16),
+                        Pair(16, 32),
+                        Pair(25, 50),
+                        Pair(42, 84),
+                        Pair(49, 98),
+                        Pair(58, 116),
+                        Pair(62, 124),
+                }));
+
     ASSERT_EQ(bb_rechts->geef_sleutel(), 16);
 
     bb_rechts.roteer(Richting::LINKS);

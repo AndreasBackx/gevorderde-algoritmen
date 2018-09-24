@@ -2,6 +2,7 @@
 
 
 Persoonlijke speeltuin voor het vak Gevorderde Algoritmen (E765015)
+
 *Deze repository kan fouten en onjuistheden bevatten*
 
 -----
@@ -12,9 +13,9 @@ Persoonlijke speeltuin voor het vak Gevorderde Algoritmen (E765015)
 
 *Uitgebreide uitleg volgt onderaan*
 
-1. Bestanden toevoegen in `CMakeLists.txt`
+1. **Bestanden toevoegen in `CMakeLists.txt`**
 
-2. project genereren
+2. **project genereren**
 
 ```
 ./generate_makefile.sh 
@@ -23,7 +24,7 @@ Persoonlijke speeltuin voor het vak Gevorderde Algoritmen (E765015)
   - Maakt een map `build` aan met de nodige project-bestanden voor jouw IDE
   - Moet elke keer opnieuw worden uitgevoerd als je bestanden toegevoegd of verwijderd van het project (dus telkens na stap 1)
 
-3. Elke keer als je wil compileren
+3. **Elke keer als je wil compileren**
 
 ```
 make
@@ -33,7 +34,7 @@ make
   - Zorg ervoor dat je hiervoor in de map `build` zit
   - `./unittest` zorgt ervoor dat de unittesten worden uitgevoerd
   
-4. Als je een clean build wil doen
+4. **Als je een clean build wil doen**
 
 ```
 rm -rf build
@@ -74,7 +75,7 @@ Om je eigen project te maken moet je in `CMakeLists.txt` aangeven welke codebest
 
 ```
 set(SOURCES
-    # voeg hier het cpp-bestand met de main-methode toe (indien aanwezig)
+    # voeg hier alle cpp-bestanden toe nodig om het main-programma te compileren (indien aanwezig)
     )
 
 set(ADDITIONAL_INPUT_FILES
@@ -82,7 +83,7 @@ set(ADDITIONAL_INPUT_FILES
     )
 
 set(TEST_SOURCES
-    # voeg hier de googletest cpp-bestanden toe
+    # voeg hier alle cpp-bestanden toe nodig om de googletest unittesten te compileren
     )
 
 set(ADDITIONAL_TEST_FILES
@@ -110,13 +111,13 @@ set(ADDITIONAL_TEST_FILES
     )
 ```
 
-Telkens dit wordt aangepast moet je het project opnieuw genereren.
+Telkens dit wordt aangepast, moet je het project opnieuw genereren.
 
 #### Het project genereren en de code compileren
 
 Het buildsysteem wordt gegenereerd door CMake (https://cmake.org/). CMake laat toe om afhankelijk van de wensen van de gebruiker build- of projectfiles te genereren voor jouw editor of buildsysteem naar keuze (make, Visual Studio, XCode, ...).
 
-De volgende stappen genereren via CMake op linux een make project dat dan op de commandline kan worden uitgevoerd. Indien je een ander IDE of besturingssysteem gebruikt, kan je eenvoudig met behulp van CMake bv. een Visual Studio project op Windows genereren om zo te ontwikkelen.
+De volgende stappen genereren via CMake op linux een make project dat dan op de commandline kan worden uitgevoerd. Indien je een ander IDE of besturingssysteem gebruikt, kan je eenvoudig met behulp van CMake bv. een Visual Studio project op Windows genereren om zo te ontwikkelen (zie onderaan). 
 
 ```
 ./generate_makefile.sh
@@ -136,6 +137,18 @@ cd ./build
 make
 ./unittest
 ``` 
+
+#### Windows (Visual Studio)
+
+CMake werkt ook op windows en genereert dat Visual Studio projecten (indien dat is geïnstalleerd). Je genereert dit als volgt:
+
+1. Maak zelf een `build` map aan
+2. Ga naar de `build` map
+3. Voer op de commandline `cmake ..` uit
+4. open het gegenereerde .sln-bestand
+5. Eenmaal geopend duid je het subproject met jouw code als hoofdproject aan
+
+Noot: het kan zijn dat de header files niet zijn opgenomen in het visual studio project. In dat geval kan je de .h files ook toevoegen aan `CMakeLists.txt`.
 
 -----
 

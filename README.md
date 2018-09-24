@@ -7,11 +7,7 @@ Persoonlijke speeltuin voor het vak Gevorderde Algoritmen (E765015)
 
 -----
 
-### Hoe werken met CMake projecten:
-
-#### tl;dr (too long; don't read)
-
-*Uitgebreide uitleg volgt onderaan*
+### Hoe werken met CMake projecten (tl;dr)
 
 1. **Bestanden toevoegen in `CMakeLists.txt`**
 
@@ -41,6 +37,10 @@ rm -rf build
 ```
 
 - Begin dan opnieuw vanaf stap 2
+
+-----
+
+### Hoe werken met CMake projecten (uitgebreid)
 
 #### Folder structuur
 
@@ -156,16 +156,18 @@ Voor de gebruikers van (Neo)Vim, Emacs, Visual Studio Code, ... met clang tools 
 
 -----
 
-### TODO 2018-2019
+### ToDo's
+
+#### 2018-2019
 
 - TBA
 
-### TODO 2017-2018
+#### 2017-2018
 
 - Stroomnetwerken: statistieken genereren en probleem oplossen
 - Boyer Moore 2e suffix en extra varianten 1e suffix implementeren
 - Zoveel mogelijk linken naar de algemene libraries
 
-### TODO 2016-2017
+#### 2016-2017
 
 Het is een puinhoop -> alles eens uitkuisen en zoveel mogelijk linken naar de algemene libraries

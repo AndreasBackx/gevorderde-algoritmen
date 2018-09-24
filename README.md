@@ -148,7 +148,11 @@ CMake werkt ook op windows en genereert dat Visual Studio projecten (indien dat 
 4. open het gegenereerde .sln-bestand
 5. Eenmaal geopend duid je het subproject met jouw code als hoofdproject aan
 
-Noot: het kan zijn dat de header files niet zijn opgenomen in het visual studio project. In dat geval kan je de .h files ook toevoegen aan `CMakeLists.txt`.
+Noot: het kan zijn dat de header files niet zijn opgenomen in het visual studio project. In dat geval kan je de .h-files ook toevoegen aan `CMakeLists.txt`.
+
+### Extra: developpen met clang tools
+
+Voor de gebruikers van (Neo)Vim, Emacs, Visual Studio Code, ... met clang tools wordt er een `compile_commands.json` aangemaakt inclusief informatie voor het helpen bij formatting, intellisense, autocompletion voor zowel header- als cpp-files. Dit gebeurt via https://github.com/Sarcasm/compdb, wat wel zelf nog geïnstalleerd moet worden via pip (`pip install compdb`).
 
 -----
 

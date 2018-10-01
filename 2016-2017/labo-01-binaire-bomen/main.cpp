@@ -5,8 +5,8 @@
 #include <fstream>
 #include <string>
 
-#include "zoekboom.h"
-#include "../libraries/prettyprint.h"
+#include "../../libraries/binaire-boom/binaireboom.h"
+#include "../tools/prettyprint.h"
 
 // TODO
 // - terug evenwijdig maken op alle niveaus via recursie

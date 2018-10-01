@@ -7,9 +7,14 @@ set(ADDITIONAL_INPUT_FILES
 
 set(TEST_SOURCES
     binaire-boom/binaireboom_test.cpp
+    splayboom/splayboom-test.cpp
     csv/csv_test.cpp
     graaf/graaf_test.cpp
     woordstroom/woordstroom_test.cpp
+    rood-zwarte-boom/rzboom-test.cpp
+    schijf/schijf-test.cpp
+    stringmetbits/stringmetbits-test.cpp
+    lijst/lijst_test.cpp
     )
 
 set(ADDITIONAL_TEST_FILES

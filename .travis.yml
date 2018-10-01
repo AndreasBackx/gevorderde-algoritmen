@@ -8,9 +8,7 @@ compiler:
     # - gcc
 
 env:
-    - TEST_DIR=libraries/graaf
-    - TEST_DIR=libraries/woordstroom
-    - TEST_DIR=libraries/csv
+    - TEST_DIR=libraries
     # - TEST_DIR=2017-2018/labo-5-stroomnetwerken # travis kent nog geen c++14
     - TEST_DIR=2017-2018/labo-6-samenhangende-componenten
     - TEST_DIR=2017-2018/labo-8-automaten
@@ -20,4 +18,5 @@ before_script:
     - sh generate_makefile.sh
     - cd build
 
+# TODO: support voor unittests toevoegen
 script: make

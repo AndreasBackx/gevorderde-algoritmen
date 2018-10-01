@@ -1,11 +1,11 @@
 
-#include "rzboom14.h"
+#include "../..//libraries/rood-zwarte-boom/rzboom-bu.h"
 
 #include <fstream>
 #include <iostream>
 #include <sstream>
 
-int main()
+void test_bottom_up()
 {
     RZBoom<int, int> rzb;
 
@@ -14,7 +14,7 @@ int main()
     int i = 0;
     for (int key : keys)
     {
-        rzb.voeg_toe_bottom_up(key, 2 * key);
+        rzb.voeg_toe(key, 2 * key);
 
         std::ofstream out;
         std::stringstream naam;
@@ -23,20 +23,22 @@ int main()
         out << rzb.get_dot_code();
         out.close();
 
-        // std::cout << i << std::endl;
         i++;
     }
 
     assert(rzb.is_rep_ok());
+}
 
-    int keys2[] = {4, 7, 10, 2, 5, 6, 3, 8, 0, 9, 1}; // https://www.coursehero.com/file/22593733/red-black-examples/
+void test_top_down()
+{
+    int keys[] = {4, 7, 10, 2, 5, 6, 3, 8, 0, 9, 1}; // https://www.coursehero.com/file/22593733/red-black-examples/
 
-    RZBoom<int, int> rzb_top_down;
+    RZBoom<int, int> rzb;
 
     i = 0;
     for (int key : keys2)
     {
-        rzb_top_down.voeg_toe_top_down(key, 2 * key);
+        rzb_top_down.voeg_toe(key, 2 * key);
 
         std::ofstream out;
         std::stringstream naam;
@@ -45,11 +47,16 @@ int main()
         out << rzb_top_down.get_dot_code();
         out.close();
 
-        // std::cout << i << std::endl;
         i++;
     }
 
     assert(rzb_top_down.is_rep_ok());
+}
+
+int main()
+{
+    test_bottom_up();
+    // test_top_down();
 
     std::cout << "Done..." << std::endl;
 

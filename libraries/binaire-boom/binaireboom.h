@@ -34,6 +34,7 @@ class BinaireBoom : public std::unique_ptr<Knoop<Sleutel, Data>>
 {
 public:
     BinaireBoom();
+    BinaireBoom(const Sleutel& sleutel, const Data& data);
     BinaireBoom(const BinaireBoom<Sleutel, Data>& andere);
     BinaireBoom<Sleutel, Data>& operator=(const BinaireBoom<Sleutel, Data>& andere);
     BinaireBoom(BinaireBoom<Sleutel, Data>&& andere);
@@ -62,8 +63,7 @@ public:
     const_iterator begin() const;
     const_iterator end() const;
 
-private:
-    BinaireBoom(const Sleutel& sleutel, const Data& data);
+protected:
     void maak_lijst_evenwichtig();
     void controleer_is_gelijk(const BinaireBoom<Sleutel, Data>& andere, bool& is_gelijk) const;
     std::tuple<BinaireBoom<Sleutel, Data>*, Knoop<Sleutel, Data>*> zoek(const Sleutel& sleutel);
@@ -98,7 +98,7 @@ template <class Sleutel, class Data>
 class Knoop
 {
 public:
-    friend class BinaireBoom<Sleutel, Data>; 
+    friend class BinaireBoom<Sleutel, Data>;
 
     Knoop(const Sleutel& sleutel, const Data& data);
     Knoop(const Sleutel& sleutel, const Data& data, Knoop<Sleutel, Data>* ouder);
@@ -113,6 +113,8 @@ public:
 
     const Sleutel& geef_sleutel() const;
     const Data& geef_data() const;
+    void zet_ouder(Knoop<Sleutel, Data>* ouder);
+    Knoop<Sleutel, Data>* geef_ouder();
 
     std::string to_string() const;
 
@@ -120,7 +122,6 @@ public:
     Richting is_linker_of_rechter_kind() const;
 
 private:
-
     Sleutel sleutel;
     Data data;
 
@@ -383,6 +384,8 @@ bool BinaireBoom<Sleutel, Data>::is_rep_ok() const
             is_correct = false;
             return;
         }
+
+        vorige = &(knoop.sleutel);
     });
 
     return is_correct;
@@ -638,6 +641,18 @@ template <class Sleutel, class Data>
 const Data& Knoop<Sleutel, Data>::geef_data() const
 {
     return data;
+}
+
+template <class Sleutel, class Data>
+void Knoop<Sleutel, Data>::zet_ouder(Knoop<Sleutel, Data>* ouder)
+{
+    this->ouder = ouder;
+}
+
+template <class Sleutel, class Data>
+Knoop<Sleutel, Data>* Knoop<Sleutel, Data>::geef_ouder()
+{
+    return ouder;
 }
 
 template <class Sleutel, class Data>

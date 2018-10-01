@@ -63,12 +63,14 @@ void StringMetBits::check0()
 
 bool StringMetBits::bit(int i) const
 {
-    if (i >= size() * 8)
+    if (i >= geefAantalBits())
     {
         return false;
     }
 
-    return ((*this)[i / 8] & uint(1) << (7 - (i % 8)));
+    unsigned int mask = static_cast<unsigned int>(1) << (7 - (i % 8));
+
+    return ((*this)[i / 8] & mask);
 }
 
 int StringMetBits::geefAantalBits() const

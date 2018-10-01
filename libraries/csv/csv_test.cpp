@@ -37,7 +37,7 @@ TEST(csv_test, genereer_bestand_verschillende_datatypes)
     CsvData csv(filename);
 
     csv.voeg_data_toe(std::vector<int>{-1, 2, -3, 4, -5});
-    csv.voeg_data_toe(std::vector<float>{1.1, 2.22, 3.333, 4.4444, 5.55555});
+    csv.voeg_data_toe(std::vector<double>{1.1, 2.22, 3.333, 4.4444, 5.55555});
     csv.voeg_data_toe(std::vector<unsigned int>{1, 2, 3, 4, 5});
 
     std::string expected_content{

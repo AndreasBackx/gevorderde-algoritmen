@@ -7,7 +7,7 @@ set(ADDITIONAL_INPUT_FILES
 
 set(TEST_SOURCES
     binaire-boom/binaireboom_test.cpp
-    splayboom/splayboom-test.cpp
+    # splayboom/splayboom-test.cpp
     csv/csv_test.cpp
     graaf/graaf_test.cpp
     woordstroom/woordstroom_test.cpp

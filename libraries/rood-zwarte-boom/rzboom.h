@@ -12,6 +12,7 @@
 #include <sstream>
 #include <stack>
 #include <tuple>
+#include <vector>
 
 enum class Kleur
 {
@@ -27,6 +28,7 @@ class RZBoom : public std::unique_ptr<RZKnoop<Sleutel, Data>>
 {
 public:
     RZBoom();
+    RZBoom(const std::vector<std::tuple<Sleutel, Data, Kleur>>& inhoud);
     RZBoom(const Sleutel& sleutel, const Data& data, const Kleur& kleur);
     virtual ~RZBoom() = default;
 
@@ -46,6 +48,7 @@ public:
     void roteer(const Richting& richting);
     bool is_rep_ok() const;
     void overloop_inorder(std::function<void(const RZKnoop<Sleutel, Data>&)> bezoek) const;
+    void overloop_postorder(std::function<void(const RZKnoop<Sleutel, Data>&)> bezoek) const;
     Kleur geef_kleur() const;
 
     std::string get_dot_code() const;
@@ -114,6 +117,22 @@ protected:
 template <class Sleutel, class Data>
 RZBoom<Sleutel, Data>::RZBoom() : std::unique_ptr<RZKnoop<Sleutel, Data>>{nullptr}
 {
+}
+
+// Om een boom opnieuw op te bouwen, voeg je de sleutels in level order toe 
+// (vergelijkbaar met breedte eerst zoeken). Dit komt omdat binaire per niveau
+// onderaan groeien
+template <class Sleutel, class Data>
+RZBoom<Sleutel, Data>::RZBoom(const std::vector<std::tuple<Sleutel, Data, Kleur>>& inhoud)
+{
+    for (auto [sleutel, data, kleur] : inhoud)
+    {
+        auto [plaats, ouder] = zoek(sleutel);
+        assert(!(*plaats));
+
+        *plaats = RZBoom<Sleutel, Data>{sleutel, data, kleur};
+        (*plaats)->ouder = ouder;
+    }
 }
 
 template <class Sleutel, class Data>
@@ -197,45 +216,6 @@ void RZBoom<Sleutel, Data>::roteer(const Richting& richting)
         return;
     }
 
-    // if (richting == Richting::RECHTS)
-    // {
-    //     if (!((*this)->links))
-    //     {
-    //         return;
-    //     }
-
-    //     RZBoom temp{std::move(*this)};
-    //     *this = std::move(temp->links);
-    //     temp->links = std::move((*this)->rechts);
-    //     (*this)->rechts = std::move(temp);
-
-    //     (*this)->ouder = (*this)->rechts->ouder;
-    //     (*this)->rechts->ouder = this->get();
-    //     if ((*this)->rechts->links)
-    //     {
-    //         (*this)->rechts->links->ouder = ((*this)->rechts).get();
-    //     }
-    // }
-    // else if (richting == Richting::LINKS)
-    // {
-    //     if (!(*this)->rechts)
-    //     {
-    //         return;
-    //     }
-
-    //     RZBoom temp{std::move(*this)};
-    //     (*this) = std::move(temp->rechts);
-    //     temp->rechts = std::move((*this)->links);
-    //     (*this)->links = std::move(temp);
-
-    //     (*this)->ouder = (*this)->links->ouder;
-    //     (*this)->links->ouder = this->get();
-    //     if ((*this)->links->rechts)
-    //     {
-    //         (*this)->links->rechts->ouder = ((*this)->links).get();
-    //     }
-    // }
-
     if (!((*this)->geef_kind(!richting)))
     {
         return;
@@ -290,6 +270,20 @@ void RZBoom<Sleutel, Data>::overloop_inorder(std::function<void(const RZKnoop<Sl
     bezoek_functie(*(*this));
 
     (*this)->rechts.overloop_inorder(bezoek_functie);
+}
+
+template <class Sleutel, class Data>
+void RZBoom<Sleutel, Data>::overloop_postorder(std::function<void(const RZKnoop<Sleutel, Data>&)> bezoek_functie) const
+{
+    if (!(*this))
+    {
+        return;
+    }
+
+    (*this)->links.overloop_inorder(bezoek_functie);
+    (*this)->rechts.overloop_inorder(bezoek_functie);
+
+    bezoek_functie(*(*this));
 }
 
 template <class Sleutel, class Data>

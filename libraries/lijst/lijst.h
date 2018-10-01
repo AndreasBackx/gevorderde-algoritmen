@@ -12,16 +12,11 @@ template <class T>
 class Lijst
 {
 public:
-    friend void swap(Lijst<T>& a, Lijst<T>& b)
-    {
-        std::swap(a.eerste, b.eerste);
-    }
-
     Lijst() = default;
     Lijst(const T& t);
-    Lijst(const Lijst<T>& andere);
+    Lijst(const Lijst<T>& andere); // Dit moeten we zelf in elkaar steken
     Lijst(Lijst<T>&& andere) = default;
-    Lijst<T>& operator=(const Lijst<T>& andere);
+    Lijst<T>& operator=(const Lijst<T>& andere); // Dit moeten we zelf in elkaar steken
     Lijst<T>& operator=(Lijst<T>&& andere) = default;
     virtual ~Lijst() = default;
 
@@ -69,8 +64,9 @@ Lijst<T>::Lijst(const Lijst<T>& andere)
 template <class T>
 Lijst<T>& Lijst<T>::operator=(const Lijst<T>& andere)
 {
+    // Copy-swap trick
     Lijst<T> temp{andere};
-    swap((*this), temp);
+    std::swap((*this), temp);
     return (*this);
 }
 

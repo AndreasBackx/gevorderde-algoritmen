@@ -8,6 +8,7 @@ compiler:
 
 env:
     - TEST_DIR=libraries
+    - TEST_DIR=2016-2017/labo-03-dynamisch-programmeren
     - TEST_DIR=2017-2018/labo-5-stroomnetwerken
     - TEST_DIR=2017-2018/labo-6-samenhangende-componenten
     - TEST_DIR=2017-2018/labo-8-automaten

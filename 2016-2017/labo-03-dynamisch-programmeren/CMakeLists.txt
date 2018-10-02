@@ -12,6 +12,9 @@ set(TEST_SOURCES
     )
 
 set(ADDITIONAL_TEST_FILES
+    try-out-2.dat
+    try-out.dat
+    versnick.dat
     )
 
 ### executable #################################################################

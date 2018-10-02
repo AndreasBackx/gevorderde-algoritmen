@@ -4,14 +4,20 @@ os: linux
 language: cpp
 
 compiler:
-    - clang
-    # - gcc
+    - gcc
 
 env:
     - TEST_DIR=libraries
-    # - TEST_DIR=2017-2018/labo-5-stroomnetwerken # travis kent nog geen c++14
+    - TEST_DIR=2017-2018/labo-5-stroomnetwerken
     - TEST_DIR=2017-2018/labo-6-samenhangende-componenten
     - TEST_DIR=2017-2018/labo-8-automaten
+
+addons:
+    apt:
+        sources:
+            - ubuntu-toolchain-r-test
+        packages:
+            - g++-8
 
 before_script:
     - cd $TEST_DIR
@@ -19,4 +25,4 @@ before_script:
     - cd build
 
 # TODO: support voor unittests toevoegen
-script: make
+script: make && ./unittest*
